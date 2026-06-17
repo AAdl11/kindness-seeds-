@@ -1,51 +1,84 @@
-# 小芽 · 善的任意門 — 開發者 交接包
+# 善的種子 · 獵人角 — Seeds of Kindness · Semillas de Bondad
 
-## 這包是什麼
-給**桌機版 開發者** 一次跑起來、建出完整可玩並部署到 GitHub Pages 的
-「小芽：善的種子 / 善的任意門」（獵人角三福社區遊戲）。
+> 一座你走得進去、照顧得到的社區。獵人角，邁向第二十年的陪伴。
+> A community you can step into and care for — Hunters Point, toward twenty years of companionship.
+> Una comunidad en la que puedes entrar y cuidar — Hunters Point, hacia veinte años de compañía.
 
-- `build-spec.md` — **主文件**，開發者 先讀它。
-  含：三福骨架、九關清單、**§3.5 依存性核心循環**、資料結構、資產清單、鐵軌、事實、驗收標準。
-- `index.html` — 已架好的**腳手架**（門 → 選角色 → 真地圖 hub → 食物發放可玩關 → 點亮 → 邀請）。這是要**擴充**的底，不是重寫。
+**▶ 立即遊玩 / Play / Jugar：** https://aadl11.github.io/kindness-seeds-/
 
 ---
 
-## 今晚四步（明暺）
+## 故事 · Story · Historia
 
-1. 桌機開終端機，新開一個 repo 資料夾，例如 `kindness-seeds`。
-   **建議開新 repo**，不要動到 JOK 團隊歷史。
-2. 把這包檔案放進去；再把素材庫 clone 進來當素材來源：
-   ```
-   git clone https://github.com/AAdl11/journey-of-kindness assets-src
-   ```
-   （真地圖、馬賽克照片、音樂都在 `assets-src/assets/` 裡。）
-3. 開 開發者，把下面〈貼給 開發者 的 prompt〉整段貼進去，按 Enter 讓它跑。
-4. 用手機 開發者 App 連桌機 開發者 看進度、隨時喊停或調方向。
+**ZH** — 2006 年，淑雲師姐在獵人角的一所小學，看見一個孩子連早餐的一把生米都沒有。那一把生米，是這一切的開始。從一把米，到食物發放、毛毯、課輔、義診、RV Park 的關懷——這份陪伴，正邁向第二十年。這款遊戲，是它的一封情書：你不是來拯救誰，你是被邀請進來，和一座本來就是英雄的社區，一起把每一扇窗點亮。
+
+**EN** — In 2006, in a Hunters Point elementary school, Sister Roxanne Buchwitz saw a child who didn't even have a handful of rice for breakfast. That handful of rice was the beginning of everything. From a handful of rice grew food shares, blankets, tutoring, free clinics, and outreach to families living in the RV Park — a companionship now approaching its twentieth year. This game is a love letter to that work: you are not here to rescue anyone. You are invited in, to help a community that was always the hero light up one window at a time.
+
+**ES** — En 2006, en una escuela primaria de Hunters Point, la hermana Roxanne Buchwitz vio a un niño que no tenía ni un puñado de arroz para el desayuno. Ese puñado de arroz fue el comienzo de todo. De un puñado de arroz nacieron los repartos de alimentos, las mantas, las tutorías, las clínicas gratuitas y el apoyo a las familias del RV Park — una compañía que se acerca ya a su vigésimo año. Este juego es una carta de amor a esa labor: no vienes a rescatar a nadie. Eres invitado a ayudar a una comunidad que siempre fue la heroína, a encender una ventana a la vez.
 
 ---
 
-## 貼給 開發者 的 prompt（整段複製）
+## 第一關 · 關懷之夜 / Care at Dusk / Cuidado al Atardecer ★★★★
 
-你在 `kindness-seeds` repo。先讀 `build-spec.md`（主文件）與 `index.html`（腳手架）。素材在 `assets-src/`（JOK clone：真地圖 `assets-src/assets/hunters_point_map.png`、馬賽克照片 `assets-src/assets/images/`、音樂 `assets-src/assets/audio/`）。
+**ZH** — 黃昏的 RV Park，露營車一台台開進來避海風，想在這裡安身歇息。你只有夕陽這段時間：在每一台車上點亮發光的線索，讀懂這一家需要什麼，親手從物資架配出專屬的關懷包，趕在天黑前送到。天會一點一點變暗、變冷，車窗一盞盞亮起。沒有分數、沒有排名、沒有輸贏——天黑時，只有一句溫柔的話：「你在入夜前，照顧到了 N／5 台車的家。」
 
-以 `index.html` 為架構底，按規格擴充成完整單頁遊戲：三福分區 hub（真地圖底）＋ 多關（各關不同玩法、不同星級、各帶真故事與真照片）＋ **§3.5 核心循環（自選福／關／角色 ＋ 自養一株小芽 ＋ 自墾持久累積的地圖 ＋ localStorage 存檔——這是命脈，不可省）** ＋「看看現在的獵人角」景深街景（用《風月同天》before→after）＋ 真實邀請。
+**EN** — At dusk in the RV Park, trailers roll in one by one to shelter from the sea wind, hoping to settle and rest. You only have this sliver of sunset: tap the glowing clues on each trailer, read what that family needs, hand-build a care package from the supply shelf, and deliver it before dark. The sky slowly deepens and grows cold; windows light up one by one. No score, no ranking, no winning or losing — when night falls, only a gentle line: "Before dark, you reached N / 5 trailer homes."
 
-先把**食物發放、課後輔導、義診**三個不同玩法的關做成可玩，其餘標即將。守 §1 鐵軌（離線單檔、純 Canvas、白天場景、藍天白雲制服不放官方 Logo、孩子＋醫師臉一律馬賽克、社區是英雄、不放柱子、三語 EN/ZH/ES）。守 §2 事實（邁向第二十年、不要寫 22 年；學校＝Bret Harte；幸福校園 ≠ 人文學校；義診醫師犧牲週末休假；《風月同天》為正典）。音樂照 §7 找免版稅短版歡快曲放 `assets/audio/`。部署到 GitHub Pages。
-
-每完成一塊就 commit 一次、寫清楚進度。做完對照 §9 自驗逐項打勾，把**沒達成或不確定**的列出來（含 Tony、Emily 校長是否實名進遊戲）等明暺決定。
+**ES** — Al atardecer en el RV Park, los remolques llegan uno a uno para resguardarse del viento del mar, buscando descanso. Solo tienes este rato de sol: toca las pistas brillantes en cada remolque, comprende qué necesita esa familia, arma a mano un paquete de cuidado desde el estante y entrégalo antes de que anochezca. El cielo se oscurece y enfría poco a poco; las ventanas se encienden una a una. Sin puntaje, sin clasificación, sin ganar ni perder — al caer la noche, solo una frase amable: "Antes de anochecer, llegaste a N / 5 hogares sobre ruedas."
 
 ---
 
-## 給 開發者 的硬規定（節錄 · 完整見 spec）
+## 玩法亮點 · Highlights · Lo Destacado
 
-- **§3.5 依存性必做**：自選 ＋ 自養小芽 ＋ 自墾持久地圖 ＋ localStorage 存檔。沒這層 ＝ 不及格的「高中生週末成品」。
-- **鐵軌**：離線單檔、純 Canvas、白天場景、藍天白雲制服（不放官方 Logo）、孩子＋醫師臉一律馬賽克、社區是英雄不是可憐人、不放柱子、三語。
-- **可讀性**：節點要高對比、一眼看得出是可點 target（為老花設計）；不要半透明毛玻璃。
-- **事實**：邁向第二十年（2006 起、2009 正式，不要寫 22 年）；學校＝Bret Harte（佈雷哈特）；幸福校園 ≠ 人文學校（後者 SF＋聖馬刁兩所、週日教中文＋品德）；義診張醫師／吳醫師犧牲週末休假；《風月同天》before→after 正典（Emily 校長見證、從吃不飽到上大學）。
-- **不確定的真實人物**（Tony、Emily 校長實名）先留問，等明暺決定，不要自作主張放進畫面。
+- **先讀懂，再給 / Observe before you give.** 蒐證式的線索閱讀：沒讀到的線索，就是還不知道的需要。No multiple choice — you infer each family's needs by reading the home, never by picking A/B/C.
+- **親手配關懷包 / Build the package by hand.** 從物資架一件件挑、拼出這一家專屬的關懷包。
+- **不比較、不計較 / No ranking, no scores.** 全程沒有分數、排名、淘汰或懲罰倒數。軟失敗只是溫柔的提醒。
+- **天色由亮到暗 / A real sunset.** 同一張黃昏插畫在程式裡逐步壓暗、變冷，車窗漸亮，配樂隨夜色收緊。
+- **你的小芽 / Your sprout.** 每照顧一家，你親手命名的小芽就長一截；用 `localStorage` 跨次保存，回來還在、又長了。
+- **三福骨架 / Three Blessings.** 幸福家園 · 幸福校園 · 幸福社區——共善竹筒與感恩牆，集體成長不排名。
+- **三語 / Trilingual.** 全程 EN / ZH / ES 即時切換。
 
 ---
 
-## 明天（明暺回來）
-看 開發者 跑出的版本，逐關用你的話磨合；§3 三福分組、節點落點、各關故事再校正。
-還沒定的：Tony／Emily 是否實名、舊金山分會確切年數、開場「從三福寫起」的三語故事文案。
+## 技術 · Tech
+
+- 純靜態網站，離線可玩，無建置步驟、無框架。Pure static site, offline-friendly, no build step, no framework.
+- 多檔架構：`index.html` + `src/css` + `src/js` + `data/`。
+- **資料驅動**：關卡的需求、線索、物資全寫在 `data/level1.js`，新增內容只改資料、不動引擎。
+- 配樂用 `<audio>` + WebAudio（音量隨暖意微升、濾波隨夜色收緊）；所有音效以 WebAudio 即時合成。
+- 跨次保存用 `localStorage`（含記憶體 fallback）。
+- 部署於 GitHub Pages。
+
+```
+index.html
+data/level1.js          # 需求池 / 線索 / 物資 / 真摯話 / 落點（資料驅動）
+src/js/i18n.js          # 三語字串 EN/ZH/ES
+src/js/audio.js         # 配樂 + WebAudio 音效
+src/js/game.js          # 主引擎：讀線索 → 配關懷包 → 送出 → 天黑收場
+src/css/style.css
+assets/images/          # rv_park_dusk1（關卡）/ rv_park_dusk（hub）/ rv_park_night（結尾）
+assets/audio/           # a-curious-discovery.mp3
+```
+
+更多關卡（食物發放、課後輔導、全勤獎、素食烹飪、義診、環保小尖兵、遊民熱食）在 hub 上標示「即將開放」，會延續同一套資料驅動架構陸續加入。
+
+---
+
+## 致謝 · Acknowledgements · Agradecimientos
+
+獻給獵人角的社區、孩子與家庭，以及二十年來不曾缺席的志工們。特別感念淑雲師姐（Roxanne Buchwitz）從一把生米開始的這條路。
+
+For the Hunters Point community — its children, its families — and the volunteers who have not missed a single year. With deep gratitude to Sister Roxanne Buchwitz, who began this path with a single handful of rice.
+
+Para la comunidad de Hunters Point — sus niños, sus familias — y los voluntarios que no han faltado ni un solo año. Con profunda gratitud a la hermana Roxanne Buchwitz, que comenzó este camino con un solo puñado de arroz.
+
+> 遊戲尊重每一個家：畫面只呈現「家」與關懷，不描繪受助的人。
+> This game honors every home: it shows the home and the care, never the people being helped.
+
+---
+
+## 授權 · License
+
+程式碼 / Code：MIT License.
+真實故事、社區素材與背景插畫僅供本公益專案使用，著作權歸各自所有者所有。
+Real stories, community materials, and background artwork are used for this nonprofit project only; all rights remain with their respective owners.
