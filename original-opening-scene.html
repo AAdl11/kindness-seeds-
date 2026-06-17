@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>小芽 · 善的任意門</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;overflow:hidden;background:#23364d;font-family:'Nunito',sans-serif;}
+  #scene{display:block;position:fixed;inset:0;width:100%;height:100%;}
+
+  /* language toggle */
+  .lang{position:fixed;top:15px;right:15px;z-index:6;display:flex;gap:6px;}
+  .lang button{font-family:'Baloo 2','Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:700;font-size:13px;border:none;cursor:pointer;
+    padding:7px 13px;border-radius:999px;background:rgba(255,255,255,.32);color:#3a2a14;
+    backdrop-filter:blur(4px);transition:background .2s;}
+  .lang button.on{background:#ffd98a;color:#5a3a12;}
+
+  /* invite UI */
+  .ui{position:fixed;left:0;right:0;bottom:0;z-index:5;padding:0 26px 44px;
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+    background:linear-gradient(to top, rgba(28,32,50,.80), rgba(28,32,50,.5) 45%, rgba(28,32,50,.12) 75%, transparent);}
+  .kicker{position:fixed;top:60px;left:0;right:0;z-index:5;text-align:center;
+    font-family:'Baloo 2','Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:700;font-size:14px;letter-spacing:2px;
+    color:#fff3d6;text-transform:uppercase;text-shadow:0 2px 12px rgba(20,30,50,.85);
+    opacity:0;animation:rise .8s ease .3s forwards;}
+  .invite{font-family:'Baloo 2','Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:700;font-size:23px;line-height:1.4;color:#fff;
+    margin:8px 0 20px;max-width:440px;text-shadow:0 2px 14px rgba(20,30,50,.6);
+    opacity:0;animation:rise .8s ease .55s forwards;}
+  .enter{font-family:'Baloo 2','Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;font-weight:800;font-size:21px;border:none;cursor:pointer;
+    color:#5a3a12;background:linear-gradient(180deg,#ffe7a6,#ffce5e);
+    padding:16px 40px;border-radius:999px;display:flex;align-items:center;gap:11px;
+    box-shadow:0 8px 0 #d99a2e, 0 18px 30px -10px rgba(120,70,0,.6);
+    opacity:0;animation:rise .8s ease .8s forwards, glowpulse 2.6s ease-in-out 1.6s infinite;}
+  .enter:active{transform:translateY(5px);box-shadow:0 3px 0 #d99a2e,0 10px 20px -10px rgba(120,70,0,.6);}
+  .enter .arrow{font-size:18px;}
+  .note{font-family:'Nunito';font-weight:700;font-size:11px;color:rgba(255,255,255,.55);
+    margin-top:16px;opacity:0;animation:rise .8s ease 1.1s forwards;}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes glowpulse{0%,100%{box-shadow:0 8px 0 #d99a2e,0 18px 30px -10px rgba(120,70,0,.6),0 0 0 0 rgba(255,221,140,.55)}
+    50%{box-shadow:0 8px 0 #d99a2e,0 18px 34px -8px rgba(120,70,0,.6),0 0 0 14px rgba(255,221,140,0)}}
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+
+<div class="lang">
+  <button data-lang="zh" class="on">中文</button>
+  <button data-lang="en">EN</button>
+  <button data-lang="es">ES</button>
+</div>
+
+<div class="kicker" id="kicker">小芽 · 善的任意門</div>
+<div class="ui">
+  <div class="invite" id="invite"></div>
+  <button class="enter" id="enter"><span class="leaf">🌱</span><span id="enterTxt"></span><span class="arrow">→</span></button>
+  <div class="note" id="note"></div>
+</div>
+
+<script>
+(() => {
+  const T = {
+    zh:{kicker:"小芽 · 善的任意門", invite:"黃昏的獵人角，門開著。<br>小芽在門邊等你。", enter:"推門進去", note:"任何手機都能玩 · 免安裝"},
+    en:{kicker:"Sprout · The Kindness Door", invite:"Golden hour in Hunters Point.<br>Sprout's by the open door.", enter:"Step through", note:"Plays on any phone · no install"},
+    es:{kicker:"Brote · La Puerta de la Bondad", invite:"Atardecer en Hunters Point.<br>Brote te espera en la puerta.", enter:"Cruzar la puerta", note:"Funciona en cualquier móvil · sin instalar"}
+  };
+  let lang='zh';
+  function applyLang(){const t=T[lang];
+    document.getElementById('kicker').textContent=t.kicker;
+    document.getElementById('invite').innerHTML=t.invite;
+    document.getElementById('enterTxt').textContent=t.enter;
+    document.getElementById('note').textContent=t.note;
+    document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+    document.documentElement.lang = lang==='zh'?'zh-Hant':lang;}
+  document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>{lang=b.dataset.lang;applyLang();}));
+
+  const cv=document.getElementById('scene'), ctx=cv.getContext('2d');
+  let W,H,DPR,t0=performance.now();
+  function resize(){DPR=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
+    cv.width=W*DPR;cv.height=H*DPR;cv.style.width=W+'px';cv.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0);buildStatic();}
+  addEventListener('resize',resize);
+
+  // horizon ~ 52% of height; door centered above it
+  let clouds=[], gulls=[], motes=[], houses=[];
+  function buildStatic(){
+    clouds=[]; for(let i=0;i<5;i++)clouds.push({x:Math.random()*W,y:H*(.10+Math.random()*.22),s:.5+Math.random()*.8,v:3+Math.random()*5});
+    gulls=[]; for(let i=0;i<4;i++)gulls.push({x:Math.random()*W,y:H*(.16+Math.random()*.2),v:8+Math.random()*7,ph:Math.random()*6});
+    motes=[]; for(let i=0;i<46;i++)motes.push({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*2.4,v:6+Math.random()*12,drift:Math.random()*6,a:.25+Math.random()*.5});
+    houses=[]; let hx=-20; const hy=H*.52; while(hx<W+30){const w=24+Math.random()*30,h=18+Math.random()*40;houses.push({x:hx,w,h,lit:Math.random()<.5});hx+=w+4+Math.random()*10;}
+  }
+
+  // ---- background: golden-hour Hunters Point (SWAPPABLE: replace this block with a Marble render <img>/<video>) ----
+  function drawSky(){
+    const g=ctx.createLinearGradient(0,0,0,H*.56);
+    g.addColorStop(0,'#33567c');g.addColorStop(.4,'#6f86a4');g.addColorStop(.72,'#e89a63');g.addColorStop(1,'#ffd58a');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H*.56);
+    // sun
+    const sx=W*.74, sy=H*.30;
+    const sg=ctx.createRadialGradient(sx,sy,6,sx,sy,150);
+    sg.addColorStop(0,'rgba(255,247,210,.95)');sg.addColorStop(.25,'rgba(255,214,130,.6)');sg.addColorStop(1,'rgba(255,214,130,0)');
+    ctx.fillStyle=sg;ctx.beginPath();ctx.arc(sx,sy,150,0,7);ctx.fill();
+    ctx.fillStyle='#fff4cf';ctx.beginPath();ctx.arc(sx,sy,30,0,7);ctx.fill();
+  }
+  function drawClouds(dt){clouds.forEach(c=>{c.x+=c.v*dt;if(c.x-90*c.s>W)c.x=-90*c.s;
+    ctx.fillStyle='rgba(255,232,196,.55)';
+    ctx.beginPath();ctx.ellipse(c.x,c.y,46*c.s,15*c.s,0,0,7);ctx.ellipse(c.x+34*c.s,c.y+4,30*c.s,12*c.s,0,0,7);ctx.ellipse(c.x-30*c.s,c.y+5,26*c.s,10*c.s,0,0,7);ctx.fill();});}
+  function drawGulls(dt,t){gulls.forEach(g=>{g.x+=g.v*dt;if(g.x>W+20)g.x=-20;
+    const f=Math.sin(t*4+g.ph)*5;ctx.strokeStyle='rgba(60,50,40,.5)';ctx.lineWidth=2;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(g.x-7,g.y+f);ctx.quadraticCurveTo(g.x,g.y-3+f,g.x,g.y+f);ctx.quadraticCurveTo(g.x,g.y-3+f,g.x+7,g.y+f);ctx.stroke();});}
+  function drawBay(t){
+    const by=H*.52, bh=H*.16;
+    const g=ctx.createLinearGradient(0,by,0,by+bh);g.addColorStop(0,'#5fa0ad');g.addColorStop(1,'#3d7f93');
+    ctx.fillStyle=g;ctx.fillRect(0,by,W,bh);
+    // shimmer
+    for(let i=0;i<26;i++){const y=by+6+ (i/26)*(bh-8);const w=(Math.sin(t*1.6+i*1.3)*.5+.5)*70+20;const x=W*.5+Math.sin(t*.7+i)*W*.35;
+      ctx.fillStyle='rgba(255,236,180,'+(.10+.14*(1-i/26))+')';ctx.fillRect(x-w/2,y,w,1.6);}
+  }
+  function drawLand(){
+    const hy=H*.52;
+    // hill band
+    const g=ctx.createLinearGradient(0,hy-30,0,hy);g.addColorStop(0,'#6a7d62');g.addColorStop(1,'#4f6450');
+    ctx.fillStyle=g;ctx.fillRect(0,hy-26,W,26);
+    // foreground ground
+    const fy=H*.68;const fg=ctx.createLinearGradient(0,fy,0,H);fg.addColorStop(0,'#7a8a5e');fg.addColorStop(1,'#56663f');
+    ctx.fillStyle=fg;ctx.beginPath();ctx.moveTo(0,fy);
+    for(let x=0;x<=W;x+=30)ctx.lineTo(x,fy+Math.sin(x*.01)*6);ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fill();
+    // houses on the far band
+    houses.forEach(h=>{const baseY=hy;ctx.fillStyle='#3f4b54';ctx.fillRect(h.x,baseY-h.h,h.w,h.h);
+      ctx.fillStyle='#33424b';ctx.beginPath();ctx.moveTo(h.x-2,baseY-h.h);ctx.lineTo(h.x+h.w/2,baseY-h.h-9);ctx.lineTo(h.x+h.w+2,baseY-h.h);ctx.closePath();ctx.fill();
+      if(h.lit){ctx.fillStyle='rgba(255,206,120,.9)';ctx.fillRect(h.x+h.w*.3,baseY-h.h*.6,5,5);}});
+  }
+
+  function drawDoor(t){
+    const cx=W*.5, baseY=H*.70, w=Math.min(W*.27,126), h=w*1.7, top=baseY-h;
+    // light spill on ground
+    const sp=ctx.createRadialGradient(cx,baseY,4,cx,baseY,w*1.5);
+    sp.addColorStop(0,'rgba(255,224,150,.5)');sp.addColorStop(1,'rgba(255,224,150,0)');
+    ctx.fillStyle=sp;ctx.beginPath();ctx.ellipse(cx,baseY,w*1.5,w*.55,0,0,7);ctx.fill();
+    // outer glow (pulse)
+    const pulse=.5+.5*Math.sin(t*1.8);
+    ctx.save();
+    const og=ctx.createRadialGradient(cx,baseY-h*.5,10,cx,baseY-h*.5,h*.85);
+    og.addColorStop(0,'rgba(255,221,140,'+(.30+.12*pulse)+')');
+    og.addColorStop(.5,'rgba(127,216,208,'+(.18+.08*pulse)+')');
+    og.addColorStop(1,'rgba(127,216,208,0)');
+    ctx.fillStyle=og;ctx.beginPath();ctx.arc(cx,baseY-h*.5,h*.85,0,7);ctx.fill();
+    ctx.restore();
+    // arch frame
+    ctx.beginPath();
+    ctx.moveTo(cx-w/2,baseY);ctx.lineTo(cx-w/2,top+w/2);
+    ctx.arc(cx,top+w/2,w/2,Math.PI,0);ctx.lineTo(cx+w/2,baseY);
+    const fg=ctx.createLinearGradient(cx-w/2,0,cx+w/2,0);
+    fg.addColorStop(0,'#caa24e');fg.addColorStop(.5,'#f5d98a');fg.addColorStop(1,'#caa24e');
+    ctx.strokeStyle=fg;ctx.lineWidth=10;ctx.lineJoin='round';ctx.stroke();
+    // luminous interior
+    ctx.save();
+    ctx.beginPath();ctx.moveTo(cx-w/2+5,baseY);ctx.lineTo(cx-w/2+5,top+w/2);
+    ctx.arc(cx,top+w/2,w/2-5,Math.PI,0);ctx.lineTo(cx+w/2-5,baseY);ctx.closePath();ctx.clip();
+    const ig=ctx.createLinearGradient(0,top,0,baseY);
+    ig.addColorStop(0,'rgba(255,247,220,'+(.85+.1*pulse)+')');
+    ig.addColorStop(.6,'rgba(255,214,140,.7)');
+    ig.addColorStop(1,'rgba(127,200,200,.55)');
+    ctx.fillStyle=ig;ctx.fillRect(cx-w/2,top,w,h);
+    // shimmer streaks inside
+    for(let i=0;i<5;i++){const yy=top+((i+ (t*.1%1))/5)*h;ctx.fillStyle='rgba(255,255,255,.18)';ctx.fillRect(cx-w/2,yy,w,2);}
+    ctx.restore();
+  }
+
+  function drawHelper(t){ // distant 藍天白雲 volunteer waving
+    const x=W*.27, y=H*.515, s=.6; // on the far shore by the homes, not in the water
+    ctx.save();ctx.translate(x,y);ctx.scale(s,s);
+    ctx.fillStyle='#fff';ctx.fillRect(-7,-18,14,18);
+    ctx.fillStyle='#2a5db0';ctx.fillRect(-7,-25,14,8);
+    ctx.fillStyle='#e8b890';ctx.beginPath();ctx.arc(0,-30,6,0,7);ctx.fill();
+    const wv=Math.sin(t*3)*.5;ctx.strokeStyle='#fff';ctx.lineWidth=4;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(6,-20);ctx.lineTo(13,-30-wv*6);ctx.stroke();
+    ctx.restore();
+  }
+
+  let blink=0;
+  function drawSprout(t,dt){
+    blink+=dt;
+    const cx=W*.5+Math.min(W*.27,126)*.72, baseY=H*.55; // floating beside the door, clear of text
+    const bob=Math.sin(t*1.6)*9;        // bigger, dreamier up-down float
+    const sway=Math.sin(t*1.05)*5;      // gentle sideways drift
+    const tilt=Math.sin(t*1.3)*0.06;    // slight rocking
+    ctx.save();ctx.translate(cx+sway,baseY-26+bob);ctx.rotate(tilt);ctx.scale(1.12,1.12);
+    // glow
+    const gl=ctx.createRadialGradient(0,0,2,0,0,46);gl.addColorStop(0,'rgba(255,236,170,.55)');gl.addColorStop(1,'rgba(255,236,170,0)');
+    ctx.fillStyle=gl;ctx.beginPath();ctx.arc(0,4,46,0,7);ctx.fill();
+    // leaf wings
+    const fl=Math.sin(t*9)*.3;ctx.fillStyle='#6fcf63';
+    ctx.save();ctx.rotate(-.5+fl);ctx.beginPath();ctx.ellipse(-19,4,14,6,0,0,7);ctx.fill();ctx.restore();
+    ctx.save();ctx.rotate(.5-fl);ctx.beginPath();ctx.ellipse(19,4,14,6,0,0,7);ctx.fill();ctx.restore();
+    // body
+    ctx.fillStyle='#f6e3a8';ctx.strokeStyle='#e0c46a';ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.ellipse(0,4,21,24,0,0,7);ctx.fill();ctx.stroke();
+    // vest
+    ctx.fillStyle='#2a5db0';ctx.beginPath();ctx.moveTo(-15,6);ctx.lineTo(-7,28);ctx.lineTo(7,28);ctx.lineTo(15,6);ctx.lineTo(8,4);ctx.lineTo(-8,4);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#fff';ctx.fillRect(-2,4,4,24);
+    // sprout leaves on head
+    ctx.fillStyle='#4caf50';
+    ctx.save();ctx.translate(-1,-20);ctx.rotate(-.35);ctx.beginPath();ctx.ellipse(0,-9,6,12,0,0,7);ctx.fill();ctx.restore();
+    ctx.save();ctx.translate(4,-20);ctx.rotate(.45);ctx.beginPath();ctx.ellipse(0,-7,5,10,0,0,7);ctx.fill();ctx.restore();
+    // face
+    const eo=(blink%3.2<.13)?1:5.5;
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(-7,0,4.6,eo,0,0,7);ctx.ellipse(7,0,4.6,eo,0,0,7);ctx.fill();
+    ctx.fillStyle='#2a2418';ctx.beginPath();ctx.arc(-6,1,2.2,0,7);ctx.arc(8,1,2.2,0,7);ctx.fill();
+    ctx.fillStyle='rgba(255,150,150,.5)';ctx.beginPath();ctx.arc(-11,7,3.2,0,7);ctx.arc(11,7,3.2,0,7);ctx.fill();
+    ctx.strokeStyle='#2a2418';ctx.lineWidth=2;ctx.beginPath();ctx.arc(1,6,3.5,.2,Math.PI-.2);ctx.stroke();
+    // waving arm
+    const wv=Math.sin(t*3.2)*.5;ctx.strokeStyle='#e0c46a';ctx.lineWidth=4;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(17,8);ctx.lineTo(26,2-wv*7);ctx.stroke();
+    // sparkle on leaf
+    ctx.fillStyle='#ffd98a';ctx.font='13px serif';ctx.textAlign='center';ctx.fillText('✨',8,-30);
+    ctx.restore();
+  }
+
+  function drawMotes(dt,t){motes.forEach(m=>{m.y-=m.v*dt;m.x+=Math.sin(t+m.drift)*8*dt;if(m.y<-5){m.y=H+5;m.x=Math.random()*W;}
+    ctx.fillStyle='rgba(255,236,180,'+m.a+')';ctx.beginPath();ctx.arc(m.x,m.y,m.r,0,7);ctx.fill();});}
+
+  let last=performance.now();
+  function loop(now){const t=(now-t0)/1000;let dt=(now-last)/1000;last=now;if(dt>.05)dt=.05;
+    drawSky();drawClouds(dt);drawGulls(dt,t);drawBay(t);drawLand();drawHelper(t);
+    drawDoor(t);drawSprout(t,dt);drawMotes(dt,t);
+    requestAnimationFrame(loop);}
+
+  resize();applyLang();requestAnimationFrame(loop);
+
+  document.getElementById('enter').addEventListener('click',()=>{
+    const e=document.getElementById('enter');e.style.transition='transform .2s';e.style.transform='scale(.9)';
+    setTimeout(()=>e.style.transform='',200);
+  });
+})();
+</script>
+</body>
+</html>
