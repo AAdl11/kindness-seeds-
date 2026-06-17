@@ -34,10 +34,41 @@ button{font-family:inherit;cursor:pointer;border:none;}
 #mute{position:fixed;top:12px;left:12px;z-index:90;width:38px;height:38px;border-radius:50%;
   background:rgba(255,255,255,.32);font-size:17px;backdrop-filter:blur(5px);}
 
-/* ---------- 開場標題（柔和白天歡迎） ---------- */
-#opening .bg{filter:saturate(1.02) brightness(1.05);}
-#opening .veil{position:absolute;inset:0;z-index:1;
-  background:linear-gradient(180deg,rgba(255,250,238,.34),rgba(255,226,186,.46));}
+/* ---------- 善的任意門 · 開場（Canvas 動畫 + 取名/歡迎回來） ---------- */
+#opening{background:#23364d;}
+#doorCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;}
+#opening .door-kicker{position:absolute;top:54px;left:0;right:0;z-index:5;text-align:center;
+  font-family:'Baloo 2','Nunito',system-ui,sans-serif;font-weight:800;font-size:15px;letter-spacing:2px;
+  color:#fff3d6;text-transform:uppercase;text-shadow:0 2px 12px rgba(20,30,50,.85);
+  opacity:0;animation:doorRise .8s ease .3s forwards;}
+#opening .door-ui{position:absolute;left:0;right:0;bottom:0;z-index:5;padding:0 22px 40px;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  background:linear-gradient(to top,rgba(28,32,50,.82),rgba(28,32,50,.5) 45%,rgba(28,32,50,.12) 75%,transparent);}
+.door-invite{font-family:'Baloo 2','Nunito',system-ui,sans-serif;font-weight:800;font-size:20px;line-height:1.45;
+  color:#fff;margin:8px 0 16px;max-width:460px;text-shadow:0 2px 14px rgba(20,30,50,.6);
+  opacity:0;animation:doorRise .8s ease .55s forwards;}
+.door-name{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:14px;
+  opacity:0;animation:doorRise .8s ease .7s forwards;}
+.door-name label{color:#fff;font-weight:800;font-size:15px;text-shadow:0 2px 10px rgba(20,30,50,.6);}
+.door-name input{width:260px;max-width:80vw;padding:12px 14px;border-radius:12px;
+  border:2px solid rgba(255,255,255,.55);background:rgba(255,255,255,.94);
+  font-size:16px;font-family:inherit;text-align:center;color:#27314a;}
+.door-name input:focus{outline:none;border-color:#ffd98a;}
+.door-welcome{font-family:'Baloo 2','Nunito',system-ui,sans-serif;font-weight:800;font-size:18px;
+  color:#ffe6b0;margin-bottom:14px;text-shadow:0 2px 12px rgba(20,30,50,.7);
+  opacity:0;animation:doorRise .8s ease .7s forwards;}
+.enter{font-family:'Baloo 2','Nunito',system-ui,sans-serif;font-weight:800;font-size:21px;border:none;cursor:pointer;
+  color:#5a3a12;background:linear-gradient(180deg,#ffe7a6,#ffce5e);
+  padding:16px 36px;border-radius:999px;display:flex;align-items:center;gap:11px;
+  box-shadow:0 8px 0 #d99a2e,0 18px 30px -10px rgba(120,70,0,.6);
+  opacity:0;animation:doorRise .8s ease .8s forwards,doorGlow 2.6s ease-in-out 1.6s infinite;}
+.enter:active{transform:translateY(5px);box-shadow:0 3px 0 #d99a2e,0 10px 20px -10px rgba(120,70,0,.6);}
+.enter .arrow{font-size:18px;}
+.door-note{font-family:'Nunito',sans-serif;font-weight:700;font-size:11px;color:rgba(255,255,255,.6);
+  margin-top:14px;max-width:440px;line-height:1.5;opacity:0;animation:doorRise .8s ease 1.1s forwards;}
+@keyframes doorRise{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes doorGlow{0%,100%{box-shadow:0 8px 0 #d99a2e,0 18px 30px -10px rgba(120,70,0,.6),0 0 0 0 rgba(255,221,140,.55);}
+  50%{box-shadow:0 8px 0 #d99a2e,0 18px 34px -8px rgba(120,70,0,.6),0 0 0 14px rgba(255,221,140,0);}}
 .card{position:relative;z-index:2;background:var(--panel);border-radius:22px;
   padding:26px 24px;max-width:380px;width:88%;box-shadow:var(--shadow);}
 .card h1{font-size:26px;color:var(--ink);line-height:1.2;}

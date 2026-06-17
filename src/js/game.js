@@ -80,14 +80,24 @@
      開場
      =================================================================== */
   function renderOpening() {
-    document.getElementById('opTitle').textContent = T('title');
-    document.getElementById('opSub').textContent = T('subtitle');
-    document.getElementById('opNameLabel').textContent = T('nameSprout');
-    document.getElementById('opHint').textContent = T('nameHint');
-    var input = document.getElementById('sproutName');
-    input.placeholder = T('namePlaceholder');
-    if (SAVE.sprout.name) input.value = SAVE.sprout.name;
-    document.getElementById('beginBtn').textContent = T('enterHP');
+    document.getElementById('opKicker').textContent = T('title');
+    document.getElementById('opInvite').innerHTML = T('doorInvite');
+    document.getElementById('beginTxt').textContent = T('enterDoor');
+    var nameBlock = document.getElementById('opName');
+    var welcome = document.getElementById('opWelcome');
+    var hint = document.getElementById('opHint');
+    if (SAVE.sprout.name) {                 // 回訪：歡迎回來，小芽又長高了
+      nameBlock.classList.add('hidden');
+      welcome.classList.remove('hidden');
+      welcome.textContent = T('welcomeBack').replace('{name}', SAVE.sprout.name);
+      hint.textContent = T('doorNote');
+    } else {                                // 第一次：在門邊幫小芽取名
+      welcome.classList.add('hidden');
+      nameBlock.classList.remove('hidden');
+      document.getElementById('opNameLabel').textContent = T('nameSprout');
+      document.getElementById('sproutName').placeholder = T('namePlaceholder');
+      hint.textContent = T('nameHint');
+    }
   }
 
   /* ===================================================================
@@ -450,8 +460,12 @@
       var m = !Sound.isMuted(); Sound.setMuted(m); mute.textContent = m ? '🔇' : '🔊';
     });
     document.getElementById('beginBtn').addEventListener('click', function () {
-      var v = document.getElementById('sproutName').value.trim();
-      SAVE.sprout.name = v || T('namePlaceholder'); persist();
+      if (!SAVE.sprout.name) {                       // 只有第一次才取名；回訪沿用
+        var v = document.getElementById('sproutName').value.trim();
+        SAVE.sprout.name = v || T('namePlaceholder');
+      }
+      persist();
+      if (window.Opening) Opening.stop();            // 推門後停掉開場動畫
       Sound.startMusic(); show('hub'); renderHub();
     });
     document.getElementById('sendBtn').addEventListener('click', sendPackage);
@@ -473,6 +487,7 @@
     window.addEventListener('orientationchange', function () { setTimeout(function () { if (lvl) layout(); }, 250); });
 
     renderOpening(); show('opening');
+    if (window.Opening) Opening.start();             // 啟動善的任意門開場動畫
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire);

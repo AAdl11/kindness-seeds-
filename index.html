@@ -19,18 +19,19 @@
 </div>
 <button id="mute" aria-label="mute">🔊</button>
 
-<!-- ============ 開場 ============ -->
+<!-- ============ 善的任意門 · 開場動畫（純 Canvas） ============ -->
 <section id="opening" class="screen">
-  <!-- 歡迎畫面：柔和白天的獵人角，不用 RV Park 黃昏圖（那只屬於關卡） -->
-  <div class="bg" style="background:url('assets/images/KS_hunters_point_map.png') center/cover no-repeat, linear-gradient(180deg,#cfe6f2 0%,#e8e6cf 60%,#f3e2c2 100%)"></div>
-  <div class="veil"></div>
-  <div class="card">
-    <h1 id="opTitle">善的種子 · 獵人角</h1>
-    <div class="sub" id="opSub">邁向第二十年的陪伴</div>
-    <label id="opNameLabel" for="sproutName">幫你的小芽取個名字</label>
-    <input id="sproutName" type="text" maxlength="16" />
-    <p class="hint" id="opHint"></p>
-    <button class="btn" id="beginBtn">進入獵人角 →</button>
+  <canvas id="doorCanvas"></canvas>
+  <div class="door-kicker" id="opKicker">善的種子 · 獵人角</div>
+  <div class="door-ui">
+    <div class="door-invite" id="opInvite"></div>
+    <div class="door-name" id="opName">
+      <label id="opNameLabel" for="sproutName">幫你的小芽取個名字</label>
+      <input id="sproutName" type="text" maxlength="16" />
+    </div>
+    <div class="door-welcome hidden" id="opWelcome"></div>
+    <button class="enter" id="beginBtn"><span class="leaf">🌱</span><span id="beginTxt">推門進去</span><span class="arrow">→</span></button>
+    <p class="door-note" id="opHint"></p>
   </div>
 </section>
 
@@ -107,10 +108,11 @@
   </div>
 </section>
 
-<!-- 資料 → i18n → 音效 → 引擎 -->
+<!-- 資料 → i18n → 音效 → 開場動畫 → 引擎 -->
 <script src="data/level1.js"></script>
 <script src="src/js/i18n.js"></script>
 <script src="src/js/audio.js"></script>
+<script src="src/js/opening.js"></script>
 <script src="src/js/game.js"></script>
 </body>
 </html>
