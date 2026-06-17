@@ -87,7 +87,7 @@
     var input = document.getElementById('sproutName');
     input.placeholder = T('namePlaceholder');
     if (SAVE.sprout.name) input.value = SAVE.sprout.name;
-    document.getElementById('beginBtn').textContent = T('begin');
+    document.getElementById('beginBtn').textContent = T('enterHP');
   }
 
   /* ===================================================================
@@ -149,7 +149,9 @@
     layout();
     // 開場先把面板展開
     document.getElementById('panel').classList.remove('collapsed');
-    spawnCar();
+    // 「開始這一夜」的夜晚字眼，進關卡時才出現
+    toast('🌇 ' + T('begin'), null, 1900);
+    setTimeout(spawnCar, 1300);
     requestAnimationFrame(loop);
   }
 
