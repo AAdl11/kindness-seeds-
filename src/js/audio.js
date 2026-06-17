@@ -1,85 +1,132 @@
 /* =====================================================================
-   Audio —— 配樂 (a-curious-discovery.mp3) + WebAudio 程式音效 (SFX)
-   - 音樂音量隨「暖意」微升
-   - 隨倒數/天色變暗，低通濾波收緊 (music "tightens" toward night)
-   - SFX 全部用 WebAudio 即時合成，不需音檔
+   Audio —— 場景配樂管理 + WebAudio 程式音效 (SFX)
+   - 每個場景一首歌，切場景時「停掉前一首、淡入下一首」，不疊播：
+       door    → welcome_intro.mp3   （開門·善之門，循環）
+       hub     → hub_abundance.mp3   （獵人角白天地圖，循環）
+       level   → a-curious-discovery.mp3（關懷之夜，循環）
+       ending  → ending_warm.mp3     （天黑了，循環）
+   - 受瀏覽器自動播放限制：第一次互動（點任意處/語言鈕/名字欄）就解鎖開播。
+   - 靜音鈕一鍵全靜。
+   - 關卡音樂隨「暖意」微升音量、隨夜色低通收緊。
    ===================================================================== */
 
 window.Sound = (function () {
-  let ctx = null;
-  let music = null;          // <audio> element
-  let musicSrc = null;       // MediaElementSource
-  let musicGain = null;
-  let musicFilter = null;
-  let started = false;
-  let muted = false;
-  let baseVol = 0.18;        // 起始音量（柔和）
+  var TRACKS = {
+    door:   { src: 'assets/audio/welcome_intro.mp3',     vol: 0.30, filtered: false },
+    hub:    { src: 'assets/audio/hub_abundance.mp3',     vol: 0.26, filtered: false },
+    level:  { src: 'assets/audio/a-curious-discovery.mp3', vol: 0.18, filtered: true },
+    ending: { src: 'assets/audio/ending_warm.mp3',       vol: 0.28, filtered: false }
+  };
+  var ctx = null;
+  var nodes = {};            // scene -> { audio, src, gain, filter }
+  var current = null;        // 目前場景名
+  var pending = null;        // 解鎖前先記住要播的場景
+  var unlocked = false;
+  var muted = false;
+  var FADE = 0.6;            // 淡入/淡出秒數
 
   function ensureCtx() {
-    if (!ctx) {
-      ctx = new (window.AudioContext || window.webkitAudioContext)();
-    }
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
     if (ctx.state === 'suspended') ctx.resume();
     return ctx;
   }
 
-  function startMusic() {
-    if (started) { if (ctx && ctx.state === 'suspended') ctx.resume(); return; }
-    started = true;
-    ensureCtx();
-    music = new Audio('assets/audio/a-curious-discovery.mp3');
-    music.loop = true;
-    music.crossOrigin = 'anonymous';
+  function build(scene) {
+    if (nodes[scene]) return nodes[scene];
+    var def = TRACKS[scene];
+    var a = new Audio(def.src);
+    a.loop = true; a.crossOrigin = 'anonymous'; a.preload = 'auto';
+    var n = { audio: a, def: def, gain: null, filter: null, srcNode: null };
     try {
-      musicSrc = ctx.createMediaElementSource(music);
-      musicFilter = ctx.createBiquadFilter();
-      musicFilter.type = 'lowpass';
-      musicFilter.frequency.value = 20000;
-      musicGain = ctx.createGain();
-      musicGain.gain.value = muted ? 0 : baseVol;
-      musicSrc.connect(musicFilter);
-      musicFilter.connect(musicGain);
-      musicGain.connect(ctx.destination);
+      var src = ctx.createMediaElementSource(a);
+      var gain = ctx.createGain(); gain.gain.value = 0;
+      if (def.filtered) {
+        var filt = ctx.createBiquadFilter();
+        filt.type = 'lowpass'; filt.frequency.value = 20000;
+        src.connect(filt); filt.connect(gain); n.filter = filt;
+      } else {
+        src.connect(gain);
+      }
+      gain.connect(ctx.destination);
+      n.gain = gain; n.srcNode = src;
     } catch (e) {
-      // fallback: 直接播放
-      music.volume = muted ? 0 : baseVol;
+      a.volume = 0;          // fallback：純 <audio>
     }
-    const p = music.play();
-    if (p && p.catch) p.catch(() => {});
+    nodes[scene] = n;
+    return n;
   }
 
-  /* warmth 0..1 → 音量微升；nightProgress 0..1 → 濾波收緊（夜越深越悶、越緊） */
-  function setMood(warmth, nightProgress) {
-    if (!started) return;
-    const vol = muted ? 0 : baseVol + 0.16 * Math.min(1, warmth);
-    if (musicGain) {
-      musicGain.gain.setTargetAtTime(vol, ctx.currentTime, 0.6);
-    } else if (music) {
-      music.volume = vol;
+  function setGain(n, target, ramp) {
+    var v = muted ? 0 : target;
+    if (n.gain) n.gain.gain.setTargetAtTime(v, ctx.currentTime, ramp || 0.2);
+    else if (n.audio) n.audio.volume = v;
+  }
+
+  function stopScene(scene) {
+    var n = nodes[scene]; if (!n) return;
+    setGain(n, 0, FADE / 3);
+    // 淡出後暫停，避免兩首疊著
+    setTimeout(function () {
+      if (current !== scene) { try { n.audio.pause(); } catch (e) {} }
+    }, FADE * 1000 + 60);
+  }
+
+  function playScene(scene) {
+    if (!TRACKS[scene]) return;
+    if (!unlocked) { pending = scene; return; }   // 等第一次互動再播
+    if (current === scene) {                       // 同場景：確保在播
+      var nn = nodes[scene];
+      if (nn) { var p = nn.audio.play(); if (p && p.catch) p.catch(function () {}); }
+      return;
     }
-    if (musicFilter) {
-      // 白天明亮 (20k) → 入夜收到 ~900Hz，音樂逐漸「收緊、變悶、緊迫」
-      const f = 20000 - (20000 - 900) * Math.min(1, nightProgress);
-      musicFilter.frequency.setTargetAtTime(f, ctx.currentTime, 0.8);
-    }
+    ensureCtx();
+    var prev = current;
+    current = scene;
+    if (prev && prev !== scene) stopScene(prev);   // 停掉前一首
+    var n = build(scene);
+    try { n.audio.currentTime = 0; } catch (e) {}
+    var pl = n.audio.play(); if (pl && pl.catch) pl.catch(function () {});
+    setGain(n, n.def.vol, FADE);                    // 淡入
+  }
+
+  function unlock() {
+    if (unlocked) return;
+    unlocked = true;
+    ensureCtx();
+    var want = pending || current || 'door';
+    current = null;                 // 讓 playScene 真正啟動
+    playScene(want);
   }
 
   function setMuted(m) {
     muted = m;
-    if (musicGain) musicGain.gain.value = muted ? 0 : baseVol;
-    else if (music) music.volume = muted ? 0 : baseVol;
+    Object.keys(nodes).forEach(function (s) {
+      var n = nodes[s];
+      var target = (s === current) ? n.def.vol : 0;
+      if (n.gain) n.gain.gain.setTargetAtTime(muted ? 0 : target, ctx ? ctx.currentTime : 0, 0.15);
+      else if (n.audio) n.audio.volume = muted ? 0 : target;
+    });
   }
   function isMuted() { return muted; }
+
+  /* 關卡：warmth 0..1 微升音量；nightProgress 0..1 低通收緊 */
+  function setMood(warmth, nightProgress) {
+    var n = nodes.level; if (!n || current !== 'level') return;
+    var base = TRACKS.level.vol;
+    setGain(n, base + 0.16 * Math.min(1, warmth), 0.6);
+    if (n.filter) {
+      var f = 20000 - (20000 - 900) * Math.min(1, nightProgress);
+      n.filter.frequency.setTargetAtTime(f, ctx.currentTime, 0.8);
+    }
+  }
 
   /* ---- WebAudio SFX ---- */
   function blip(freq, dur, type, vol, when) {
     if (muted) return;
     ensureCtx();
-    const t0 = ctx.currentTime + (when || 0);
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type = type || 'sine';
-    o.frequency.value = freq;
+    var t0 = ctx.currentTime + (when || 0);
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type || 'sine'; o.frequency.value = freq;
     g.gain.setValueAtTime(0.0001, t0);
     g.gain.exponentialRampToValueAtTime(vol || 0.12, t0 + 0.012);
     g.gain.exponentialRampToValueAtTime(0.0001, t0 + (dur || 0.18));
@@ -87,30 +134,31 @@ window.Sound = (function () {
     o.start(t0); o.stop(t0 + (dur || 0.18) + 0.02);
   }
 
+  /* 第一次互動就解鎖（任意點擊/按鍵） */
+  function initUnlock() {
+    var h = function () { unlock(); };
+    ['pointerdown', 'keydown', 'touchstart'].forEach(function (ev) {
+      window.addEventListener(ev, h, { once: false });
+    });
+  }
+
   return {
-    startMusic,
-    setMood,
-    setMuted,
-    isMuted,
-    // 點到線索：清亮的一聲
-    clue:   () => { blip(880, 0.14, 'sine', 0.10); blip(1320, 0.12, 'sine', 0.07, 0.04); },
-    // 挑物資放進關懷包
-    pick:   () => blip(620, 0.10, 'triangle', 0.10),
-    // 從關懷包拿掉
-    unpick: () => blip(360, 0.10, 'sine', 0.08),
-    // 送出成功：窗亮、暖意+1（上行琶音堆疊到高潮 + 泛音閃光）
-    success:() => {
-      blip(523, 0.18, 'sine', 0.11, 0.00);  // C5
-      blip(659, 0.18, 'sine', 0.11, 0.10);  // E5
-      blip(784, 0.20, 'sine', 0.12, 0.20);  // G5
-      blip(1047, 0.42, 'sine', 0.13, 0.32); // C6（高潮）
-      blip(1568, 0.40, 'triangle', 0.06, 0.36); // 泛音閃光
+    initUnlock: initUnlock,
+    unlock: unlock,
+    playScene: playScene,
+    setMood: setMood,
+    setMuted: setMuted,
+    isMuted: isMuted,
+    clue:   function () { blip(880, 0.14, 'sine', 0.10); blip(1320, 0.12, 'sine', 0.07, 0.04); },
+    pick:   function () { blip(620, 0.10, 'triangle', 0.10); },
+    unpick: function () { blip(360, 0.10, 'sine', 0.08); },
+    success:function () {
+      blip(523, 0.18, 'sine', 0.11, 0.00); blip(659, 0.18, 'sine', 0.11, 0.10);
+      blip(784, 0.20, 'sine', 0.12, 0.20); blip(1047, 0.42, 'sine', 0.13, 0.32);
+      blip(1568, 0.40, 'triangle', 0.06, 0.36);
     },
-    // 軟提示：溫柔的兩聲（不刺耳、非懲罰）
-    soft:   () => { blip(420, 0.18, 'sine', 0.08); blip(360, 0.22, 'sine', 0.07, 0.14); },
-    // 小芽長一截
-    grow:   () => { blip(700, 0.12, 'triangle', 0.09); blip(1050, 0.22, 'triangle', 0.10, 0.10); },
-    // 車開進來：低沉的一聲駛近感
-    arrive: () => { blip(180, 0.34, 'sine', 0.09); blip(240, 0.30, 'triangle', 0.05, 0.06); }
+    soft:   function () { blip(420, 0.18, 'sine', 0.08); blip(360, 0.22, 'sine', 0.07, 0.14); },
+    grow:   function () { blip(700, 0.12, 'triangle', 0.09); blip(1050, 0.22, 'triangle', 0.10, 0.10); },
+    arrive: function () { blip(180, 0.34, 'sine', 0.09); blip(240, 0.30, 'triangle', 0.05, 0.06); }
   };
 })();

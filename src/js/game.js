@@ -25,10 +25,49 @@
     warmth: 0, bamboo: 0, homeFu: 0, lit: {}, lastHomes: 0
   };
 
-  /* ---------- 小芽 ---------- */
-  var SPROUT_EMOJI = ['🌱', '🌿', '🪴', '🌳'];
+  /* ---------- 小芽 = 看得見地長大的盆栽（種子→發芽→小苗→小樹/開花） ---------- */
   function sproutStage(g) { return g >= 12 ? 3 : g >= 6 ? 2 : g >= 1 ? 1 : 0; }
-  function sproutIcon() { return SPROUT_EMOJI[sproutStage(SAVE.sprout.growth)]; }
+  /* 依「累積照顧的家數」growth 決定枝葉與花瓣多寡；px = 顯示大小 */
+  function plantSVG(growth, px) {
+    growth = Math.max(0, growth | 0);
+    var leaves = growth <= 0 ? 0 : Math.min(2 + growth, 14);
+    var flowers = growth < 5 ? 0 : Math.min(Math.floor((growth - 3) / 2), 8);
+    var stemTop = growth <= 0 ? 78 : Math.max(16, 70 - Math.min(growth, 14) * 3.6); // y 越小越高
+    var W = 100, H = 112, soilY = 92, baseY = soilY - 3, s = '';
+    // 盆
+    s += '<path d="M30 ' + soilY + ' L70 ' + soilY + ' L64 109 L36 109 Z" fill="#c8794a"/>';
+    s += '<rect x="26" y="' + (soilY - 7) + '" width="48" height="9" rx="3" fill="#b5673c"/>';
+    s += '<ellipse cx="50" cy="' + (soilY - 2) + '" rx="20" ry="4" fill="#6b4a2f"/>';
+    if (growth <= 0) {
+      s += '<path d="M50 ' + (soilY - 2) + ' q-7 -9 0 -16 q7 7 0 16" fill="#6fcf63"/>'; // 種子冒的小芽
+    } else {
+      s += '<path d="M50 ' + baseY + ' C 47 ' + (baseY - 18) + ', 53 ' + (stemTop + 18) + ', 50 ' + stemTop + '" stroke="#4f9c3f" stroke-width="3.4" fill="none" stroke-linecap="round"/>';
+      for (var i = 0; i < leaves; i++) {
+        var frac = (i + 1) / (leaves + 1);
+        var y = baseY - frac * (baseY - stemTop);
+        var side = (i % 2 === 0) ? -1 : 1;
+        var rot = side * 38 - side * (frac * 8);
+        var ll = 7.5 + (1 - frac) * 4.5;
+        s += '<g transform="translate(50,' + y.toFixed(1) + ') rotate(' + rot + ')"><ellipse cx="' + (side * ll * 0.6).toFixed(1) + '" cy="0" rx="' + ll.toFixed(1) + '" ry="' + (ll * 0.5).toFixed(1) + '" fill="#5bbf57"/></g>';
+      }
+      for (var f = 0; f < flowers; f++) {
+        var off = (f - (flowers - 1) / 2) * 9;
+        var fx = 50 + off, fy = stemTop + 1 + Math.abs(off) * 0.22, pc = '';
+        for (var p = 0; p < 5; p++) {
+          pc += '<ellipse cx="3.6" cy="0" rx="3.4" ry="2.2" fill="#ff9ec4" transform="rotate(' + (p * 72) + ')"/>';
+        }
+        s += '<g transform="translate(' + fx.toFixed(1) + ',' + fy.toFixed(1) + ')">' + pc + '<circle r="2.1" fill="#ffd54a"/></g>';
+      }
+    }
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + px + '" height="' + (px * H / W).toFixed(1) + '" xmlns="http://www.w3.org/2000/svg" style="display:block">' + s + '</svg>';
+  }
+  /* HUD 用的小芽膠囊（盆栽 + 名字） */
+  function sproutChip() {
+    var c = document.createElement('div'); c.className = 'chip sprout-chip';
+    c.innerHTML = '<span class="potico">' + plantSVG(SAVE.sprout.growth, 26) + '</span>' +
+      '<span>' + (SAVE.sprout.name || T('sproutLabel')) + '</span>';
+    return c;
+  }
 
   /* ---------- HUB 節點（三福；只有「關懷之夜」可玩，其餘即將） ---------- */
   var NODES = {
@@ -107,7 +146,7 @@
     document.getElementById('hubTitle').textContent = T('hubTitle');
     document.getElementById('hubSub').textContent = T('subtitle');
     var hud = document.getElementById('hubHud'); hud.innerHTML = '';
-    hud.appendChild(chip(sproutIcon() + ' ' + (SAVE.sprout.name || T('sproutLabel'))));
+    hud.appendChild(sproutChip());
     hud.appendChild(chip('🎍 ' + T('bambooLabel') + ' ' + SAVE.bamboo));
     hud.appendChild(chip('💛 ' + T('warmthLabel') + ' ' + SAVE.warmth));
 
@@ -131,7 +170,7 @@
       '<div class="nm">' + L(n.nm) + lit + '</div>' +
       '<div class="ds">' + L(n.ds) + '</div>' +
       '<div class="stars">' + stars(n.stars) + '</div>';
-    if (n.state === 'play') d.addEventListener('click', function () { Sound.startMusic(); startLevel(); });
+    if (n.state === 'play') d.addEventListener('click', function () { startLevel(); });
     return d;
   }
 
@@ -152,6 +191,7 @@
       pack: [], notes: [],
       startT: performance.now(), progress: 0, ended: false, usedLines: []
     };
+    Sound.playScene('level');                        // 換關卡音樂
     show('level');
     buildWinGlows();
     renderLvlHud();
@@ -220,12 +260,12 @@
 
   function renderLvlHud() {
     var hud = document.getElementById('hudBar'); hud.innerHTML = '';
-    hud.appendChild(chip(sproutIcon() + ' ' + (SAVE.sprout.name || T('sproutLabel'))));
+    hud.appendChild(sproutChip());
     var warm = chip('💛 ' + SAVE.warmth); warm.className = 'chip warm'; hud.appendChild(warm);
     hud.appendChild(chip('🚐 ' + T('homesLabel') + ' ' + lvl.served + '/' + CARS));
     var leave = document.createElement('button');
     leave.id = 'leaveBtn'; leave.textContent = T('toHub');
-    leave.addEventListener('click', function () { lvl.ended = true; show('hub'); renderHub(); });
+    leave.addEventListener('click', function () { lvl.ended = true; Sound.playScene('hub'); show('hub'); renderHub(); });
     hud.appendChild(leave);
   }
 
@@ -404,13 +444,19 @@
   function endNight() {
     if (lvl.ended) return;
     lvl.ended = true; SAVE.lastHomes = lvl.served; persist();
+    Sound.playScene('ending');
     document.getElementById('endTitle').textContent = T('endTitle');
     document.getElementById('endLine').textContent = T('endLine');
     document.getElementById('endBig').textContent = lvl.served + ' / ' + CARS;
     document.getElementById('endHomes').textContent = T('endHomes');
     document.getElementById('endWarm').textContent = T('endWarm');
-    document.getElementById('endSprout').textContent =
-      sproutIcon() + ' ' + (SAVE.sprout.name || '') + ' · ' + L({ zh: '又長了一截', en: 'grew a little more', es: 'creció un poco más' });
+    // 把這盆植物畫得大、明顯：枝葉＝累積成長，今晚顧得越多畫得越大
+    var bigPx = 120 + lvl.served * 8;          // 0 顆→120，7 顆→176（顧越多畫越大）
+    document.getElementById('endPlant').innerHTML = plantSVG(SAVE.sprout.growth, bigPx);
+    document.getElementById('endSprout').innerHTML =
+      '<b>' + (SAVE.sprout.name || '') + '</b> · ' +
+      L({ zh: '又長了一截', en: 'grew a little more', es: 'creció un poco más' }) +
+      (lvl.served > 0 ? ' · ' + L({ zh: '今晚 +' + lvl.served, en: '+' + lvl.served + ' tonight', es: '+' + lvl.served + ' esta noche' }) : '');
     document.getElementById('againBtn').textContent = T('againNight');
     document.getElementById('endHubBtn').textContent = T('toHub');
     show('ending');
@@ -466,11 +512,11 @@
       }
       persist();
       if (window.Opening) Opening.stop();            // 推門後停掉開場動畫
-      Sound.startMusic(); show('hub'); renderHub();
+      Sound.playScene('hub'); show('hub'); renderHub();  // 換 hub 音樂
     });
     document.getElementById('sendBtn').addEventListener('click', sendPackage);
     document.getElementById('againBtn').addEventListener('click', startLevel);
-    document.getElementById('endHubBtn').addEventListener('click', function () { show('hub'); renderHub(); });
+    document.getElementById('endHubBtn').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
 
     // 底部面板收合
     document.getElementById('panelTab').addEventListener('click', function () {
@@ -488,6 +534,8 @@
 
     renderOpening(); show('opening');
     if (window.Opening) Opening.start();             // 啟動善的任意門開場動畫
+    Sound.initUnlock();                              // 第一次互動就解鎖
+    Sound.playScene('door');                         // 想播開門音樂（解鎖後立刻響）
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire);

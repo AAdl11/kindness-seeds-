@@ -114,8 +114,16 @@ button{font-family:inherit;cursor:pointer;border:none;}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(255,206,77,.30),0 8px 18px rgba(216,154,31,.30);}
   50%{box-shadow:0 0 0 6px rgba(255,206,77,.55),0 10px 22px rgba(216,154,31,.5);}}
 
-/* ---------- 小芽圖示 ---------- */
+/* ---------- 小芽盆栽圖示 ---------- */
 .sprout-ico{display:inline-block;}
+.sprout-chip{padding-top:4px;padding-bottom:4px;}
+.sprout-chip .potico{display:inline-flex;align-items:flex-end;line-height:0;}
+.sprout-chip .potico svg{filter:drop-shadow(0 2px 3px rgba(0,0,0,.3));}
+/* 結尾：大盆栽，依今晚成績放大 */
+.endplant{display:flex;justify-content:center;align-items:flex-end;margin:6px auto 2px;min-height:120px;
+  animation:plantPop .6s cubic-bezier(.22,1.2,.4,1) both;}
+.endplant svg{filter:drop-shadow(0 6px 10px rgba(0,0,0,.4));}
+@keyframes plantPop{from{opacity:0;transform:translateY(14px) scale(.7);}to{opacity:1;transform:translateY(0) scale(1);}}
 
 /* ---------- 關卡 / LEVEL：HUD 條 + 舞台 + 底部窄面板 ---------- */
 #level{position:fixed;inset:0;z-index:10;display:none;
@@ -248,7 +256,7 @@ button{font-family:inherit;cursor:pointer;border:none;}
 /* ---------- 結尾 ---------- */
 #ending .bg{filter:brightness(.95);}
 #ending .veil{position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(10,14,34,.45),rgba(8,11,28,.72));}
-#ending .card{background:var(--panel-dark);color:#fff;}
+#ending .card{background:var(--panel-dark);color:#fff;max-height:92vh;overflow-y:auto;}
 #ending .card h1{color:#fff;}
 #ending .big{font-size:40px;color:var(--gold);font-weight:800;margin:6px 0;}
 #ending .endwarm{font-size:13.5px;color:#d7deeec0;line-height:1.6;margin:12px 0 4px;}
