@@ -8,7 +8,7 @@
 
 window.LEVEL1 = {
   id: 'rv_park_dusk',
-  stars: 4,
+  stars: 2,
 
   /* 情境 / framing —— 讀家不畫人：畫面永遠不出現受助的人 */
   framing: {
@@ -131,13 +131,16 @@ window.LEVEL1 = {
     { zh: '謝謝你願意先讀懂，再給。', en: 'Thank you for understanding first, then giving.', es: 'Gracias por entender primero y luego dar.' }
   ],
 
-  /* 五台車的落點 / Five trailer focal spots on rv_park_dusk1.png
-     座標為背景圖的比例 (0–1)。focus = 高亮那台車的中心；window = 窗亮位置。 */
+  /* 一夜七台車的落點 / Seven trailer focal spots on rv_park_dusk1.png (1376x768)
+     座標為背景圖的比例 (0–1)。focus = 高亮那台車的中心；window = 窗亮位置。
+     畫面用 contain（整張圖都看得到），所以這些點在直式/橫式都精準貼在車上。 */
   spots: [
-    { focus: { x: 0.50, y: 0.42 }, window: { x: 0.53, y: 0.44 } },
-    { focus: { x: 0.18, y: 0.40 }, window: { x: 0.15, y: 0.42 } },
-    { focus: { x: 0.80, y: 0.38 }, window: { x: 0.83, y: 0.40 } },
-    { focus: { x: 0.34, y: 0.30 }, window: { x: 0.34, y: 0.31 } },
-    { focus: { x: 0.64, y: 0.29 }, window: { x: 0.66, y: 0.30 } }
+    { focus: { x: 0.435, y: 0.52 }, window: { x: 0.455, y: 0.55 } }, /* 中央條紋遮陽車（主角） */
+    { focus: { x: 0.305, y: 0.46 }, window: { x: 0.315, y: 0.48 } }, /* 左中 紅白遮陽 */
+    { focus: { x: 0.600, y: 0.46 }, window: { x: 0.620, y: 0.48 } }, /* 右中 橘色條紋 */
+    { focus: { x: 0.155, y: 0.43 }, window: { x: 0.150, y: 0.45 } }, /* 後排左 */
+    { focus: { x: 0.730, y: 0.38 }, window: { x: 0.745, y: 0.40 } }, /* 後排右 */
+    { focus: { x: 0.075, y: 0.53 }, window: { x: 0.060, y: 0.55 } }, /* 前排最左 */
+    { focus: { x: 0.880, y: 0.50 }, window: { x: 0.895, y: 0.52 } }  /* 前排最右 */
   ]
 };

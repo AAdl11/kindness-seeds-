@@ -49,30 +49,40 @@
 
 <!-- ============ 關卡 · 關懷之夜 ============ -->
 <div id="level">
-  <div id="sceneBg"></div>
-  <div id="darkLayer"></div>
-  <div id="coldLayer"></div>
-  <div id="glowLayer"></div>
-  <div id="spotlight"></div>
-  <div id="spotRing"></div>
-  <div id="clueLayer"></div>
+  <!-- HUD：固定最上一條 -->
+  <div id="hudBar"></div>
 
-  <div class="lvl-top" id="lvlTop"></div>
+  <!-- 舞台：場景永遠完整可見，介面不蓋它 -->
+  <div id="stage">
+    <div id="sceneImg"></div>
+    <div id="skyWarm"></div>
+    <div id="darkLayer"></div>
+    <div id="coldLayer"></div>
+    <div id="vignette"></div>
+    <div id="glowLayer"></div>
+    <div id="spotlight"></div>
+    <div id="spotRing"></div>
+    <div id="clueLayer"></div>
+    <div id="toast"></div>
+  </div>
 
-  <div id="toast"></div>
-
-  <div class="dock">
-    <h4 id="notesH">📝 觀察筆記</h4>
-    <div class="notes" id="notes"></div>
-
-    <h4 id="shelfH">🧺 物資架</h4>
-    <div class="shelf" id="shelf"></div>
-
-    <h4 id="packH">🎁 關懷包</h4>
-    <div class="pack" id="pack"></div>
-
-    <div class="send-row">
-      <button id="sendBtn" disabled>送出關懷包</button>
+  <!-- 最底部一條半透明窄面板，可收合 -->
+  <div id="panel">
+    <button id="panelTab" aria-label="toggle panel"><span id="panelChevron">▾</span></button>
+    <div id="panelBody">
+      <div class="prow">
+        <div class="plabel" id="notesH">📝 觀察筆記</div>
+        <div class="notes" id="notes"></div>
+      </div>
+      <div class="prow">
+        <div class="plabel" id="shelfH">🧺 物資架</div>
+        <div class="shelf" id="shelf"></div>
+      </div>
+      <div class="prow packrow">
+        <div class="plabel" id="packH">🎁 關懷包</div>
+        <div class="pack" id="pack"></div>
+        <button id="sendBtn" disabled>送出</button>
+      </div>
     </div>
   </div>
 </div>

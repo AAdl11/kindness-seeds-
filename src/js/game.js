@@ -1,8 +1,9 @@
 /* =====================================================================
    善的種子 · 關懷之夜 / Care at Dusk — 主引擎
    依賴：i18n.js, audio.js, data/level1.js
-   核心循環：讀懂線索 → 親手配關懷包 → 送出 → 窗亮 → 小芽長 → 天黑溫柔收場
-   無分數 / 無排名 / 無懲罰：天色倒數只是黃昏氛圍，時間到=溫柔收場。
+   核心循環：車開進來 → 讀懂車上線索 → 親手配關懷包 → 送出 → 窗亮融入背景
+            → 下一台 → 天黑溫柔收場
+   無分數 / 無排名 / 無懲罰；天色倒數只是黃昏氛圍，時間到=溫柔收場。
    ===================================================================== */
 (function () {
   'use strict';
@@ -11,10 +12,8 @@
   var MEM = {};
   var KEY = 'kindness-seeds-save';
   function loadSave() {
-    try {
-      var raw = localStorage.getItem(KEY);
-      if (raw) return JSON.parse(raw);
-    } catch (e) { if (MEM[KEY]) return JSON.parse(MEM[KEY]); }
+    try { var raw = localStorage.getItem(KEY); if (raw) return JSON.parse(raw); }
+    catch (e) { if (MEM[KEY]) return JSON.parse(MEM[KEY]); }
     return null;
   }
   function persist() {
@@ -23,24 +22,20 @@
   }
   var SAVE = loadSave() || {
     sprout: { name: '', growth: 0 },
-    warmth: 0,
-    bamboo: 0,
-    homeFu: 0,            // 幸福家園 推進（累計照顧的家）
-    lit: {},             // 地圖永久點亮
-    lastHomes: 0
+    warmth: 0, bamboo: 0, homeFu: 0, lit: {}, lastHomes: 0
   };
 
   /* ---------- 小芽 ---------- */
   var SPROUT_EMOJI = ['🌱', '🌿', '🪴', '🌳'];
-  function sproutStage(g) { return g >= 8 ? 3 : g >= 4 ? 2 : g >= 1 ? 1 : 0; }
+  function sproutStage(g) { return g >= 12 ? 3 : g >= 6 ? 2 : g >= 1 ? 1 : 0; }
   function sproutIcon() { return SPROUT_EMOJI[sproutStage(SAVE.sprout.growth)]; }
 
   /* ---------- HUB 節點（三福；只有「關懷之夜」可玩，其餘即將） ---------- */
   var NODES = {
     home: [
-      { id: 'rv_park_dusk', state: 'play', stars: 4,
+      { id: 'rv_park_dusk', state: 'play', stars: 2,
         nm: { zh: '關懷之夜', en: 'Care at Dusk', es: 'Cuidado al Atardecer' },
-        ds: { zh: 'RV Park 關懷', en: 'RV Park outreach', es: 'Apoyo en el RV Park' } },
+        ds: { zh: 'RV Park 關懷 · 入門', en: 'RV Park outreach · intro', es: 'RV Park · inicio' } },
       { id: 'foodshare', state: 'soon', stars: 1,
         nm: { zh: '食物發放', en: 'Food share', es: 'Reparto de alimentos' },
         ds: { zh: '2006 一把生米', en: '2006, a handful of rice', es: '2006, un puñado de arroz' } },
@@ -75,9 +70,8 @@
   /* ---------- 螢幕切換 ---------- */
   function show(id) {
     ['opening', 'hub', 'level', 'ending'].forEach(function (s) {
-      var el = document.getElementById(s);
-      if (!el) return;
-      if (s === 'level') el.style.display = (s === id) ? 'block' : 'none';
+      var el = document.getElementById(s); if (!el) return;
+      if (s === 'level') el.style.display = (s === id) ? 'flex' : 'none';
       else el.classList.toggle('hidden', s !== id);
     });
   }
@@ -102,22 +96,17 @@
   function renderHub() {
     document.getElementById('hubTitle').textContent = T('hubTitle');
     document.getElementById('hubSub').textContent = T('subtitle');
-    // HUD
-    var hud = document.getElementById('hubHud');
-    hud.innerHTML = '';
-    hud.appendChild(chip(sproutIcon() + ' ' + (SAVE.sprout.name || T('sproutLabel')), ''));
-    hud.appendChild(chip('🎍 ' + T('bambooLabel') + ' ' + SAVE.bamboo, ''));
-    hud.appendChild(chip('💛 ' + T('warmthLabel') + ' ' + SAVE.warmth, ''));
+    var hud = document.getElementById('hubHud'); hud.innerHTML = '';
+    hud.appendChild(chip(sproutIcon() + ' ' + (SAVE.sprout.name || T('sproutLabel'))));
+    hud.appendChild(chip('🎍 ' + T('bambooLabel') + ' ' + SAVE.bamboo));
+    hud.appendChild(chip('💛 ' + T('warmthLabel') + ' ' + SAVE.warmth));
 
-    var zonesEl = document.getElementById('fuZones');
-    zonesEl.innerHTML = '';
+    var zonesEl = document.getElementById('fuZones'); zonesEl.innerHTML = '';
     [['home', T('fuHome')], ['campus', T('fuCampus')], ['community', T('fuCommunity')]].forEach(function (pair) {
       var fu = document.createElement('div'); fu.className = 'fu';
       var h = document.createElement('h3'); h.textContent = pair[1]; fu.appendChild(h);
       var acts = document.createElement('div'); acts.className = 'acts';
-      NODES[pair[0]].forEach(function (n) {
-        acts.appendChild(nodeEl(n));
-      });
+      NODES[pair[0]].forEach(function (n) { acts.appendChild(nodeEl(n)); });
       fu.appendChild(acts); zonesEl.appendChild(fu);
     });
   }
@@ -132,9 +121,7 @@
       '<div class="nm">' + L(n.nm) + lit + '</div>' +
       '<div class="ds">' + L(n.ds) + '</div>' +
       '<div class="stars">' + stars(n.stars) + '</div>';
-    if (n.state === 'play') {
-      d.addEventListener('click', function () { Sound.startMusic(); startLevel(); });
-    }
+    if (n.state === 'play') d.addEventListener('click', function () { Sound.startMusic(); startLevel(); });
     return d;
   }
 
@@ -142,125 +129,155 @@
      關卡 · 關懷之夜
      =================================================================== */
   var D = window.LEVEL1;
-  var NIGHT_MS = 210000;          // 黃昏到天黑約 3.5 分鐘（從容，可做完五家）
-  var lvl = null;                 // 本夜狀態
+  var IW = 1376, IH = 768;            // 背景原始尺寸
+  var CARS = 7;                       // 一夜七台車
+  var COUNTS = [1, 1, 1, 2, 2, 2, 3]; // 越後面需要越多、線索要讀越多條
+  var NIGHT_MS = 240000;              // 黃昏到天黑約 4 分鐘（從容，可做完七台）
+  var rect = { ox: 0, oy: 0, rw: 1, rh: 1, s: 1 };
+  var lvl = null;
 
   function startLevel() {
     lvl = {
-      carIndex: 0,
-      served: 0,
-      counts: [1, 1, 2, 2, 3],     // 越晚的車需要越多、線索要讀越多條
-      car: null,
-      pack: [],                    // 關懷包：supply id 陣列
-      notes: [],                   // 已讀懂的需求 id
-      startT: performance.now(),
-      progress: 0,
-      ended: false,
-      usedLines: []
+      carIndex: 0, served: 0, car: null,
+      pack: [], notes: [],
+      startT: performance.now(), progress: 0, ended: false, usedLines: []
     };
-    // 背景主圖（黃昏），程式裡逐步壓暗
-    document.getElementById('sceneBg').style.backgroundImage = "url('assets/images/rv_park_dusk1.png')";
-    // 預備五個窗光
-    buildWinGlows();
     show('level');
-    renderLevelChrome();
+    buildWinGlows();
+    renderLvlHud();
+    renderPanelLabels();
+    layout();
+    // 開場先把面板展開
+    document.getElementById('panel').classList.remove('collapsed');
     spawnCar();
     requestAnimationFrame(loop);
   }
 
-  function buildWinGlows() {
-    var layer = document.getElementById('glowLayer');
-    layer.innerHTML = '';
+  /* ---- 座標：背景用 contain，整張圖都在；把比例精準對應到車身 ---- */
+  function computeRect() {
+    var stage = document.getElementById('stage');
+    var W = stage.clientWidth, H = stage.clientHeight;
+    var s = Math.min(W / IW, H / IH);
+    var rw = IW * s, rh = IH * s;
+    rect = { ox: (W - rw) / 2, oy: (H - rh) / 2, rw: rw, rh: rh, s: s };
+  }
+  function px(fx, fy) { return { x: rect.ox + fx * rect.rw, y: rect.oy + fy * rect.rh }; }
+
+  function layout() {
+    computeRect();
+    var img = document.getElementById('sceneImg');
+    img.style.left = rect.ox + 'px'; img.style.top = rect.oy + 'px';
+    img.style.width = rect.rw + 'px'; img.style.height = rect.rh + 'px';
+    // 窗光
     D.spots.forEach(function (sp, i) {
-      var g = document.createElement('div');
-      g.className = 'winglow';
-      g.id = 'wg' + i;
-      g.style.left = (sp.window.x * 100) + '%';
-      g.style.top = (sp.window.y * 100) + '%';
+      var g = document.getElementById('wg' + i); if (!g) return;
+      var p = px(sp.window.x, sp.window.y);
+      var w = rect.rw * 0.078, h = rect.rw * 0.058;
+      g.style.left = p.x + 'px'; g.style.top = p.y + 'px';
+      g.style.width = w + 'px'; g.style.height = h + 'px';
+    });
+    // 線索
+    document.querySelectorAll('#clueLayer .clue').forEach(function (el) {
+      var p = px(parseFloat(el.dataset.fx), parseFloat(el.dataset.fy));
+      el.style.left = p.x + 'px'; el.style.top = p.y + 'px';
+    });
+    // 聚光
+    if (lvl && lvl.car) positionSpot(lvl.car.spot.focus.x, lvl.car.spot.focus.y, false);
+  }
+
+  function positionSpot(fx, fy, animatedFromSide) {
+    var p = px(fx, fy);
+    var w = rect.rw * 0.22, h = rect.rw * 0.17;
+    var spot = document.getElementById('spotlight'), ring = document.getElementById('spotRing');
+    [spot, ring].forEach(function (el, k) {
+      el.style.width = (w + (k ? rect.rw * 0.012 : 0)) + 'px';
+      el.style.height = (h + (k ? rect.rw * 0.012 : 0)) + 'px';
+      el.style.top = p.y + 'px';
+      el.style.left = (animatedFromSide ? (rect.ox + rect.rw * 1.05) : p.x) + 'px';
+      el.style.opacity = 1;
+    });
+  }
+
+  function buildWinGlows() {
+    var layer = document.getElementById('glowLayer'); layer.innerHTML = '';
+    D.spots.forEach(function (sp, i) {
+      var g = document.createElement('div'); g.className = 'winglow'; g.id = 'wg' + i;
       layer.appendChild(g);
     });
   }
 
-  function renderLevelChrome() {
-    var top = document.getElementById('lvlTop');
-    top.innerHTML = '';
-    top.appendChild(chip(sproutIcon() + ' ' + (SAVE.sprout.name || T('sproutLabel'))));
-    var warm = chip('💛 ' + T('warmthLabel') + ' ' + SAVE.warmth); warm.className = 'chip warm';
-    top.appendChild(warm);
-    top.appendChild(chip('🚐 ' + T('homesLabel') + ' ' + lvl.served + '/5'));
+  function renderLvlHud() {
+    var hud = document.getElementById('hudBar'); hud.innerHTML = '';
+    hud.appendChild(chip(sproutIcon() + ' ' + (SAVE.sprout.name || T('sproutLabel'))));
+    var warm = chip('💛 ' + SAVE.warmth); warm.className = 'chip warm'; hud.appendChild(warm);
+    hud.appendChild(chip('🚐 ' + T('homesLabel') + ' ' + lvl.served + '/' + CARS));
     var leave = document.createElement('button');
     leave.id = 'leaveBtn'; leave.textContent = T('toHub');
     leave.addEventListener('click', function () { lvl.ended = true; show('hub'); renderHub(); });
-    top.appendChild(leave);
+    hud.appendChild(leave);
+  }
 
-    // dock 標題
-    document.getElementById('notesH').innerHTML = '📝 ' + T('notesTitle') +
-      ' <span class="mini">' + T('tapClue') + '</span>';
+  function renderPanelLabels() {
+    document.getElementById('notesH').innerHTML = '📝 ' + T('notesTitle');
     document.getElementById('shelfH').textContent = '🧺 ' + T('shelfTitle');
     document.getElementById('packH').textContent = '🎁 ' + T('packTitle');
     document.getElementById('sendBtn').textContent = T('send');
-    renderShelf();
-    renderNotes();
-    renderPack();
   }
 
-  /* ---- 開進一台新車：抽需求、佈線索、移動聚光 ---- */
+  /* ---- 開進一台新車 ---- */
   function spawnCar() {
     var idx = lvl.carIndex;
     var spot = D.spots[idx % D.spots.length];
-    var count = lvl.counts[idx] || 1;
-    var keys = Object.keys(D.needs);
-    shuffle(keys);
+    var count = COUNTS[idx] || 1;
+    var keys = Object.keys(D.needs); shuffle(keys);
     var picked = keys.slice(0, count);
-    lvl.car = { needs: picked, spot: spot, subtle: idx >= 2 };
-    lvl.pack = [];
-    lvl.notes = [];
+    lvl.car = { needs: picked, spot: spot, subtle: idx >= 4 };
+    lvl.pack = []; lvl.notes = [];
 
-    // 聚光燈移到這台車
-    var sx = (spot.focus.x * 100) + '%', sy = (spot.focus.y * 100) + '%';
-    var spotlight = document.getElementById('spotlight');
-    var ring = document.getElementById('spotRing');
-    spotlight.style.left = sx; spotlight.style.top = sy; spotlight.style.opacity = 1;
-    ring.style.left = sx; ring.style.top = sy; ring.style.opacity = 1;
+    // 聚光：從右側「開進來」滑到車位
+    positionSpot(spot.focus.x, spot.focus.y, true);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { positionSpot(spot.focus.x, spot.focus.y, false); });
+    });
+    Sound.arrive();
 
-    // 佈置線索（每個需求一個發亮點，落在這台車上）
-    var clueLayer = document.getElementById('clueLayer');
-    clueLayer.innerHTML = '';
+    // 佈線索：每個需求一個發亮點，車停妥後一顆顆亮起
+    var clueLayer = document.getElementById('clueLayer'); clueLayer.innerHTML = '';
     picked.forEach(function (needId, i) {
       var need = D.needs[needId];
       var clue = need.clues[Math.floor(Math.random() * need.clues.length)];
-      // 在聚光範圍內散開
-      var ang = (i / picked.length) * Math.PI * 2 + Math.random() * 0.6;
-      var rad = 0.045 + Math.random() * 0.03;
-      var cx = spot.focus.x + Math.cos(ang) * rad;
-      var cy = spot.focus.y + Math.sin(ang) * rad * 0.8;
+      var ang = (i / Math.max(1, picked.length)) * Math.PI * 2 + Math.random() * 0.6;
+      var rad = 0.04 + Math.random() * 0.025;
+      var cfx = clamp(spot.focus.x + Math.cos(ang) * rad, 0.03, 0.97);
+      var cfy = clamp(spot.focus.y + Math.sin(ang) * rad * 0.78, 0.06, 0.92);
       var el = document.createElement('div');
-      el.className = 'clue' + (lvl.car.subtle ? ' subtle' : '');
-      el.style.left = (cx * 100) + '%';
-      el.style.top = (cy * 100) + '%';
+      el.className = 'clue enter' + (lvl.car.subtle ? ' subtle' : '');
+      el.dataset.fx = cfx; el.dataset.fy = cfy;
+      el.style.animationDelay = (0.55 + i * 0.14) + 's';
       el.textContent = clue.icon;
+      var p = px(cfx, cfy); el.style.left = p.x + 'px'; el.style.top = p.y + 'px';
       el.addEventListener('click', function () { readClue(el, needId, clue); });
       clueLayer.appendChild(el);
+      setTimeout(function () { el.classList.remove('enter'); }, (0.55 + i * 0.14) * 1000 + 520);
     });
 
     renderShelf(); renderNotes(); renderPack(); updateSend();
-    toast(T('carIncoming'), null, 1400);
+    toast('🚐 (' + (idx + 1) + '/' + CARS + ') ' + T('carIncoming'), null, 1600);
   }
 
   function readClue(el, needId, clue) {
     if (el.classList.contains('read')) return;
-    el.classList.add('read');
-    el.textContent = '✓';
+    el.classList.remove('enter');
+    el.classList.add('read'); el.textContent = '✓';
     Sound.clue();
     if (lvl.notes.indexOf(needId) === -1) lvl.notes.push(needId);
     renderNotes();
     var need = D.needs[needId];
-    toast(T('clueFound') + L(clue.read), T('needInferred') + L(need.label), 2200);
+    toast(T('clueFound') + L(clue.read), T('needInferred') + L(need.label), 2300);
   }
 
   function renderNotes() {
-    var box = document.getElementById('notes');
-    box.innerHTML = '';
+    var box = document.getElementById('notes'); box.innerHTML = '';
     if (!lvl.notes.length) {
       var e = document.createElement('div'); e.className = 'note-empty';
       e.textContent = T('notesEmpty'); box.appendChild(e); return;
@@ -274,8 +291,7 @@
   }
 
   function renderShelf() {
-    var shelf = document.getElementById('shelf');
-    shelf.innerHTML = '';
+    var shelf = document.getElementById('shelf'); shelf.innerHTML = '';
     D.supplies.forEach(function (s) {
       var inpack = lvl.pack.indexOf(s.id) !== -1;
       var it = document.createElement('div');
@@ -291,8 +307,7 @@
   }
 
   function renderPack() {
-    var pack = document.getElementById('pack');
-    pack.innerHTML = '';
+    var pack = document.getElementById('pack'); pack.innerHTML = '';
     if (!lvl.pack.length) {
       var e = document.createElement('div'); e.className = 'pack-empty';
       e.textContent = T('packEmpty'); pack.appendChild(e); return;
@@ -318,74 +333,68 @@
 
     if (!covered) {
       Sound.soft();
-      toast('🤍 ' + T('softMiss'), null, 2600);   // 軟失敗：溫柔提示，不扣分、不結束
+      toast('🤍 ' + T('softMiss'), null, 2700);   // 軟失敗：溫柔提示，不扣分、不結束
       return;
     }
-    // 成功：窗亮、暖意+1、小芽長、竹筒+1、幸福家園推進
+    // 成功：窗亮融入背景、暖意+1、小芽長、竹筒+1、幸福家園推進
     Sound.success();
     var wg = document.getElementById('wg' + (lvl.carIndex % D.spots.length));
     if (wg) wg.classList.add('lit');
     SAVE.warmth += 1; SAVE.bamboo += 1; SAVE.homeFu += 1;
-    SAVE.sprout.growth += 1; SAVE.lit[D.id] = true;
-    persist();
+    SAVE.sprout.growth += 1; SAVE.lit[D.id] = true; persist();
     Sound.grow();
     lvl.served += 1;
     document.getElementById('spotlight').style.opacity = 0;
     document.getElementById('spotRing').style.opacity = 0;
     document.getElementById('clueLayer').innerHTML = '';
-    renderLevelChrome();
+    renderLvlHud();
 
-    var line = nextWarmLine();
-    toast('✨ ' + T('sent'), L(line), 2600);
+    toast('✨ ' + T('sent'), L(nextWarmLine()), 2600);
 
     lvl.carIndex += 1;
-    if (lvl.served >= 5) {
-      setTimeout(endNight, 1700);
-    } else {
-      setTimeout(spawnCar, 1700);
-    }
+    if (lvl.served >= CARS) setTimeout(endNight, 1800);
+    else setTimeout(spawnCar, 1800);
   }
   function nextWarmLine() {
     var pool = D.warmLines;
     var avail = pool.filter(function (_, i) { return lvl.usedLines.indexOf(i) === -1; });
     if (!avail.length) { lvl.usedLines = []; avail = pool; }
-    var i = pool.indexOf(avail[Math.floor(Math.random() * avail.length)]);
-    lvl.usedLines.push(i);
-    return pool[i];
+    var pick = avail[Math.floor(Math.random() * avail.length)];
+    lvl.usedLines.push(pool.indexOf(pick));
+    return pick;
   }
 
-  /* ---- 天色迴圈：逐步壓暗 + 窗燈漸亮 + 寒冷 + 音樂收緊 ---- */
+  /* ---- 天色迴圈：金黃→冷藍夜，車窗漸亮，音樂低通收緊 ---- */
   function loop(now) {
     if (!lvl || lvl.ended) return;
     var timeP = (now - lvl.startT) / NIGHT_MS;
-    var carP = lvl.served / 5;
+    var carP = lvl.served / CARS;
     var p = Math.min(1, Math.max(timeP, carP));
     lvl.progress = p;
 
-    document.getElementById('darkLayer').style.opacity = (p * 0.86).toFixed(3);
-    document.getElementById('coldLayer').style.opacity = (p * 0.5).toFixed(3);
-    document.getElementById('sceneBg').style.filter =
-      'brightness(' + (1 - 0.5 * p).toFixed(3) + ') saturate(' + (1 - 0.25 * p).toFixed(3) + ')';
-    // 所有車窗隨天色漸亮（已照顧的最亮、會閃）
+    document.getElementById('skyWarm').style.opacity = (1 - p).toFixed(3);
+    document.getElementById('darkLayer').style.opacity = (p * 0.92).toFixed(3);
+    document.getElementById('coldLayer').style.opacity = (p * 0.62).toFixed(3);
+    document.getElementById('vignette').style.opacity = (0.4 + p * 0.45).toFixed(3);
+    document.getElementById('sceneImg').style.filter =
+      'brightness(' + (1 - 0.55 * p).toFixed(3) + ') saturate(' + (1 - 0.2 * p).toFixed(3) + ')';
     D.spots.forEach(function (_, i) {
       var g = document.getElementById('wg' + i);
-      if (g && !g.classList.contains('lit')) g.style.opacity = (0.12 + 0.5 * p).toFixed(3);
+      if (g && !g.classList.contains('lit')) g.style.opacity = (0.08 + 0.5 * p).toFixed(3);
     });
     Sound.setMood(carP, p);
 
-    if (timeP >= 1 && lvl.served < 5) { endNight(); return; }
+    if (timeP >= 1 && lvl.served < CARS) { endNight(); return; }
     requestAnimationFrame(loop);
   }
 
   /* ---- 溫柔收場 ---- */
   function endNight() {
     if (lvl.ended) return;
-    lvl.ended = true;
-    SAVE.lastHomes = lvl.served;
-    persist();
+    lvl.ended = true; SAVE.lastHomes = lvl.served; persist();
     document.getElementById('endTitle').textContent = T('endTitle');
     document.getElementById('endLine').textContent = T('endLine');
-    document.getElementById('endBig').textContent = lvl.served + ' / 5';
+    document.getElementById('endBig').textContent = lvl.served + ' / ' + CARS;
     document.getElementById('endHomes').textContent = T('endHomes');
     document.getElementById('endWarm').textContent = T('endWarm');
     document.getElementById('endSprout').textContent =
@@ -398,6 +407,7 @@
   /* ---------- 小工具 ---------- */
   function supplyById(id) { for (var i = 0; i < D.supplies.length; i++) if (D.supplies[i].id === id) return D.supplies[i]; }
   function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
   var toastT = null;
   function toast(line1, line2, ms) {
     var el = document.getElementById('toast');
@@ -409,56 +419,58 @@
 
   /* ---------- 語言切換時重繪 ---------- */
   window.onLangChange = function () {
-    document.querySelectorAll('.lang button').forEach(function (b) {
-      b.classList.toggle('on', b.dataset.l === window.LANG);
-    });
+    document.querySelectorAll('.lang button').forEach(function (b) { b.classList.toggle('on', b.dataset.l === window.LANG); });
     if (!document.getElementById('opening').classList.contains('hidden')) renderOpening();
     if (!document.getElementById('hub').classList.contains('hidden')) renderHub();
-    if (document.getElementById('level').style.display === 'block') renderLevelChrome();
-    if (!document.getElementById('ending').classList.contains('hidden')) endNightRefreshText();
+    if (document.getElementById('level').style.display === 'flex' && lvl) {
+      renderLvlHud(); renderPanelLabels(); renderNotes(); renderShelf(); renderPack(); updateSend();
+    }
+    if (!document.getElementById('ending').classList.contains('hidden')) {
+      document.getElementById('endTitle').textContent = T('endTitle');
+      document.getElementById('endLine').textContent = T('endLine');
+      document.getElementById('endHomes').textContent = T('endHomes');
+      document.getElementById('endWarm').textContent = T('endWarm');
+      document.getElementById('againBtn').textContent = T('againNight');
+      document.getElementById('endHubBtn').textContent = T('toHub');
+    }
   };
-  function endNightRefreshText() {
-    document.getElementById('endTitle').textContent = T('endTitle');
-    document.getElementById('endLine').textContent = T('endLine');
-    document.getElementById('endHomes').textContent = T('endHomes');
-    document.getElementById('endWarm').textContent = T('endWarm');
-    document.getElementById('againBtn').textContent = T('againNight');
-    document.getElementById('endHubBtn').textContent = T('toHub');
-  }
 
   /* ===================================================================
      啟動 / 事件綁定
      =================================================================== */
   function wire() {
-    // 語言
     document.querySelectorAll('.lang button').forEach(function (b) {
       b.addEventListener('click', function () { window.setLang(b.dataset.l); });
-    });
-    // 靜音
-    var mute = document.getElementById('mute');
-    mute.addEventListener('click', function () {
-      var m = !Sound.isMuted(); Sound.setMuted(m);
-      mute.textContent = m ? '🔇' : '🔊';
-    });
-    // 開始
-    document.getElementById('beginBtn').addEventListener('click', function () {
-      var v = document.getElementById('sproutName').value.trim();
-      SAVE.sprout.name = v || T('namePlaceholder');
-      persist();
-      Sound.startMusic();
-      show('hub'); renderHub();
-    });
-    document.getElementById('sendBtn').addEventListener('click', sendPackage);
-    document.getElementById('againBtn').addEventListener('click', function () { startLevel(); });
-    document.getElementById('endHubBtn').addEventListener('click', function () { show('hub'); renderHub(); });
-
-    // 初始語言鈕狀態
-    document.querySelectorAll('.lang button').forEach(function (b) {
       b.classList.toggle('on', b.dataset.l === window.LANG);
     });
+    var mute = document.getElementById('mute');
+    mute.addEventListener('click', function () {
+      var m = !Sound.isMuted(); Sound.setMuted(m); mute.textContent = m ? '🔇' : '🔊';
+    });
+    document.getElementById('beginBtn').addEventListener('click', function () {
+      var v = document.getElementById('sproutName').value.trim();
+      SAVE.sprout.name = v || T('namePlaceholder'); persist();
+      Sound.startMusic(); show('hub'); renderHub();
+    });
+    document.getElementById('sendBtn').addEventListener('click', sendPackage);
+    document.getElementById('againBtn').addEventListener('click', startLevel);
+    document.getElementById('endHubBtn').addEventListener('click', function () { show('hub'); renderHub(); });
 
-    renderOpening();
-    show('opening');
+    // 底部面板收合
+    document.getElementById('panelTab').addEventListener('click', function () {
+      document.getElementById('panel').classList.toggle('collapsed');
+      setTimeout(layout, 380);
+    });
+
+    // 版面：場景隨舞台大小重新對位
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(function () { if (lvl) layout(); });
+      ro.observe(document.getElementById('stage'));
+    }
+    window.addEventListener('resize', function () { if (lvl) layout(); });
+    window.addEventListener('orientationchange', function () { setTimeout(function () { if (lvl) layout(); }, 250); });
+
+    renderOpening(); show('opening');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire);
