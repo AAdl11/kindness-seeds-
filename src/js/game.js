@@ -24,10 +24,20 @@
     sprout: { name: '', growth: 0 },
     warmth: 0, bamboo: 0, homeFu: 0, kindnessMin: 0, lit: {}, lastHomes: 0
   };
-  if (SAVE.kindnessMin == null) SAVE.kindnessMin = 0;   // 舊存檔補欄位
+  // 舊存檔補欄位（永不歸零）
+  if (SAVE.kindnessMin == null) SAVE.kindnessMin = 0;
+  if (SAVE.coins == null) SAVE.coins = 0;          // 善的銅板（竹筒裡可倒入社區）
+  if (SAVE.pours == null) SAVE.pours = 0;          // 倒竹筒次數（→水量表）
+  if (SAVE.milestones == null) SAVE.milestones = {}; // 里程碑進度
+  if (SAVE.bloomPour == null) SAVE.bloomPour = {};   // 倒竹筒造成的開花區
+  var C = window.CONFIG;
 
-  /* ---------- 小芽 = 看得見地長大的盆栽（種子→發芽→小苗→小樹/開花） ---------- */
-  function sproutStage(g) { return g >= 12 ? 3 : g >= 6 ? 2 : g >= 1 ? 1 : 0; }
+  /* ---------- 小芽 = 看得見地長大的盆栽（種子→發芽→小苗→開花→小樹→大樹） ---------- */
+  function sproutStage(g) {
+    var th = C.sprout.thresholds, i = th.length - 1;
+    for (; i >= 0; i--) if (g >= th[i]) return i;
+    return 0;
+  }
   /* 依「累積照顧的家數」growth 決定枝葉與花瓣多寡；px = 顯示大小 */
   function plantSVG(growth, px) {
     growth = Math.max(0, growth | 0);
@@ -75,13 +85,13 @@
      之後加關卡只要在這裡加一個物件、給座標即可，支援超過 9 關。 */
   var ACTIVITIES = [
     // 幸福家園（住宅區左側＋食物菜圃）
-    { id: 'rv_park_dusk', fu: 'home', state: 'play', stars: 2, pos: { x: 0.12, y: 0.64 },
+    { id: 'rv_park_dusk', fu: 'home', state: 'play', stars: 2, pos: { x: 0.22, y: 0.62 },
       nm: { zh: '關懷之夜', en: 'Care at Dusk', es: 'Cuidado al Atardecer' },
       ds: { zh: 'RV Park 關懷 · 入門', en: 'RV Park outreach · intro', es: 'RV Park · inicio' } },
     { id: 'foodshare', fu: 'home', state: 'soon', stars: 1, pos: { x: 0.40, y: 0.67 },
       nm: { zh: '食物發放', en: 'Food share', es: 'Reparto de alimentos' },
       ds: { zh: '2006 一把生米', en: '2006, a handful of rice', es: '2006, un puñado de arroz' } },
-    { id: 'blankets', fu: 'home', state: 'soon', stars: 1, pos: { x: 0.09, y: 0.42 },
+    { id: 'blankets', fu: 'home', state: 'soon', stars: 1, pos: { x: 0.21, y: 0.40 },
       nm: { zh: '冬季毛毯', en: 'Winter blankets', es: 'Mantas de invierno' },
       ds: { zh: '海風天涼', en: 'Against the cold wind', es: 'Contra el viento frío' } },
     // 幸福校園（中央校舍）
@@ -111,9 +121,15 @@
   function show(id) {
     ['opening', 'hub', 'level', 'ending'].forEach(function (s) {
       var el = document.getElementById(s); if (!el) return;
-      if (s === 'level') el.style.display = (s === id) ? 'flex' : 'none';
+      if (s === 'level') el.style.display = (s === id) ? 'block' : 'none';
       else el.classList.toggle('hidden', s !== id);
     });
+    document.body.className = 'screen-' + id;
+    var g = (id === 'hub' || id === 'level');   // 永久 HUD / 竹筒 / 金圈米芽：hub 與關卡顯示
+    ['hudTime', 'hudCoins', 'bamboo', 'sproutRing'].forEach(function (eid) {
+      document.getElementById(eid).classList.toggle('hidden', !g);
+    });
+    if (g) refreshGlobals();
   }
 
   /* ===================================================================
@@ -151,10 +167,6 @@
   function renderHub() {
     document.getElementById('hubTitle').textContent = T('hubTitle');
     document.getElementById('hubSub').textContent = T('subtitle');
-    var hud = document.getElementById('hubHud'); hud.innerHTML = '';
-    hud.appendChild(sproutChip());
-    hud.appendChild(chip('🎍 ' + T('bambooLabel') + ' ' + SAVE.bamboo));
-    hud.appendChild(chip('💛 ' + T('warmthLabel') + ' ' + SAVE.warmth));
 
     // 節點
     var pinLayer = document.getElementById('pinLayer'); pinLayer.innerHTML = '';
@@ -174,28 +186,124 @@
       pinLayer.appendChild(p);
     });
 
-    // 完成的關 → 那一區開花變美（bloom 補丁）
+    // 開花補丁：完成的關 + 倒竹筒推進的里程碑那一區
     var bloom = document.getElementById('bloomLayer'); bloom.innerHTML = '';
     ACTIVITIES.forEach(function (a) {
       if (!SAVE.lit[a.id]) return;
-      var b = document.createElement('div'); b.className = 'bloom'; b.dataset.id = a.id;
+      var b = document.createElement('div'); b.className = 'bloom'; b.dataset.kind = 'act'; b.dataset.id = a.id;
+      bloom.appendChild(b);
+    });
+    C.milestones.forEach(function (ms) {
+      if (!SAVE.bloomPour[ms.id]) return;
+      var b = document.createElement('div'); b.className = 'bloom'; b.dataset.kind = 'ms'; b.dataset.id = ms.id;
       bloom.appendChild(b);
     });
 
-    // 全域榮景：完成越多，地圖越亮、花越多、出現光束/彩虹
-    var ratio = completedCount() / ACTIVITIES.length;
-    var pl = document.getElementById('prosperityLayer');
-    pl.style.setProperty('--prosper', ratio.toFixed(3));
-    pl.classList.toggle('beams', ratio >= 0.34);
-    pl.classList.toggle('rainbow', ratio >= 0.66);
-
+    renderMilestones();
+    applyHubMeters();
     hubLayout();
+    refreshGlobals();
   }
 
-  /* 地圖用 contain，節點精準落在地圖上（直橫式都不跑位） */
+  /* 里程碑進度條（向外＝加速器；竹筒滿了可點任一條倒入） */
+  function renderMilestones() {
+    var box = document.getElementById('milestones'); box.innerHTML = '';
+    var canPour = SAVE.bamboo >= C.bamboo.capacity;
+    C.milestones.forEach(function (ms) {
+      var prog = SAVE.milestones[ms.id] || 0;
+      var row = document.createElement('div'); row.className = 'ms' + (canPour ? ' canpour' : '');
+      row.innerHTML = '<div class="ms-name">' + L(ms.name) + ' <i>' + prog + '/' + ms.target + '</i></div>' +
+        '<div class="ms-bar"><span style="width:' + Math.min(100, prog / ms.target * 100).toFixed(0) + '%"></span></div>';
+      if (canPour) row.addEventListener('click', function () { pourInto(ms); });
+      box.appendChild(row);
+    });
+  }
+  function pourInto(ms) {
+    if (SAVE.bamboo < C.bamboo.capacity) return;
+    SAVE.bamboo -= C.bamboo.capacity;
+    SAVE.pours += 1;
+    SAVE.milestones[ms.id] = Math.min(ms.target, (SAVE.milestones[ms.id] || 0) + 1);
+    SAVE.bloomPour[ms.id] = true;
+    persist();
+    Sound.pour();
+    flash('🎍🌸 ' + T('poured'));
+    renderHub();
+  }
+
+  /* 陽光・空氣・水 → 整體榮景（敘事：黯淡 → 溫暖 → 珍珠柔光） */
+  function meters() {
+    var m = C.meters;
+    var sun = Math.min(1, SAVE.kindnessMin / m.sunPerMinuteFull);
+    var water = Math.min(1, SAVE.pours / m.waterPerPourFull);
+    var air = Math.min(1, m.airBase + (SAVE.lit['eco'] ? m.airFromEco : 0));
+    var completion = completedCount() / ACTIVITIES.length;
+    var radiance = Math.min(1, 0.28 * sun + 0.22 * water + 0.12 * air + 0.28 * completion + 0.10 * Math.min(1, SAVE.sprout.growth / 16));
+    return { sun: sun, water: water, air: air, completion: completion, radiance: radiance };
+  }
+  function applyHubMeters() {
+    var M = meters();
+    document.getElementById('hubMap').style.filter =
+      'brightness(' + (0.78 + 0.34 * M.radiance).toFixed(3) + ') saturate(' + (0.6 + 0.6 * M.radiance).toFixed(3) + ')';
+    document.getElementById('dawnVeil').style.opacity = ((1 - M.radiance) * 0.55).toFixed(3);
+    var pl = document.getElementById('prosperityLayer');
+    pl.style.setProperty('--prosper', M.sun.toFixed(3));
+    pl.classList.toggle('beams', M.sun >= 0.6);
+    pl.classList.toggle('rainbow', M.water >= 1);
+    document.getElementById('greenLayer').style.opacity = (0.12 + 0.5 * Math.max(M.water, M.completion)).toFixed(3);
+    document.getElementById('airLayer').style.opacity = ((1 - M.air) * 0.5).toFixed(3);
+    document.getElementById('pearlLayer').style.opacity = (M.radiance >= 0.7 ? (M.radiance - 0.7) / 0.3 * 0.55 : 0).toFixed(3);
+  }
+
+  /* ===== 永久玻璃 HUD / 竹筒 / 金圈米芽 ===== */
+  function refreshGlobals() {
+    document.getElementById('hudTime').innerHTML = '☀️ <b>' + SAVE.kindnessMin + '</b> ' + T('minUnit');
+    document.getElementById('hudCoins').innerHTML = '🪙 <b>' + SAVE.coins + '</b> ' + T('coinUnit');
+    var cap = C.bamboo.capacity;
+    document.getElementById('bambooCount').textContent = Math.min(SAVE.bamboo, cap) + '/' + cap;
+    document.getElementById('bambooFill').style.height = Math.min(100, SAVE.bamboo / cap * 100).toFixed(0) + '%';
+    var pour = document.getElementById('pourBtn');
+    pour.textContent = T('pour');
+    pour.classList.toggle('hidden', SAVE.bamboo < cap);
+    document.getElementById('sproutPlant').innerHTML = plantSVG(SAVE.sprout.growth, 54);
+    document.getElementById('sproutStageName').textContent =
+      (SAVE.sprout.name ? SAVE.sprout.name + ' · ' : '') + stageName(SAVE.sprout.growth);
+  }
+
+  /* 一道光點/銅板從車飛到金圈米芽 / 竹筒 */
+  function flyTo(targetId, fromX, fromY, cls, cb) {
+    var t = document.getElementById(targetId);
+    if (!t) { if (cb) cb(); return; }
+    var r = t.getBoundingClientRect(), tx = r.left + r.width / 2, ty = r.top + r.height / 2;
+    var d = document.createElement('div'); d.className = cls;
+    d.style.left = fromX + 'px'; d.style.top = fromY + 'px';
+    document.body.appendChild(d);
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        d.style.transform = 'translate(' + (tx - fromX) + 'px,' + (ty - fromY) + 'px) scale(.5)';
+        d.style.opacity = '0.25';
+      });
+    });
+    setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); if (cb) cb(); }, 720);
+  }
+  function pulseRing(carIdx) {
+    var ring = document.getElementById('sproutRing');
+    ring.classList.remove('grow', 'bloom'); void ring.offsetWidth;
+    ring.classList.add(carIdx >= 2 ? 'bloom' : 'grow');
+    var r = ring.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2, { n: carIdx >= 2 ? 34 : 16, spread: 70, life: 950, size: carIdx >= 2 ? 11 : 8 });
+  }
+  function flash(msg) {
+    var f = document.createElement('div'); f.className = 'flash'; f.textContent = msg;
+    document.body.appendChild(f);
+    setTimeout(function () { f.classList.add('show'); }, 12);
+    setTimeout(function () { f.classList.remove('show'); }, 1800);
+    setTimeout(function () { if (f.parentNode) f.parentNode.removeChild(f); }, 2200);
+  }
+
+  /* 地圖 full-bleed cover（max）；節點在中央安全區，cover 裁切也看得到 */
   function hubFit() {
     var st = document.getElementById('mapStage');
-    var W = st.clientWidth, H = st.clientHeight, s = Math.min(W / IW, H / IH);
+    var W = st.clientWidth, H = st.clientHeight, s = Math.max(W / IW, H / IH);
     var rw = IW * s, rh = IH * s;
     hubRect = { ox: (W - rw) / 2, oy: (H - rh) / 2, rw: rw, rh: rh, s: s };
   }
@@ -204,19 +312,22 @@
   function hubLayout() {
     if (document.getElementById('hub').classList.contains('hidden')) return;
     hubFit();
-    var img = document.getElementById('hubMap');
-    img.style.left = hubRect.ox + 'px'; img.style.top = hubRect.oy + 'px';
-    img.style.width = hubRect.rw + 'px'; img.style.height = hubRect.rh + 'px';
     // 節點
     ACTIVITIES.forEach(function (a) {
       var el = document.querySelector('#pinLayer .pinnode[data-id="' + a.id + '"]');
       if (!el) return; var p = hubPx(a.pos.x, a.pos.y);
       el.style.left = p.x + 'px'; el.style.top = p.y + 'px';
     });
-    // bloom
+    // bloom（關卡完成 + 里程碑那一區）
     document.querySelectorAll('#bloomLayer .bloom').forEach(function (b) {
-      var a = ACTIVITIES.filter(function (x) { return x.id === b.dataset.id; })[0]; if (!a) return;
-      var p = hubPx(a.pos.x, a.pos.y); var sz = hubRect.rw * 0.16;
+      var pos = null;
+      if (b.dataset.kind === 'ms') {
+        var ms = C.milestones.filter(function (x) { return x.id === b.dataset.id; })[0]; if (ms) pos = ms.bloom;
+      } else {
+        var a = ACTIVITIES.filter(function (x) { return x.id === b.dataset.id; })[0]; if (a) pos = a.pos;
+      }
+      if (!pos) return;
+      var p = hubPx(pos.x, pos.y); var sz = hubRect.rw * 0.16;
       b.style.left = p.x + 'px'; b.style.top = p.y + 'px';
       b.style.width = sz + 'px'; b.style.height = sz + 'px';
     });
@@ -263,11 +374,11 @@
     requestAnimationFrame(loop);
   }
 
-  /* ---- 座標：背景用 contain，整張圖都在；把比例精準對應到車身 ---- */
+  /* ---- 座標：背景 full-bleed cover（max），線索精準對應到車身（節點在中央安全區） ---- */
   function computeRect() {
     var stage = document.getElementById('stage');
     var W = stage.clientWidth, H = stage.clientHeight;
-    var s = Math.min(W / IW, H / IH);
+    var s = Math.max(W / IW, H / IH);          // cover
     var rw = IW * s, rh = IH * s;
     rect = { ox: (W - rw) / 2, oy: (H - rh) / 2, rw: rw, rh: rh, s: s };
   }
@@ -275,9 +386,6 @@
 
   function layout() {
     computeRect();
-    var img = document.getElementById('sceneImg');
-    img.style.left = rect.ox + 'px'; img.style.top = rect.oy + 'px';
-    img.style.width = rect.rw + 'px'; img.style.height = rect.rh + 'px';
     // 窗光
     D.spots.forEach(function (sp, i) {
       var g = document.getElementById('wg' + i); if (!g) return;
@@ -318,9 +426,7 @@
 
   function renderLvlHud() {
     var hud = document.getElementById('hudBar'); hud.innerHTML = '';
-    hud.appendChild(sproutChip());
-    var warm = chip('💛 ' + SAVE.warmth); warm.className = 'chip warm'; hud.appendChild(warm);
-    hud.appendChild(chip('🚐 ' + T('homesLabel') + ' ' + lvl.served + '/' + CARS));
+    hud.appendChild(chip('🚐 ' + lvl.served + '/' + CARS));
     var leave = document.createElement('button');
     leave.id = 'leaveBtn'; leave.textContent = T('toHub');
     leave.addEventListener('click', function () { lvl.ended = true; Sound.playScene('hub'); show('hub'); renderHub(); });
@@ -481,17 +587,25 @@
       toast('🤍 ' + T('softMiss'), null, 2700);   // 軟失敗：溫柔提示，不扣分、不結束
       return;
     }
-    // 成功：窗亮融入背景、暖意+1、小芽長、竹筒+1、幸福家園推進；一階階堆上去(crescendo)
-    Sound.success(lvl.carIndex);                 // 越後面的車，音越高、climax 越大
-    var wg = document.getElementById('wg' + (lvl.carIndex % D.spots.length));
+    // 成功：窗亮融入背景；一階階堆上去(crescendo)
+    var idx = lvl.carIndex;
+    Sound.success(idx);                            // 越後面的車，音越高、climax 越大
+    var wg = document.getElementById('wg' + (idx % D.spots.length));
     if (wg) wg.classList.add('lit');
-    // 配對成功的粒子閃光（堆在窗口上，越後面越多）
     var wp = px(lvl.car.spot.window.x, lvl.car.spot.window.y);
-    burst(wp.x, wp.y, { n: 16 + lvl.carIndex * 8, spread: rect.rw * (0.12 + lvl.carIndex * 0.03), life: 820, size: 9 });
-    SAVE.warmth += 1; SAVE.bamboo += 1; SAVE.homeFu += 1;
-    SAVE.sprout.growth += 1; SAVE.lit[D.id] = true; persist();
+    burst(wp.x, wp.y, { n: 16 + idx * 8, spread: rect.rw * (0.12 + idx * 0.03), life: 820, size: 9 });
+    // 永久累積（永不歸零）：善的時數 + 銅板（投進竹筒）+ 米芽長一階
+    SAVE.warmth += 1; SAVE.homeFu += 1;
+    SAVE.kindnessMin += C.perHome.minutes;
+    SAVE.coins += C.perHome.coins;
+    SAVE.bamboo += C.perHome.coins;
+    SAVE.sprout.growth += C.perHome.growth;
+    SAVE.lit[D.id] = true; persist();
     Sound.grow();
-    growCelebration(lvl.carIndex);                 // 小芽當場長大 + 天使金光
+    // 一道光點飛進金圈米芽 → 金圈發光、米芽長一階且留住（第3台綻放）
+    flyTo('sproutRing', wp.x, wp.y, 'flydot', function () { refreshGlobals(); pulseRing(idx); });
+    // 一枚銅板「鏘」地掉進竹筒
+    flyTo('bamboo', wp.x, wp.y, 'flycoin', function () { Sound.coin(); bambooBump(); });
     lvl.served += 1;
     document.getElementById('spotlight').style.opacity = 0;
     document.getElementById('spotRing').style.opacity = 0;
@@ -501,8 +615,13 @@
     toast('✨ ' + T('sent'), L(nextWarmLine()), 2400);
 
     lvl.carIndex += 1;
-    if (lvl.served >= CARS) setTimeout(endNight, 2200);
-    else setTimeout(spawnCar, 2200);
+    if (lvl.served >= CARS) setTimeout(endNight, 2300);
+    else setTimeout(spawnCar, 2300);
+  }
+  function bambooBump() {
+    var b = document.getElementById('bamboo');
+    b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump');
+    refreshGlobals();
   }
 
   /* ---- 親眼看著小芽長大：天使金光環 + 盆栽當場長一階（第3台綻放收高潮） ---- */
@@ -566,15 +685,16 @@
 
   function stageName(g) {
     var d = window.I18N[window.LANG] || window.I18N.zh;
-    return (d.sproutStages || [])[sproutStage(g)] || '';
+    var key = C.sprout.stageKeys[sproutStage(g)];
+    return (d.stageNames && d.stageNames[key]) || key || '';
   }
 
   /* ---- 溫柔收場 ---- */
   function endNight() {
     if (lvl.ended) return;
     lvl.ended = true;
-    var addMin = lvl.served * MIN_PER_HOME;                 // 善的時數
-    SAVE.lastHomes = lvl.served; SAVE.kindnessMin += addMin; persist();
+    var addMin = lvl.served * C.perHome.minutes;           // 今晚的善的時數（已逐家累計，這裡只顯示）
+    SAVE.lastHomes = lvl.served; persist();
     Sound.playScene('ending');
     document.getElementById('endTitle').textContent = T('endTitle');
     document.getElementById('endLine').textContent = T('endLine');
@@ -617,7 +737,7 @@
     document.querySelectorAll('.lang button').forEach(function (b) { b.classList.toggle('on', b.dataset.l === window.LANG); });
     if (!document.getElementById('opening').classList.contains('hidden')) renderOpening();
     if (!document.getElementById('hub').classList.contains('hidden')) renderHub();
-    if (document.getElementById('level').style.display === 'flex' && lvl) {
+    if (document.getElementById('level').style.display === 'block' && lvl) {
       renderLvlHud(); renderPanelLabels(); renderNotes(); renderShelf(); renderPack(); updateSend();
     }
     if (!document.getElementById('ending').classList.contains('hidden')) {
@@ -641,6 +761,13 @@
     var mute = document.getElementById('mute');
     mute.addEventListener('click', function () {
       var m = !Sound.isMuted(); Sound.setMuted(m); mute.textContent = m ? '🔇' : '🔊';
+    });
+    // 竹筒倒入：倒進第一個還沒滿的里程碑（也可在 hub 點任一里程碑倒入）
+    document.getElementById('pourBtn').addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (SAVE.bamboo < C.bamboo.capacity) return;
+      var ms = C.milestones.filter(function (m) { return (SAVE.milestones[m.id] || 0) < m.target; })[0] || C.milestones[0];
+      pourInto(ms);
     });
     document.getElementById('beginBtn').addEventListener('click', function () {
       if (!SAVE.sprout.name) {                       // 只有第一次才取名；回訪沿用

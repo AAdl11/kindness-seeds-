@@ -165,6 +165,10 @@ window.Sound = (function () {
     },
     soft:   function () { blip(420, 0.18, 'sine', 0.08); blip(360, 0.22, 'sine', 0.07, 0.14); },
     grow:   function () { blip(700, 0.12, 'triangle', 0.09); blip(1050, 0.22, 'triangle', 0.10, 0.10); },
-    arrive: function () { blip(180, 0.34, 'sine', 0.09); blip(240, 0.30, 'triangle', 0.05, 0.06); }
+    arrive: function () { blip(180, 0.34, 'sine', 0.09); blip(240, 0.30, 'triangle', 0.05, 0.06); },
+    // 銅板「鏘」地掉進竹筒（金屬鈴聲）
+    coin: function () { blip(1180, 0.16, 'triangle', 0.09); blip(1760, 0.20, 'sine', 0.07, 0.03); blip(2350, 0.26, 'sine', 0.05, 0.06); },
+    // 倒竹筒入社區（一串清亮）
+    pour: function () { [0, 0.08, 0.16, 0.24].forEach(function (t, i) { blip(700 + i * 180, 0.22, 'triangle', 0.08, t); }); }
   };
 })();

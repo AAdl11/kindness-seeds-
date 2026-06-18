@@ -19,6 +19,22 @@
 </div>
 <button id="mute" aria-label="mute">🔊</button>
 
+<!-- ============ 永久玻璃浮層 HUD（嵌畫框四角；hub/關卡顯示） ============ -->
+<div id="hudTime" class="ghud hidden"></div>
+<div id="hudCoins" class="ghud hidden"></div>
+<!-- 竹筒（投幣） -->
+<div id="bamboo" class="hidden">
+  <div id="bambooTube"><span id="bambooFill"></span><span id="bambooIco">🎍</span></div>
+  <div id="bambooCount"></div>
+  <button id="pourBtn" class="hidden"></button>
+</div>
+<!-- 永久金圈米芽（住在金色天使光圈裡，延續到結尾/hub，永不歸零） -->
+<div id="sproutRing" class="hidden">
+  <div class="ring-halo"></div>
+  <div id="sproutPlant"></div>
+  <div id="sproutStageName"></div>
+</div>
+
 <!-- ============ 善的任意門 · 開場動畫（純 Canvas） ============ -->
 <section id="opening" class="screen">
   <canvas id="doorCanvas"></canvas>
@@ -37,20 +53,22 @@
 
 <!-- ============ HUB / 白天獵人角地圖（節點散落地圖上） ============ -->
 <section id="hub" class="screen hidden">
-  <div id="hubTop">
-    <div class="hub-head">
-      <h2 id="hubTitle">獵人角</h2>
-      <div id="hubSub"></div>
-    </div>
-    <div class="hud" id="hubHud"></div>
-  </div>
   <div id="mapStage">
     <div id="hubMap"></div>
+    <div id="dawnVeil"></div>
     <div id="prosperityLayer"></div>
+    <div id="greenLayer"></div>
+    <div id="airLayer"></div>
+    <div id="pearlLayer"></div>
     <div id="bloomLayer"></div>
     <div id="growthTree"></div>
     <div id="pinLayer"></div>
   </div>
+  <div id="hubTop">
+    <h2 id="hubTitle">獵人角</h2>
+    <div id="hubSub"></div>
+  </div>
+  <div id="milestones"></div>
 </section>
 
 <!-- ============ 關卡 · 關懷之夜 ============ -->
@@ -115,6 +133,7 @@
 
 <!-- 資料 → i18n → 音效 → 開場動畫 → 引擎 -->
 <script src="data/level1.js"></script>
+<script src="data/config.js"></script>
 <script src="src/js/i18n.js"></script>
 <script src="src/js/audio.js"></script>
 <script src="src/js/opening.js"></script>

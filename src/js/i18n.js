@@ -53,6 +53,9 @@ window.I18N = {
     becameStage: '{name} 長成「{stage}」',
     kindnessPlus: '善的時數 +{min} 分鐘',
     kindnessTotal: '累積 {total} 分鐘',
+    timeLabel: '善的時數', coinLabel: '善的銅板', coinUnit: '枚', minUnit: '分鐘',
+    pour: '倒進社區', bambooFull: '竹筒滿了！倒進社區 →', poured: '竹筒倒進社區，那一區開花了',
+    stageNames: { seed: '種子', sprouting: '發芽', seedling: '小苗', flowering: '開花', youngTree: '小樹', bigTree: '大樹' },
     tapClue: '（點背景上發亮的點）'
   },
   en: {
@@ -101,6 +104,9 @@ window.I18N = {
     becameStage: '{name} is now {stage}',
     kindnessPlus: 'Kindness time +{min} min',
     kindnessTotal: '{total} min total',
+    timeLabel: 'Kindness time', coinLabel: 'Good coins', coinUnit: '', minUnit: 'min',
+    pour: 'Pour into the community', bambooFull: 'Bamboo is full! Pour it in →', poured: 'Poured in — the area bloomed',
+    stageNames: { seed: 'Seed', sprouting: 'Sprout', seedling: 'Seedling', flowering: 'In bloom', youngTree: 'Young tree', bigTree: 'Great tree' },
     tapClue: '(tap the glowing dots)'
   },
   es: {
@@ -149,6 +155,9 @@ window.I18N = {
     becameStage: '{name} ahora es {stage}',
     kindnessPlus: 'Tiempo de bondad +{min} min',
     kindnessTotal: '{total} min en total',
+    timeLabel: 'Tiempo de bondad', coinLabel: 'Monedas del bien', coinUnit: '', minUnit: 'min',
+    pour: 'Verter en la comunidad', bambooFull: '¡El bambú está lleno! Viértelo →', poured: 'Vertido — el área floreció',
+    stageNames: { seed: 'Semilla', sprouting: 'Brote', seedling: 'Plántula', flowering: 'En flor', youngTree: 'Arbolito', bigTree: 'Gran árbol' },
     tapClue: '(toca los puntos brillantes)'
   }
 };
