@@ -416,3 +416,61 @@ body.screen-level #milestones{display:none;}
   .item .em{font-size:20px;}
   .plabel{width:64px;font-size:12px;}
 }
+
+/* ===================================================================
+   手機修復與優化：換名字選單、安全區、直式 RWD、面板間距
+   =================================================================== */
+
+/* 門邊「換一個名字」連結 */
+.switch-link{margin-top:12px;background:rgba(255,255,255,.18);color:#fff;font-weight:700;
+  font-size:clamp(12px,2.6vw,14px);padding:8px 16px;border-radius:999px;
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+
+/* hub 角落齒輪 + 小選單（換名字/重聽/重新開始） */
+#hubGear{position:fixed;z-index:81;top:calc(54px + env(safe-area-inset-top));left:calc(12px + env(safe-area-inset-left));
+  width:38px;height:38px;border-radius:50%;background:rgba(18,24,44,.55);color:#fff;font-size:18px;
+  border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+#hubMenu{position:fixed;z-index:82;top:calc(98px + env(safe-area-inset-top));left:calc(12px + env(safe-area-inset-left));
+  display:flex;flex-direction:column;gap:6px;background:rgba(14,18,38,.94);border:1px solid rgba(255,255,255,.16);
+  border-radius:12px;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,.45);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
+#hubMenu button{background:rgba(255,255,255,.1);color:#fff;font-weight:700;font-size:13px;
+  padding:10px 13px;border-radius:9px;text-align:left;white-space:nowrap;}
+#hubMenu #miRestart{color:#ffb39e;}
+
+/* 安全區（瀏海/圓角）— 固定四角浮層內縮 */
+#hudTime{top:calc(12px + env(safe-area-inset-top));left:calc(58px + env(safe-area-inset-left));}
+#hudCoins{top:calc(54px + env(safe-area-inset-top));right:calc(12px + env(safe-area-inset-right));}
+.lang{top:calc(12px + env(safe-area-inset-top));right:calc(12px + env(safe-area-inset-right));}
+#mute{top:calc(12px + env(safe-area-inset-top));left:calc(12px + env(safe-area-inset-left));}
+#bamboo{left:calc(12px + env(safe-area-inset-left));bottom:calc(86px + env(safe-area-inset-bottom));}
+#sproutRing{right:calc(10px + env(safe-area-inset-right));bottom:calc(64px + env(safe-area-inset-bottom));}
+
+/* 里程碑挪到上方置中，讓左下竹筒、右下金圈各自有空間（直式不打架） */
+#milestones{left:50%;transform:translateX(-50%);top:calc(46px + env(safe-area-inset-top));bottom:auto;
+  max-width:min(82vw,440px);align-items:stretch;}
+.ms-name{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+
+/* emoji 拉開間距 + clamp 放大 */
+#bambooIco{font-size:clamp(1.3rem,2.2vw,2rem);}
+.ghud{gap:7px;font-size:clamp(12px,2.6vw,14px);}
+.ghud b{font-size:clamp(15px,3.4vw,19px);}
+
+/* ---------- 直式（portrait）優先 ---------- */
+@media (max-aspect-ratio:1/1){
+  #milestones{top:auto;bottom:calc(150px + env(safe-area-inset-bottom));max-width:min(92vw,460px);}
+  #bamboo{bottom:calc(70px + env(safe-area-inset-bottom));}
+  #sproutRing{bottom:calc(56px + env(safe-area-inset-bottom));width:76px;}
+  #hudTime,#hudCoins{font-size:12px;}
+  /* 關卡：金圈/竹筒貼邊中段，底部讓給面板 */
+  body.screen-level #sproutRing{top:38%;width:64px;}
+  body.screen-level #bamboo{top:36%;}
+}
+/* 很窄或很矮：再縮一點，避免互相重疊 */
+@media (max-width:380px){
+  #sproutRing{width:66px;}
+  #sproutStageName{font-size:10px;max-width:84px;}
+  #bambooTube{width:26px;height:54px;}
+}
+
+/* 收合把手加大，iOS 直式也好按 */
+#panelTab{width:74px;height:30px;top:-30px;font-size:18px;}

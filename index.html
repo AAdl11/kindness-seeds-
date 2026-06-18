@@ -2,7 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>善的種子 · 獵人角 · Seeds of Kindness</title>
 <meta name="description" content="善的種子 — 獵人角邁向第二十年的陪伴。第一關：關懷之夜 / Care at Dusk." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -48,6 +48,7 @@
     <div class="door-welcome hidden" id="opWelcome"></div>
     <button class="enter" id="beginBtn"><span class="leaf">🌱</span><span id="beginTxt">推門進去</span><span class="arrow">→</span></button>
     <p class="door-note" id="opHint"></p>
+    <button class="switch-link hidden" id="switchName"></button>
   </div>
 </section>
 
@@ -69,6 +70,12 @@
     <div id="hubSub"></div>
   </div>
   <div id="milestones"></div>
+  <button id="hubGear" aria-label="menu">⚙️</button>
+  <div id="hubMenu" class="hidden">
+    <button id="miSwitch"></button>
+    <button id="miReplay"></button>
+    <button id="miRestart"></button>
+  </div>
 </section>
 
 <!-- ============ 關卡 · 關懷之夜 ============ -->

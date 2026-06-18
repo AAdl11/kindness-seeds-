@@ -8,29 +8,68 @@
 (function () {
   'use strict';
 
-  /* ---------- 持久化（localStorage，含記憶體 fallback） ---------- */
+  /* ---------- 持久化：以「玩家名字」為鑰匙；同名接續、絕不清空 ---------- */
   var MEM = {};
-  var KEY = 'kindness-seeds-save';
-  function loadSave() {
-    try { var raw = localStorage.getItem(KEY); if (raw) return JSON.parse(raw); }
-    catch (e) { if (MEM[KEY]) return JSON.parse(MEM[KEY]); }
-    return null;
-  }
-  function persist() {
-    var raw = JSON.stringify(SAVE);
-    try { localStorage.setItem(KEY, raw); } catch (e) { MEM[KEY] = raw; }
-  }
-  var SAVE = loadSave() || {
-    sprout: { name: '', growth: 0 },
-    warmth: 0, bamboo: 0, homeFu: 0, kindnessMin: 0, lit: {}, lastHomes: 0
-  };
-  // 舊存檔補欄位（永不歸零）
-  if (SAVE.kindnessMin == null) SAVE.kindnessMin = 0;
-  if (SAVE.coins == null) SAVE.coins = 0;          // 善的銅板（竹筒裡可倒入社區）
-  if (SAVE.pours == null) SAVE.pours = 0;          // 倒竹筒次數（→水量表）
-  if (SAVE.milestones == null) SAVE.milestones = {}; // 里程碑進度
-  if (SAVE.bloomPour == null) SAVE.bloomPour = {};   // 倒竹筒造成的開花區
+  var STORE_KEY = 'kindness-seeds-store';   // { currentPlayer, saves:{ name:SAVE } }
+  var OLD_KEY = 'kindness-seeds-save';       // 舊版單一存檔（要遷移過來）
   var C = window.CONFIG;
+
+  function newSave(name) {
+    return {
+      sprout: { name: name || '', growth: 0 },
+      warmth: 0, bamboo: 0, homeFu: 0, kindnessMin: 0, coins: 0, pours: 0,
+      milestones: {}, bloomPour: {}, lit: {}, lastHomes: 0
+    };
+  }
+  function normalize(s) {            // 補欄位，老玩家不掉進度
+    var d = newSave(s && s.sprout && s.sprout.name || '');
+    s = s || d;
+    s.sprout = s.sprout || d.sprout;
+    if (s.sprout.growth == null) s.sprout.growth = 0;
+    ['warmth', 'bamboo', 'homeFu', 'kindnessMin', 'coins', 'pours', 'lastHomes'].forEach(function (k) { if (s[k] == null) s[k] = 0; });
+    ['milestones', 'bloomPour', 'lit'].forEach(function (k) { if (s[k] == null) s[k] = {}; });
+    return s;
+  }
+  function rawGet(k) { try { var r = localStorage.getItem(k); if (r) return r; } catch (e) {} return MEM[k] || null; }
+  function rawSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { MEM[k] = v; } }
+
+  function migrate() {
+    var raw = rawGet(STORE_KEY);
+    if (raw) { try { return JSON.parse(raw); } catch (e) {} }
+    var store = { currentPlayer: null, saves: {} };
+    var oldRaw = rawGet(OLD_KEY);
+    if (oldRaw) {
+      try {
+        var old = normalize(JSON.parse(oldRaw));
+        var nm = old.sprout.name || '小芽';
+        old.sprout.name = nm;
+        store.saves[nm] = old; store.currentPlayer = nm;   // 舊存檔遷到目前名字底下
+      } catch (e) {}
+    }
+    rawSet(STORE_KEY, JSON.stringify(store));
+    return store;
+  }
+
+  var STORE = migrate();
+  var SAVE = (STORE.currentPlayer && STORE.saves[STORE.currentPlayer])
+    ? normalize(STORE.saves[STORE.currentPlayer]) : newSave('');
+
+  function persist() {
+    if (SAVE.sprout.name) {                 // 有名字才寫進該名字的世界
+      STORE.saves[SAVE.sprout.name] = SAVE;
+      STORE.currentPlayer = SAVE.sprout.name;
+    }
+    rawSet(STORE_KEY, JSON.stringify(STORE));
+  }
+  function hasSave(name) { return !!(name && STORE.saves[name]); }
+  function loadPlayer(name) {               // 取名：同名接續、新名字新世界
+    name = (name || '').trim() || '小芽';
+    SAVE = hasSave(name) ? normalize(STORE.saves[name]) : newSave(name);
+    STORE.currentPlayer = name; persist();
+  }
+  function restartName(name) {              // 只清這個名字的世界（需二次確認）
+    SAVE = newSave(name); STORE.currentPlayer = name; persist();
+  }
 
   /* ---------- 小芽 = 看得見地長大的盆栽（種子→發芽→小苗→開花→小樹→大樹） ---------- */
   function sproutStage(g) {
@@ -38,36 +77,51 @@
     for (; i >= 0; i--) if (g >= th[i]) return i;
     return 0;
   }
-  /* 依「累積照顧的家數」growth 決定枝葉與花瓣多寡；px = 顯示大小 */
+  /* 依「累積照顧的家數」growth 決定枝葉與花瓣多寡；px = 顯示大小。
+     用 SVG 漸層/柔光/陰影做得更精緻（不新增美術素材）。 */
+  var _plantUID = 0;
   function plantSVG(growth, px) {
     growth = Math.max(0, growth | 0);
     var leaves = growth <= 0 ? 0 : Math.min(2 + growth, 14);
     var flowers = growth < 5 ? 0 : Math.min(Math.floor((growth - 3) / 2), 8);
-    var stemTop = growth <= 0 ? 78 : Math.max(16, 70 - Math.min(growth, 14) * 3.6); // y 越小越高
-    var W = 100, H = 112, soilY = 92, baseY = soilY - 3, s = '';
+    var stemTop = growth <= 0 ? 78 : Math.max(16, 70 - Math.min(growth, 14) * 3.6);
+    var W = 100, H = 112, soilY = 92, baseY = soilY - 3, u = 'p' + (++_plantUID), s = '';
+    // 漸層/柔光定義
+    s += '<defs>' +
+      '<radialGradient id="' + u + 'glow" cx="50%" cy="42%" r="60%"><stop offset="0%" stop-color="#fff7d6" stop-opacity=".55"/><stop offset="100%" stop-color="#fff7d6" stop-opacity="0"/></radialGradient>' +
+      '<linearGradient id="' + u + 'pot" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e08a52"/><stop offset="100%" stop-color="#a85a30"/></linearGradient>' +
+      '<linearGradient id="' + u + 'leaf" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#7fd07a"/><stop offset="100%" stop-color="#3f9740"/></linearGradient>' +
+      '<radialGradient id="' + u + 'pet" cx="40%" cy="35%" r="70%"><stop offset="0%" stop-color="#ffd0e4"/><stop offset="100%" stop-color="#ff8fbb"/></radialGradient>' +
+      '</defs>';
+    // 柔光 + 地面陰影
+    s += '<ellipse cx="50" cy="' + (H - 2) + '" rx="26" ry="4" fill="rgba(0,0,0,.18)"/>';
+    s += '<rect x="0" y="0" width="100" height="112" fill="url(#' + u + 'glow)"/>';
     // 盆
-    s += '<path d="M30 ' + soilY + ' L70 ' + soilY + ' L64 109 L36 109 Z" fill="#c8794a"/>';
-    s += '<rect x="26" y="' + (soilY - 7) + '" width="48" height="9" rx="3" fill="#b5673c"/>';
-    s += '<ellipse cx="50" cy="' + (soilY - 2) + '" rx="20" ry="4" fill="#6b4a2f"/>';
+    s += '<path d="M30 ' + soilY + ' L70 ' + soilY + ' L63 109 L37 109 Z" fill="url(#' + u + 'pot)"/>';
+    s += '<rect x="26" y="' + (soilY - 7) + '" width="48" height="9" rx="3.5" fill="#b5673c"/>';
+    s += '<rect x="26" y="' + (soilY - 7) + '" width="48" height="3" rx="1.5" fill="rgba(255,255,255,.25)"/>';
+    s += '<ellipse cx="50" cy="' + (soilY - 2) + '" rx="20" ry="4" fill="#5e4128"/>';
     if (growth <= 0) {
-      s += '<path d="M50 ' + (soilY - 2) + ' q-7 -9 0 -16 q7 7 0 16" fill="#6fcf63"/>'; // 種子冒的小芽
+      s += '<path d="M50 ' + (soilY - 2) + ' q-7 -9 0 -16 q7 7 0 16" fill="url(#' + u + 'leaf)"/>';
     } else {
-      s += '<path d="M50 ' + baseY + ' C 47 ' + (baseY - 18) + ', 53 ' + (stemTop + 18) + ', 50 ' + stemTop + '" stroke="#4f9c3f" stroke-width="3.4" fill="none" stroke-linecap="round"/>';
+      s += '<path d="M50 ' + baseY + ' C 47 ' + (baseY - 18) + ', 53 ' + (stemTop + 18) + ', 50 ' + stemTop + '" stroke="#4a9a3d" stroke-width="3.4" fill="none" stroke-linecap="round"/>';
       for (var i = 0; i < leaves; i++) {
         var frac = (i + 1) / (leaves + 1);
         var y = baseY - frac * (baseY - stemTop);
         var side = (i % 2 === 0) ? -1 : 1;
         var rot = side * 38 - side * (frac * 8);
         var ll = 7.5 + (1 - frac) * 4.5;
-        s += '<g transform="translate(50,' + y.toFixed(1) + ') rotate(' + rot + ')"><ellipse cx="' + (side * ll * 0.6).toFixed(1) + '" cy="0" rx="' + ll.toFixed(1) + '" ry="' + (ll * 0.5).toFixed(1) + '" fill="#5bbf57"/></g>';
+        s += '<g transform="translate(50,' + y.toFixed(1) + ') rotate(' + rot + ')">' +
+          '<ellipse cx="' + (side * ll * 0.6).toFixed(1) + '" cy="0" rx="' + ll.toFixed(1) + '" ry="' + (ll * 0.5).toFixed(1) + '" fill="url(#' + u + 'leaf)"/>' +
+          '<path d="M0 0 L' + (side * ll * 1.1).toFixed(1) + ' 0" stroke="rgba(255,255,255,.35)" stroke-width="0.6"/></g>';
       }
       for (var f = 0; f < flowers; f++) {
         var off = (f - (flowers - 1) / 2) * 9;
         var fx = 50 + off, fy = stemTop + 1 + Math.abs(off) * 0.22, pc = '';
         for (var p = 0; p < 5; p++) {
-          pc += '<ellipse cx="3.6" cy="0" rx="3.4" ry="2.2" fill="#ff9ec4" transform="rotate(' + (p * 72) + ')"/>';
+          pc += '<ellipse cx="3.7" cy="0" rx="3.5" ry="2.3" fill="url(#' + u + 'pet)" transform="rotate(' + (p * 72) + ')"/>';
         }
-        s += '<g transform="translate(' + fx.toFixed(1) + ',' + fy.toFixed(1) + ')">' + pc + '<circle r="2.1" fill="#ffd54a"/></g>';
+        s += '<g transform="translate(' + fx.toFixed(1) + ',' + fy.toFixed(1) + ')">' + pc + '<circle r="2.2" fill="#ffd54a"/><circle r="2.2" fill="none" stroke="rgba(255,255,255,.5)" stroke-width=".5"/></g>';
       }
     }
     return '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + px + '" height="' + (px * H / W).toFixed(1) + '" xmlns="http://www.w3.org/2000/svg" style="display:block">' + s + '</svg>';
@@ -135,6 +189,7 @@
   /* ===================================================================
      開場
      =================================================================== */
+  var opSwitching = false;             // 在門邊「換一個名字」時 = true
   function renderOpening() {
     document.getElementById('opKicker').textContent = T('title');
     document.getElementById('opInvite').innerHTML = T('doorInvite');
@@ -142,17 +197,23 @@
     var nameBlock = document.getElementById('opName');
     var welcome = document.getElementById('opWelcome');
     var hint = document.getElementById('opHint');
-    if (SAVE.sprout.name) {                 // 回訪：歡迎回來，小芽又長高了
+    var link = document.getElementById('switchName');
+    var returning = SAVE.sprout.name && !opSwitching;
+    if (returning) {                       // 回訪：歡迎回來，<名字> · 點一下繼續
       nameBlock.classList.add('hidden');
       welcome.classList.remove('hidden');
       welcome.textContent = T('welcomeBack').replace('{name}', SAVE.sprout.name);
       hint.textContent = T('doorNote');
-    } else {                                // 第一次：在門邊幫小芽取名
+      link.classList.remove('hidden'); link.textContent = T('switchName');
+    } else {                               // 取名（第一次或換名字）
       welcome.classList.add('hidden');
       nameBlock.classList.remove('hidden');
       document.getElementById('opNameLabel').textContent = T('nameSprout');
-      document.getElementById('sproutName').placeholder = T('namePlaceholder');
+      var inp = document.getElementById('sproutName');
+      inp.placeholder = T('namePlaceholder');
+      if (opSwitching) inp.value = '';
       hint.textContent = T('nameHint');
+      link.classList.add('hidden');
     }
   }
 
@@ -167,6 +228,9 @@
   function renderHub() {
     document.getElementById('hubTitle').textContent = T('hubTitle');
     document.getElementById('hubSub').textContent = T('subtitle');
+    document.getElementById('miSwitch').textContent = T('switchName');
+    document.getElementById('miReplay').textContent = T('replayMusic');
+    document.getElementById('miRestart').textContent = T('restartWorld');
 
     // 節點
     var pinLayer = document.getElementById('pinLayer'); pinLayer.innerHTML = '';
@@ -178,7 +242,7 @@
       if (a.state === 'play') {
         p.innerHTML = '<span class="dot"></span>' +
           '<span class="pinlabel"><b>' + L(a.nm) + '</b><i>' + stars(a.stars) + '</i></span>';
-        p.addEventListener('click', function () { startLevel(); });
+        p.addEventListener('pointerup', function () { startLevel(); });
       } else {
         p.innerHTML = '<span class="dot"></span>';
         p.title = L(a.nm) + ' · ' + T('soon');
@@ -214,7 +278,7 @@
       var row = document.createElement('div'); row.className = 'ms' + (canPour ? ' canpour' : '');
       row.innerHTML = '<div class="ms-name">' + L(ms.name) + ' <i>' + prog + '/' + ms.target + '</i></div>' +
         '<div class="ms-bar"><span style="width:' + Math.min(100, prog / ms.target * 100).toFixed(0) + '%"></span></div>';
-      if (canPour) row.addEventListener('click', function () { pourInto(ms); });
+      if (canPour) row.addEventListener('pointerup', function () { pourInto(ms); });
       box.appendChild(row);
     });
   }
@@ -750,6 +814,22 @@
     }
   };
 
+  /* 推門進去 / 點一下繼續：解析名字 → 解鎖音樂 → 進 hub（音訊不可中斷流程） */
+  function enterFromDoor() {
+    var naming = !SAVE.sprout.name || opSwitching;
+    if (naming) {
+      var v = (document.getElementById('sproutName').value || '').trim();
+      loadPlayer(v || T('namePlaceholder'));      // 同名接續、新名字新世界
+      opSwitching = false;
+    } else {
+      STORE.currentPlayer = SAVE.sprout.name; persist();   // 繼續現有世界
+    }
+    if (window.Opening) Opening.stop();
+    Sound.unlock();                                // 第一次點擊解鎖
+    Sound.playScene('hub');
+    show('hub'); renderHub();
+  }
+
   /* ===================================================================
      啟動 / 事件綁定
      =================================================================== */
@@ -769,14 +849,34 @@
       var ms = C.milestones.filter(function (m) { return (SAVE.milestones[m.id] || 0) < m.target; })[0] || C.milestones[0];
       pourInto(ms);
     });
-    document.getElementById('beginBtn').addEventListener('click', function () {
-      if (!SAVE.sprout.name) {                       // 只有第一次才取名；回訪沿用
-        var v = document.getElementById('sproutName').value.trim();
-        SAVE.sprout.name = v || T('namePlaceholder');
-      }
-      persist();
-      if (window.Opening) Opening.stop();            // 推門後停掉開場動畫
-      Sound.playScene('hub'); show('hub'); renderHub();  // 換 hub 音樂
+    document.getElementById('beginBtn').addEventListener('click', enterFromDoor);
+    document.getElementById('sproutName').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') enterFromDoor();
+    });
+    // 門邊「換一個名字」
+    document.getElementById('switchName').addEventListener('click', function () {
+      opSwitching = true; renderOpening();
+      var inp = document.getElementById('sproutName'); if (inp) inp.focus();
+    });
+    // hub 角落齒輪 → 小選單（換名字 / 重新開始這名字 / 重聽音樂）
+    document.getElementById('hubGear').addEventListener('click', function (e) {
+      e.stopPropagation();
+      document.getElementById('hubMenu').classList.toggle('hidden');
+    });
+    document.getElementById('miSwitch').addEventListener('click', function () {
+      document.getElementById('hubMenu').classList.add('hidden');
+      opSwitching = true; Sound.playScene('door');
+      show('opening'); if (window.Opening) Opening.start(); renderOpening();
+      var inp = document.getElementById('sproutName'); if (inp) { inp.value = ''; inp.focus(); }
+    });
+    document.getElementById('miReplay').addEventListener('click', function () {
+      document.getElementById('hubMenu').classList.add('hidden'); Sound.replay('hub');
+    });
+    document.getElementById('miRestart').addEventListener('click', function () {
+      var nm = SAVE.sprout.name || '';
+      if (!confirm(T('restartConfirm').replace('{name}', nm))) return;
+      document.getElementById('hubMenu').classList.add('hidden');
+      restartName(nm); renderHub(); flash('🌱 ' + T('restarted'));
     });
     document.getElementById('sendBtn').addEventListener('click', sendPackage);
     document.getElementById('againBtn').addEventListener('click', startLevel);
