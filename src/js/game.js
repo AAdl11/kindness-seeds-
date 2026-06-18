@@ -70,42 +70,42 @@
     return c;
   }
 
-  /* ---------- HUB 節點（三福；只有「關懷之夜」可玩，其餘即將） ---------- */
-  var NODES = {
-    home: [
-      { id: 'rv_park_dusk', state: 'play', stars: 2,
-        nm: { zh: '關懷之夜', en: 'Care at Dusk', es: 'Cuidado al Atardecer' },
-        ds: { zh: 'RV Park 關懷 · 入門', en: 'RV Park outreach · intro', es: 'RV Park · inicio' } },
-      { id: 'foodshare', state: 'soon', stars: 1,
-        nm: { zh: '食物發放', en: 'Food share', es: 'Reparto de alimentos' },
-        ds: { zh: '2006 一把生米', en: '2006, a handful of rice', es: '2006, un puñado de arroz' } },
-      { id: 'blankets', state: 'soon', stars: 1,
-        nm: { zh: '冬季毛毯', en: 'Winter blankets', es: 'Mantas de invierno' },
-        ds: { zh: '海風天涼', en: 'Against the cold wind', es: 'Contra el viento frío' } }
-    ],
-    campus: [
-      { id: 'tutoring', state: 'soon', stars: 2,
-        nm: { zh: '課後輔導', en: 'After-school tutoring', es: 'Tutoría' },
-        ds: { zh: '幸福校園 · Bret Harte', en: 'Blessed Campus · Bret Harte', es: 'Campus · Bret Harte' } },
-      { id: 'attendance', state: 'soon', stars: 1,
-        nm: { zh: '全勤獎', en: 'Perfect attendance', es: 'Asistencia perfecta' },
-        ds: { zh: '為堅持鼓掌', en: 'Cheer every child', es: 'Aplausos para cada niño' } },
-      { id: 'cooking', state: 'soon', stars: 2,
-        nm: { zh: '素食烹飪班', en: 'Veggie cooking class', es: 'Clase de cocina vegetariana' },
-        ds: { zh: '照順序抓時機', en: 'Timing & order', es: 'Orden y tiempo' } }
-    ],
-    community: [
-      { id: 'clinic', state: 'soon', stars: 3,
-        nm: { zh: '義診', en: 'Free clinic', es: 'Clínica gratuita' },
-        ds: { zh: '醫師週末義診 @ AG', en: 'Weekend clinic @ AG', es: 'Clínica de fin de semana @ AG' } },
-      { id: 'eco', state: 'soon', stars: 2,
-        nm: { zh: '環保小尖兵', en: 'Eco vanguard', es: 'Vanguardia ecológica' },
-        ds: { zh: '街角整理回乾淨', en: 'A corner made bright', es: 'Una esquina iluminada' } },
-      { id: 'hotmeal', state: 'soon', stars: 2,
-        nm: { zh: '遊民熱食', en: 'Hot meals', es: 'Comidas calientes' },
-        ds: { zh: '社區活動中心', en: 'Community center', es: 'Centro comunitario' } }
-    ]
-  };
+  /* ---------- 活動節點（資料驅動：散落在白天地圖上的發光圖釘） ----------
+     每個節點帶 fu（落在地圖哪一區自然呈現三福）＋ pos{x,y}（地圖比例座標）。
+     之後加關卡只要在這裡加一個物件、給座標即可，支援超過 9 關。 */
+  var ACTIVITIES = [
+    // 幸福家園（住宅區左側＋食物菜圃）
+    { id: 'rv_park_dusk', fu: 'home', state: 'play', stars: 2, pos: { x: 0.12, y: 0.64 },
+      nm: { zh: '關懷之夜', en: 'Care at Dusk', es: 'Cuidado al Atardecer' },
+      ds: { zh: 'RV Park 關懷 · 入門', en: 'RV Park outreach · intro', es: 'RV Park · inicio' } },
+    { id: 'foodshare', fu: 'home', state: 'soon', stars: 1, pos: { x: 0.40, y: 0.67 },
+      nm: { zh: '食物發放', en: 'Food share', es: 'Reparto de alimentos' },
+      ds: { zh: '2006 一把生米', en: '2006, a handful of rice', es: '2006, un puñado de arroz' } },
+    { id: 'blankets', fu: 'home', state: 'soon', stars: 1, pos: { x: 0.09, y: 0.42 },
+      nm: { zh: '冬季毛毯', en: 'Winter blankets', es: 'Mantas de invierno' },
+      ds: { zh: '海風天涼', en: 'Against the cold wind', es: 'Contra el viento frío' } },
+    // 幸福校園（中央校舍）
+    { id: 'tutoring', fu: 'campus', state: 'soon', stars: 2, pos: { x: 0.49, y: 0.39 },
+      nm: { zh: '課後輔導', en: 'After-school tutoring', es: 'Tutoría' },
+      ds: { zh: '幸福校園 · Bret Harte', en: 'Blessed Campus · Bret Harte', es: 'Campus · Bret Harte' } },
+    { id: 'attendance', fu: 'campus', state: 'soon', stars: 1, pos: { x: 0.59, y: 0.45 },
+      nm: { zh: '全勤獎', en: 'Perfect attendance', es: 'Asistencia perfecta' },
+      ds: { zh: '為堅持鼓掌', en: 'Cheer every child', es: 'Aplausos para cada niño' } },
+    { id: 'cooking', fu: 'campus', state: 'soon', stars: 2, pos: { x: 0.40, y: 0.46 },
+      nm: { zh: '素食烹飪班', en: 'Veggie cooking class', es: 'Clase de cocina vegetariana' },
+      ds: { zh: '照順序抓時機', en: 'Timing & order', es: 'Orden y tiempo' } },
+    // 幸福社區（右側／散布）
+    { id: 'clinic', fu: 'community', state: 'soon', stars: 3, pos: { x: 0.67, y: 0.54 },
+      nm: { zh: '義診', en: 'Free clinic', es: 'Clínica gratuita' },
+      ds: { zh: '醫師週末義診 @ AG', en: 'Weekend clinic @ AG', es: 'Clínica de fin de semana @ AG' } },
+    { id: 'eco', fu: 'community', state: 'soon', stars: 2, pos: { x: 0.27, y: 0.33 },
+      nm: { zh: '環保小尖兵', en: 'Eco vanguard', es: 'Vanguardia ecológica' },
+      ds: { zh: '街角整理回乾淨', en: 'A corner made bright', es: 'Una esquina iluminada' } },
+    { id: 'hotmeal', fu: 'community', state: 'soon', stars: 2, pos: { x: 0.73, y: 0.37 },
+      nm: { zh: '遊民熱食', en: 'Hot meals', es: 'Comidas calientes' },
+      ds: { zh: '社區活動中心', en: 'Community center', es: 'Centro comunitario' } }
+  ];
+  var TREE_POS = { x: 0.55, y: 0.82 };   // 中央總成長樹（base 落點，往上長）
 
   /* ---------- 螢幕切換 ---------- */
   function show(id) {
@@ -141,8 +141,13 @@
   }
 
   /* ===================================================================
-     HUB / 三福
+     HUB / 白天獵人角地圖（節點散落在地圖上；完成後那一區開花變美）
      =================================================================== */
+  var hubRect = { ox: 0, oy: 0, rw: 1, rh: 1, s: 1 };
+  function chip(txt) { var c = document.createElement('div'); c.className = 'chip'; c.textContent = txt; return c; }
+  function stars(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
+  function completedCount() { return ACTIVITIES.filter(function (a) { return SAVE.lit[a.id]; }).length; }
+
   function renderHub() {
     document.getElementById('hubTitle').textContent = T('hubTitle');
     document.getElementById('hubSub').textContent = T('subtitle');
@@ -151,28 +156,76 @@
     hud.appendChild(chip('🎍 ' + T('bambooLabel') + ' ' + SAVE.bamboo));
     hud.appendChild(chip('💛 ' + T('warmthLabel') + ' ' + SAVE.warmth));
 
-    var zonesEl = document.getElementById('fuZones'); zonesEl.innerHTML = '';
-    [['home', T('fuHome')], ['campus', T('fuCampus')], ['community', T('fuCommunity')]].forEach(function (pair) {
-      var fu = document.createElement('div'); fu.className = 'fu';
-      var h = document.createElement('h3'); h.textContent = pair[1]; fu.appendChild(h);
-      var acts = document.createElement('div'); acts.className = 'acts';
-      NODES[pair[0]].forEach(function (n) { acts.appendChild(nodeEl(n)); });
-      fu.appendChild(acts); zonesEl.appendChild(fu);
+    // 節點
+    var pinLayer = document.getElementById('pinLayer'); pinLayer.innerHTML = '';
+    ACTIVITIES.forEach(function (a) {
+      var done = !!SAVE.lit[a.id];
+      var p = document.createElement('div');
+      p.className = 'pinnode ' + (a.state === 'play' ? 'play' : 'soon') + (done ? ' done' : '');
+      p.dataset.id = a.id;
+      if (a.state === 'play') {
+        p.innerHTML = '<span class="dot"></span>' +
+          '<span class="pinlabel"><b>' + L(a.nm) + '</b><i>' + stars(a.stars) + '</i></span>';
+        p.addEventListener('click', function () { startLevel(); });
+      } else {
+        p.innerHTML = '<span class="dot"></span>';
+        p.title = L(a.nm) + ' · ' + T('soon');
+      }
+      pinLayer.appendChild(p);
     });
+
+    // 完成的關 → 那一區開花變美（bloom 補丁）
+    var bloom = document.getElementById('bloomLayer'); bloom.innerHTML = '';
+    ACTIVITIES.forEach(function (a) {
+      if (!SAVE.lit[a.id]) return;
+      var b = document.createElement('div'); b.className = 'bloom'; b.dataset.id = a.id;
+      bloom.appendChild(b);
+    });
+
+    // 全域榮景：完成越多，地圖越亮、花越多、出現光束/彩虹
+    var ratio = completedCount() / ACTIVITIES.length;
+    var pl = document.getElementById('prosperityLayer');
+    pl.style.setProperty('--prosper', ratio.toFixed(3));
+    pl.classList.toggle('beams', ratio >= 0.34);
+    pl.classList.toggle('rainbow', ratio >= 0.66);
+
+    hubLayout();
   }
-  function chip(txt) { var c = document.createElement('div'); c.className = 'chip'; c.textContent = txt; return c; }
-  function stars(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
-  function nodeEl(n) {
-    var d = document.createElement('div');
-    d.className = 'node ' + (n.state === 'play' ? 'playable' : 'soon');
-    var lit = SAVE.lit[n.id] ? ' ✨' : '';
-    d.innerHTML =
-      '<div class="tag">' + (n.state === 'play' ? T('play') : T('soon')) + '</div>' +
-      '<div class="nm">' + L(n.nm) + lit + '</div>' +
-      '<div class="ds">' + L(n.ds) + '</div>' +
-      '<div class="stars">' + stars(n.stars) + '</div>';
-    if (n.state === 'play') d.addEventListener('click', function () { startLevel(); });
-    return d;
+
+  /* 地圖用 contain，節點精準落在地圖上（直橫式都不跑位） */
+  function hubFit() {
+    var st = document.getElementById('mapStage');
+    var W = st.clientWidth, H = st.clientHeight, s = Math.min(W / IW, H / IH);
+    var rw = IW * s, rh = IH * s;
+    hubRect = { ox: (W - rw) / 2, oy: (H - rh) / 2, rw: rw, rh: rh, s: s };
+  }
+  function hubPx(fx, fy) { return { x: hubRect.ox + fx * hubRect.rw, y: hubRect.oy + fy * hubRect.rh }; }
+
+  function hubLayout() {
+    if (document.getElementById('hub').classList.contains('hidden')) return;
+    hubFit();
+    var img = document.getElementById('hubMap');
+    img.style.left = hubRect.ox + 'px'; img.style.top = hubRect.oy + 'px';
+    img.style.width = hubRect.rw + 'px'; img.style.height = hubRect.rh + 'px';
+    // 節點
+    ACTIVITIES.forEach(function (a) {
+      var el = document.querySelector('#pinLayer .pinnode[data-id="' + a.id + '"]');
+      if (!el) return; var p = hubPx(a.pos.x, a.pos.y);
+      el.style.left = p.x + 'px'; el.style.top = p.y + 'px';
+    });
+    // bloom
+    document.querySelectorAll('#bloomLayer .bloom').forEach(function (b) {
+      var a = ACTIVITIES.filter(function (x) { return x.id === b.dataset.id; })[0]; if (!a) return;
+      var p = hubPx(a.pos.x, a.pos.y); var sz = hubRect.rw * 0.16;
+      b.style.left = p.x + 'px'; b.style.top = p.y + 'px';
+      b.style.width = sz + 'px'; b.style.height = sz + 'px';
+    });
+    // 中央總成長樹（跨關累積：小芽 → 大樹）
+    var tree = document.getElementById('growthTree');
+    var tp = hubPx(TREE_POS.x, TREE_POS.y);
+    var treePx = (90 + Math.min(SAVE.sprout.growth, 24) * 7) * hubRect.s * 1.2;
+    tree.style.left = tp.x + 'px'; tree.style.top = tp.y + 'px';
+    tree.innerHTML = plantSVG(SAVE.sprout.growth, treePx);
   }
 
   /* ===================================================================
@@ -438,17 +491,41 @@
     SAVE.warmth += 1; SAVE.bamboo += 1; SAVE.homeFu += 1;
     SAVE.sprout.growth += 1; SAVE.lit[D.id] = true; persist();
     Sound.grow();
+    growCelebration(lvl.carIndex);                 // 小芽當場長大 + 天使金光
     lvl.served += 1;
     document.getElementById('spotlight').style.opacity = 0;
     document.getElementById('spotRing').style.opacity = 0;
     document.getElementById('clueLayer').innerHTML = '';
     renderLvlHud();
 
-    toast('✨ ' + T('sent'), L(nextWarmLine()), 2600);
+    toast('✨ ' + T('sent'), L(nextWarmLine()), 2400);
 
     lvl.carIndex += 1;
-    if (lvl.served >= CARS) setTimeout(endNight, 1800);
-    else setTimeout(spawnCar, 1800);
+    if (lvl.served >= CARS) setTimeout(endNight, 2200);
+    else setTimeout(spawnCar, 2200);
+  }
+
+  /* ---- 親眼看著小芽長大：天使金光環 + 盆栽當場長一階（第3台綻放收高潮） ---- */
+  function growCelebration(carIdx) {
+    var stage = document.getElementById('stage');
+    var bloom = carIdx >= 2;                        // 第3台（天黑）綻放
+    var cosGrowth = [Math.max(SAVE.sprout.growth, 1), Math.max(SAVE.sprout.growth, 3), Math.max(SAVE.sprout.growth, 8)][Math.min(carIdx, 2)];
+    var size = [96, 124, 176][Math.min(carIdx, 2)];
+    // 金光環
+    var halo = document.createElement('div'); halo.className = 'halo';
+    halo.style.left = '50%'; halo.style.top = '46%';
+    halo.style.setProperty('--hs', (bloom ? 360 : 240) + 'px');
+    stage.appendChild(halo);
+    setTimeout(function () { if (halo.parentNode) halo.parentNode.removeChild(halo); }, 1500);
+    // 盆栽當場長大
+    var cele = document.createElement('div');
+    cele.className = 'growcele' + (bloom ? ' bloom' : '');
+    cele.innerHTML = plantSVG(cosGrowth, size);
+    stage.appendChild(cele);
+    setTimeout(function () { if (cele.parentNode) cele.parentNode.removeChild(cele); }, bloom ? 2150 : 1850);
+    // 金色粒子（綻放時更多）
+    var W = stage.clientWidth, H = stage.clientHeight;
+    burst(W * 0.5, H * 0.46, { n: bloom ? 40 : 22, spread: rect.rw * (bloom ? 0.3 : 0.18), life: 1000, size: bloom ? 11 : 9 });
   }
   function nextWarmLine() {
     var pool = D.warmLines;
@@ -584,13 +661,15 @@
       setTimeout(layout, 380);
     });
 
-    // 版面：場景隨舞台大小重新對位
+    // 版面：場景／地圖隨容器大小重新對位
+    function relayout() { if (lvl) layout(); hubLayout(); }
     if (window.ResizeObserver) {
-      var ro = new ResizeObserver(function () { if (lvl) layout(); });
+      var ro = new ResizeObserver(relayout);
       ro.observe(document.getElementById('stage'));
+      ro.observe(document.getElementById('mapStage'));
     }
-    window.addEventListener('resize', function () { if (lvl) layout(); });
-    window.addEventListener('orientationchange', function () { setTimeout(function () { if (lvl) layout(); }, 250); });
+    window.addEventListener('resize', relayout);
+    window.addEventListener('orientationchange', function () { setTimeout(relayout, 250); });
 
     renderOpening(); show('opening');
     if (window.Opening) Opening.start();             // 啟動善的任意門開場動畫

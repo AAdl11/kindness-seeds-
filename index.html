@@ -35,18 +35,21 @@
   </div>
 </section>
 
-<!-- ============ HUB / 三福 ============ -->
+<!-- ============ HUB / 白天獵人角地圖（節點散落地圖上） ============ -->
 <section id="hub" class="screen hidden">
-  <!-- 推門後＝獵人角社區地圖（白天）。圖未到位時，下方漸層當後備，不會破版。 -->
-  <div class="bg" style="background:url('assets/images/KS_hunters_point_map.png') center/cover no-repeat, linear-gradient(180deg,#bcd6e8 0%,#cfe0d6 45%,#e7d8b6 100%)"></div>
-  <div class="veil"></div>
-  <div class="hub-wrap">
+  <div id="hubTop">
     <div class="hub-head">
-      <h2 id="hubTitle">獵人角 · 三福</h2>
-      <div id="hubSub" style="font-size:13px;opacity:.9"></div>
+      <h2 id="hubTitle">獵人角</h2>
+      <div id="hubSub"></div>
     </div>
     <div class="hud" id="hubHud"></div>
-    <div class="fu-zone" id="fuZones"></div>
+  </div>
+  <div id="mapStage">
+    <div id="hubMap"></div>
+    <div id="prosperityLayer"></div>
+    <div id="bloomLayer"></div>
+    <div id="growthTree"></div>
+    <div id="pinLayer"></div>
   </div>
 </section>
 
