@@ -49,7 +49,10 @@ window.I18N = {
     againNight: '再來一夜',
     toHub: '回三福',
     // misc
-    sproutStages: ['一粒種子', '冒芽了', '小樹苗', '一棵樹'],
+    sproutStages: ['種子', '發芽', '小苗', '開花小樹'],
+    becameStage: '{name} 長成「{stage}」',
+    kindnessPlus: '善的時數 +{min} 分鐘',
+    kindnessTotal: '累積 {total} 分鐘',
     tapClue: '（點背景上發亮的點）'
   },
   en: {
@@ -94,7 +97,10 @@ window.I18N = {
     endWarm: 'No ranking, no score — only windows, one by one, lit from within.',
     againNight: 'One more night',
     toHub: 'Back to the map',
-    sproutStages: ['a seed', 'sprouting', 'a sapling', 'a tree'],
+    sproutStages: ['a seed', 'a sprout', 'a sapling', 'a blooming tree'],
+    becameStage: '{name} is now {stage}',
+    kindnessPlus: 'Kindness time +{min} min',
+    kindnessTotal: '{total} min total',
     tapClue: '(tap the glowing dots)'
   },
   es: {
@@ -139,7 +145,10 @@ window.I18N = {
     endWarm: 'Sin clasificación, sin puntaje — solo ventanas, una a una, encendidas por dentro.',
     againNight: 'Otra noche más',
     toHub: 'Volver al mapa',
-    sproutStages: ['una semilla', 'brotando', 'un arbolito', 'un árbol'],
+    sproutStages: ['una semilla', 'un brote', 'un retoño', 'un árbol en flor'],
+    becameStage: '{name} ahora es {stage}',
+    kindnessPlus: 'Tiempo de bondad +{min} min',
+    kindnessTotal: '{total} min en total',
     tapClue: '(toca los puntos brillantes)'
   }
 };

@@ -152,10 +152,16 @@ window.Sound = (function () {
     clue:   function () { blip(880, 0.14, 'sine', 0.10); blip(1320, 0.12, 'sine', 0.07, 0.04); },
     pick:   function () { blip(620, 0.10, 'triangle', 0.10); },
     unpick: function () { blip(360, 0.10, 'sine', 0.08); },
-    success:function () {
-      blip(523, 0.18, 'sine', 0.11, 0.00); blip(659, 0.18, 'sine', 0.11, 0.10);
-      blip(784, 0.20, 'sine', 0.12, 0.20); blip(1047, 0.42, 'sine', 0.13, 0.32);
-      blip(1568, 0.40, 'triangle', 0.06, 0.36);
+    success:function (level) {
+      level = level || 0;
+      var k = Math.pow(1.1225, level * 2);          // 每台車升一個全音（crescendo）
+      var vb = 0.11 + level * 0.012;
+      blip(523 * k, 0.18, 'sine', vb, 0.00);
+      blip(659 * k, 0.18, 'sine', vb, 0.10);
+      blip(784 * k, 0.20, 'sine', vb + 0.01, 0.20);
+      blip(1047 * k, 0.46, 'sine', vb + 0.02, 0.32);    // climax
+      blip(1568 * k, 0.42, 'triangle', 0.06 + level * 0.01, 0.36);
+      if (level >= 2) { blip(2093, 0.55, 'sine', 0.10, 0.42); blip(1318, 0.55, 'sine', 0.08, 0.42); } // 天黑收高潮
     },
     soft:   function () { blip(420, 0.18, 'sine', 0.08); blip(360, 0.22, 'sine', 0.07, 0.14); },
     grow:   function () { blip(700, 0.12, 'triangle', 0.09); blip(1050, 0.22, 'triangle', 0.10, 0.10); },

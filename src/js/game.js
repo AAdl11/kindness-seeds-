@@ -22,8 +22,9 @@
   }
   var SAVE = loadSave() || {
     sprout: { name: '', growth: 0 },
-    warmth: 0, bamboo: 0, homeFu: 0, lit: {}, lastHomes: 0
+    warmth: 0, bamboo: 0, homeFu: 0, kindnessMin: 0, lit: {}, lastHomes: 0
   };
+  if (SAVE.kindnessMin == null) SAVE.kindnessMin = 0;   // 舊存檔補欄位
 
   /* ---------- 小芽 = 看得見地長大的盆栽（種子→發芽→小苗→小樹/開花） ---------- */
   function sproutStage(g) { return g >= 12 ? 3 : g >= 6 ? 2 : g >= 1 ? 1 : 0; }
@@ -179,9 +180,13 @@
      =================================================================== */
   var D = window.LEVEL1;
   var IW = 1376, IH = 768;            // 背景原始尺寸
-  var CARS = 7;                       // 一夜七台車
-  var COUNTS = [1, 1, 1, 2, 2, 2, 3]; // 越後面需要越多、線索要讀越多條
-  var NIGHT_MS = 420000;              // 黃昏到天黑約 7 分鐘（從容讀線索，七台都顧得完）
+  var CARS = 3;                       // 三台車：天亮 → 黃昏 → 天黑
+  var COUNTS = [2, 2, 3];             // 每台讀 2–3 個需要
+  var STAGE_BASE = [0.04, 0.42, 0.80]; // 三台對應的天色起點（亮/昏/暗）
+  var STAGE_SPAN = [0.40, 0.40, 0.20]; // 一台車內天色再往下壓的幅度（時間壓力）
+  var CAR_CREEP_MS = 44000;           // 一台車內天色爬完這段時間
+  var NIGHT_MS = 150000;              // 強制收場上限（約 90–120 秒玩完，這是保險）
+  var MIN_PER_HOME = 10;              // 善的時數：每照顧一家 +10 分鐘
   var rect = { ox: 0, oy: 0, rw: 1, rh: 1, s: 1 };
   var lvl = null;
 
@@ -276,21 +281,55 @@
     document.getElementById('sendBtn').textContent = T('send');
   }
 
-  /* ---- 開進一台新車 ---- */
+  /* ---- 衝進來特效：大燈閃光 + 塵土 ---- */
+  function chargeIn(fx, fy) {
+    var stage = document.getElementById('stage');
+    var p = px(fx, fy);
+    var hl = document.createElement('div'); hl.className = 'headlight';
+    hl.style.left = p.x + 'px'; hl.style.top = p.y + 'px';
+    hl.style.width = (rect.rw * 0.5) + 'px'; hl.style.height = (rect.rw * 0.5) + 'px';
+    stage.appendChild(hl);
+    setTimeout(function () { if (hl.parentNode) hl.parentNode.removeChild(hl); }, 760);
+    burst(p.x, p.y + rect.rw * 0.045, { n: 10, color: 'rgba(196,160,110,', spread: rect.rw * 0.17, dy: rect.rw * 0.015, life: 720, size: 7 });
+  }
+
+  /* ---- 粒子閃光（點線索/配對成功的爽感回饋） ---- */
+  function burst(x, y, o) {
+    o = o || {}; var stage = document.getElementById('stage');
+    var n = o.n || 12, spread = o.spread || (rect.rw * 0.12), color = o.color || 'rgba(255,210,110,',
+      life = o.life || 700, size = o.size || 8;
+    for (var i = 0; i < n; i++) {
+      var s = document.createElement('div'); s.className = 'spark';
+      var ang = Math.random() * Math.PI * 2, dist = spread * (0.4 + Math.random() * 0.6);
+      var sz = (size * (0.6 + Math.random() * 0.8)).toFixed(1);
+      s.style.left = x + 'px'; s.style.top = y + 'px';
+      s.style.width = sz + 'px'; s.style.height = sz + 'px';
+      s.style.background = 'radial-gradient(circle,#fff 5%,' + color + '.95) 45%,' + color + '0) 80%)';
+      s.style.setProperty('--dx', (Math.cos(ang) * dist).toFixed(1) + 'px');
+      s.style.setProperty('--dy', (Math.sin(ang) * dist - (o.dy || 0)).toFixed(1) + 'px');
+      s.style.animationDuration = life + 'ms';
+      stage.appendChild(s);
+      (function (el) { setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, life + 60); })(s);
+    }
+  }
+
+  /* ---- 一台車「衝進」畫面（大燈、塵土、動感） ---- */
   function spawnCar() {
     var idx = lvl.carIndex;
     var spot = D.spots[idx % D.spots.length];
-    var count = COUNTS[idx] || 1;
+    var count = COUNTS[idx] || 2;
     var keys = Object.keys(D.needs); shuffle(keys);
     var picked = keys.slice(0, count);
-    lvl.car = { needs: picked, spot: spot, subtle: idx >= 4 };
+    lvl.car = { needs: picked, spot: spot, subtle: idx >= 2 };  // 第3台（天黑）線索更隱晦
     lvl.pack = []; lvl.notes = [];
+    lvl.carStartT = performance.now();                          // 這台車的天色計時起點
 
-    // 聚光：從右側「開進來」滑到車位
+    // 聚光：從右側「衝進來」滑到車位（更快、更有動感）
     positionSpot(spot.focus.x, spot.focus.y, true);
     requestAnimationFrame(function () {
       requestAnimationFrame(function () { positionSpot(spot.focus.x, spot.focus.y, false); });
     });
+    chargeIn(spot.focus.x, spot.focus.y);                        // 大燈閃 + 塵土
     Sound.arrive();
 
     // 佈線索：每個需求一個發亮點，車停妥後一顆顆亮起
@@ -322,6 +361,7 @@
     el.classList.remove('enter');
     el.classList.add('read'); el.textContent = '✓';
     Sound.clue();
+    burst(parseFloat(el.style.left), parseFloat(el.style.top), { n: 9, spread: rect.rw * 0.07, life: 600, size: 7 });
     if (lvl.notes.indexOf(needId) === -1) lvl.notes.push(needId);
     renderNotes();
     var need = D.needs[needId];
@@ -388,10 +428,13 @@
       toast('🤍 ' + T('softMiss'), null, 2700);   // 軟失敗：溫柔提示，不扣分、不結束
       return;
     }
-    // 成功：窗亮融入背景、暖意+1、小芽長、竹筒+1、幸福家園推進
-    Sound.success();
+    // 成功：窗亮融入背景、暖意+1、小芽長、竹筒+1、幸福家園推進；一階階堆上去(crescendo)
+    Sound.success(lvl.carIndex);                 // 越後面的車，音越高、climax 越大
     var wg = document.getElementById('wg' + (lvl.carIndex % D.spots.length));
     if (wg) wg.classList.add('lit');
+    // 配對成功的粒子閃光（堆在窗口上，越後面越多）
+    var wp = px(lvl.car.spot.window.x, lvl.car.spot.window.y);
+    burst(wp.x, wp.y, { n: 16 + lvl.carIndex * 8, spread: rect.rw * (0.12 + lvl.carIndex * 0.03), life: 820, size: 9 });
     SAVE.warmth += 1; SAVE.bamboo += 1; SAVE.homeFu += 1;
     SAVE.sprout.growth += 1; SAVE.lit[D.id] = true; persist();
     Sound.grow();
@@ -416,13 +459,17 @@
     return pick;
   }
 
-  /* ---- 天色迴圈：金黃→冷藍夜，車窗漸亮，音樂低通收緊 ---- */
+  /* ---- 天色迴圈：金黃→冷藍夜（明顯且偏快，分三段：天亮/黃昏/天黑） ---- */
   function loop(now) {
     if (!lvl || lvl.ended) return;
     var timeP = (now - lvl.startT) / NIGHT_MS;
-    var carP = lvl.served / CARS;
-    var p = Math.min(1, Math.max(timeP, carP));
+    var idx = Math.min(lvl.carIndex, CARS - 1);
+    // 天色錨在「目前第幾台車」，車內再隨時間往下壓（壓力來自趕在天黑前）
+    var inCar = Math.min(1, (now - (lvl.carStartT || lvl.startT)) / CAR_CREEP_MS);
+    var staged = STAGE_BASE[idx] + STAGE_SPAN[idx] * inCar;
+    var p = Math.min(1, Math.max(timeP, staged));
     lvl.progress = p;
+    var carP = lvl.served / CARS;
 
     document.getElementById('skyWarm').style.opacity = (1 - p).toFixed(3);
     document.getElementById('darkLayer').style.opacity = (p * 0.92).toFixed(3);
@@ -440,10 +487,17 @@
     requestAnimationFrame(loop);
   }
 
+  function stageName(g) {
+    var d = window.I18N[window.LANG] || window.I18N.zh;
+    return (d.sproutStages || [])[sproutStage(g)] || '';
+  }
+
   /* ---- 溫柔收場 ---- */
   function endNight() {
     if (lvl.ended) return;
-    lvl.ended = true; SAVE.lastHomes = lvl.served; persist();
+    lvl.ended = true;
+    var addMin = lvl.served * MIN_PER_HOME;                 // 善的時數
+    SAVE.lastHomes = lvl.served; SAVE.kindnessMin += addMin; persist();
     Sound.playScene('ending');
     document.getElementById('endTitle').textContent = T('endTitle');
     document.getElementById('endLine').textContent = T('endLine');
@@ -451,12 +505,18 @@
     document.getElementById('endHomes').textContent = T('endHomes');
     document.getElementById('endWarm').textContent = T('endWarm');
     // 把這盆植物畫得大、明顯：枝葉＝累積成長，今晚顧得越多畫得越大
-    var bigPx = 120 + lvl.served * 8;          // 0 顆→120，7 顆→176（顧越多畫越大）
+    var bigPx = 130 + lvl.served * 24;                      // 0→130，3→202
     document.getElementById('endPlant').innerHTML = plantSVG(SAVE.sprout.growth, bigPx);
+    var name = SAVE.sprout.name || '';
     document.getElementById('endSprout').innerHTML =
-      '<b>' + (SAVE.sprout.name || '') + '</b> · ' +
+      '<b>' + name + '</b> · ' +
       L({ zh: '又長了一截', en: 'grew a little more', es: 'creció un poco más' }) +
       (lvl.served > 0 ? ' · ' + L({ zh: '今晚 +' + lvl.served, en: '+' + lvl.served + ' tonight', es: '+' + lvl.served + ' esta noche' }) : '');
+    // 獎勵：盆栽階段 + 善的時數（累積）
+    document.getElementById('endReward').innerHTML =
+      '🌱 ' + T('becameStage').replace('{name}', name).replace('{stage}', stageName(SAVE.sprout.growth)) +
+      ' ｜ ' + T('kindnessPlus').replace('{min}', addMin) +
+      ' ｜ ' + T('kindnessTotal').replace('{total}', SAVE.kindnessMin);
     document.getElementById('againBtn').textContent = T('againNight');
     document.getElementById('endHubBtn').textContent = T('toHub');
     show('ending');

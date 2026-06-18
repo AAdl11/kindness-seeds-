@@ -173,11 +173,23 @@ button{font-family:inherit;cursor:pointer;border:none;}
 #spotlight{position:absolute;z-index:6;transform:translate(-50%,-50%);
   border-radius:50%;pointer-events:none;
   box-shadow:0 0 0 9999px rgba(6,8,20,.46);
-  transition:left .85s cubic-bezier(.22,.61,.36,1),top .85s cubic-bezier(.22,.61,.36,1),width .4s,height .4s,opacity .5s;}
+  transition:left .5s cubic-bezier(.3,.8,.3,1),top .5s cubic-bezier(.3,.8,.3,1),width .4s,height .4s,opacity .5s;}
 #spotRing{position:absolute;z-index:7;transform:translate(-50%,-50%);
   border-radius:50%;pointer-events:none;border:2px dashed rgba(255,226,158,.6);
   box-shadow:0 0 26px rgba(255,210,120,.45);
-  transition:left .85s cubic-bezier(.22,.61,.36,1),top .85s cubic-bezier(.22,.61,.36,1),width .4s,height .4s,opacity .5s;}
+  transition:left .5s cubic-bezier(.3,.8,.3,1),top .5s cubic-bezier(.3,.8,.3,1),width .4s,height .4s,opacity .5s;}
+
+/* 衝進來：大燈閃光 */
+.headlight{position:absolute;z-index:6;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle, rgba(255,248,220,.92), rgba(255,236,170,.32) 40%, rgba(255,236,170,0) 70%);
+  animation:hlflash .76s ease-out forwards;}
+@keyframes hlflash{0%{opacity:0;transform:translate(-50%,-50%) scale(.55);}
+  22%{opacity:.95;}100%{opacity:0;transform:translate(-50%,-50%) scale(1.18);}}
+/* 粒子閃光（點線索/配對成功的爽感） */
+.spark{position:absolute;z-index:9;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);
+  animation-name:sparkfly;animation-timing-function:cubic-bezier(.2,.7,.3,1);animation-fill-mode:forwards;}
+@keyframes sparkfly{0%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,0px))) scale(.3);}}
 
 /* 線索發亮點 */
 .clue{position:absolute;z-index:8;width:32px;height:32px;margin:-16px 0 0 -16px;
