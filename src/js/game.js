@@ -673,7 +673,7 @@
     var covered = lvl.car.needs.every(function (n) { return packNeeds.indexOf(n) !== -1; });
 
     if (!covered) {
-      Sound.soft();
+      Sound.soft(); juiceComboBreak();
       toast('🤍 ' + T('softMiss'), null, 2700);   // 軟失敗：溫柔提示，不扣分、不結束
       return;
     }
@@ -696,6 +696,7 @@
     flyTo('sproutRing', wp.x, wp.y, 'flydot', function () { refreshGlobals(); pulseRing(idx); });
     // 一枚銅板「鏘」地掉進竹筒
     flyTo('bamboo', wp.x, wp.y, 'flycoin', function () { Sound.coin(); bambooBump(); });
+    juiceSuccess(wp.x, wp.y, document.getElementById('stage'));   // 震動＋畫面震＋連擊
     lvl.served += 1;
     document.getElementById('spotlight').style.opacity = 0;
     document.getElementById('spotRing').style.opacity = 0;
@@ -972,7 +973,7 @@
     while (t) { if (t.classList && t.classList.contains('l2bin')) return t.dataset.bin; t = t.parentElement; }
     return null;
   }
-  function l2Retry() { Sound.soft(); flash('🤍 ' + L(C.level2.retry)); }
+  function l2Retry() { Sound.soft(); flash('🤍 ' + L(C.level2.retry)); juiceComboBreak(); }
 
   function l2Place(el, it, band, binId) {
     var binEl = document.querySelector('#l2bins .l2bin[data-bin="' + binId + '"]');
@@ -999,16 +1000,17 @@
     if (slice) slice.classList.add('on');
     var spot = document.querySelector('#l2spots .l2spot[data-band="' + band + '"]');
     if (spot) { spot.classList.add('healed'); var sr = spot.getBoundingClientRect(); l2Flower(sr.left + sr.width / 2, sr.top + sr.height / 2); }
-    if (binEl) { binEl.classList.add('lit'); setTimeout(function () { binEl.classList.remove('lit'); }, 700); }
+    if (binEl) { binEl.classList.add('lit', 'bounce'); setTimeout(function () { binEl.classList.remove('lit', 'bounce'); }, 800); }  // 桶子 Q 彈
     // 同關1的回饋：金光飛向金圈米芽（長一階）＋ 銅板進竹筒
     var src = (spot || binEl || document.body).getBoundingClientRect();
     var cx = src.left + src.width / 2, cy = src.top + src.height / 2;
     SAVE.kindnessMin += C.perHome.minutes; SAVE.coins += C.perHome.coins;
     SAVE.bamboo += C.perHome.coins; SAVE.sprout.growth += C.perHome.growth; persist();
     Sound.grow();
-    burst(cx, cy, { n: 16, spread: 76, life: 800, size: 9 });
+    burst(cx, cy, { n: REDUCE ? 10 : 16, spread: 76, life: 800, size: 9 });
     flyTo('sproutRing', cx, cy, 'flydot', function () { refreshGlobals(); pulseRing(0); });
     flyTo('bamboo', cx, cy, 'flycoin', function () { Sound.coin(); bambooBump(); });
+    juiceSuccess(cx, cy, document.getElementById('l2scene'));   // 震動＋畫面震＋連擊
     flash('🌸 ' + L(C.level2.revealLine));
     l2.done += 1;
     document.getElementById('level2').style.setProperty('--heal', (l2.done / l2.total).toFixed(3));
@@ -1056,7 +1058,20 @@
   var REDUCE = false;
   try { REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
   function buzz(ms) { if (REDUCE) return; try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
-  function l3Shake() { if (REDUCE) return; var s = document.getElementById('l3scene'); s.classList.remove('shake'); void s.offsetWidth; s.classList.add('shake'); }
+  function l3Shake() { juiceShake(document.getElementById('l3scene')); }
+  /* ---- 共用「做對手感」(全三關一致；純感官，非分數) ---- */
+  var gCombo = 0, gComboT = null;
+  function juiceShake(el) { if (REDUCE || !el) return; el.classList.remove('juice-shake'); void el.offsetWidth; el.classList.add('juice-shake'); }
+  function juiceComboBreak() { gCombo = 0; }
+  function juiceSuccess(cx, cy, el) {
+    buzz(12); juiceShake(el);
+    gCombo += 1;
+    if (gCombo >= 2) {                       // 連擊心流：火花更多、音層疊上（中斷只歸零、不罰）
+      Sound.success(Math.min(2, gCombo - 1));
+      if (!REDUCE) burst(cx, cy, { n: 8 + gCombo * 2, spread: 60 + gCombo * 10, life: 700, size: 7 });
+    }
+    clearTimeout(gComboT); gComboT = setTimeout(function () { gCombo = 0; }, 1800);
+  }
   function l3Img2(base, cb) { resolveImg(base, cb); }
 
   function startLevel3() {
@@ -1174,7 +1189,7 @@
     while (t) { if (t.classList && t.classList.contains('l3target')) return t.dataset.t; t = t.parentElement; }
     return null;
   }
-  function l3Retry() { Sound.soft(); flash('🤍 ' + L(C.level3.retry)); l3.combo = 0; }
+  function l3Retry() { Sound.soft(); flash('🤍 ' + L(C.level3.retry)); juiceComboBreak(); }
   function l3SendCard(el, tId) {
     var tgEl = document.querySelector('#l3targets .l3target[data-t="' + tId + '"]');
     el.style.pointerEvents = 'none';
@@ -1207,14 +1222,11 @@
     SAVE.bamboo += C.perHome.coins; SAVE.sprout.growth += C.perHome.growth;
     if (letter) advanceLetters();             // 一人一信里程碑 +1（只由第二幕）
     persist();
-    Sound.grow(); buzz(12); l3Shake();
+    Sound.grow();
     burst(cx, cy, { n: REDUCE ? 10 : 16, spread: 78, life: 800, size: 9 });
     flyTo('sproutRing', cx, cy, 'flydot', function () { refreshGlobals(); pulseRing(0); });
     flyTo('bamboo', cx, cy, 'flycoin', function () { Sound.coin(); bambooBump(); });
-    // 連擊心流（純感官）：連續送對→火花更多、音層疊上
-    l3.combo += 1;
-    if (l3.combo >= 2) { Sound.success(Math.min(2, l3.combo - 1)); if (!REDUCE) burst(cx, cy, { n: 8 + l3.combo * 2, spread: 60 + l3.combo * 10, life: 700, size: 7 }); }
-    clearTimeout(l3.comboT); l3.comboT = setTimeout(function () { l3.combo = 0; }, 1800);
+    juiceSuccess(cx, cy, document.getElementById('l3scene'));   // 震動＋畫面震＋連擊
   }
 
   /* ---------- 第二幕：一人一信 → 花蓮（甩/拖把信拋過海面） ---------- */

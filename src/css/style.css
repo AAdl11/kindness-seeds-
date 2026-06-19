@@ -718,3 +718,12 @@ body.screen-level #milestones{display:none;}
 .help-card li{font-size:13.5px;line-height:1.45;color:#e7ecf7;}
 .help-card #helpClose{margin-top:14px;width:100%;padding:11px;border-radius:999px;font-weight:800;font-size:15px;
   background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:#4a3007;}
+
+/* ===================================================================
+   全三關共用「做對手感」：畫面微震 + 桶子 Q 彈（reuse L3 keyframes）
+   =================================================================== */
+.juice-shake{animation:l3shake .3s ease;}
+.l2bin.bounce .l2bin-ico{animation:l3bounce .5s ease;}
+@media (prefers-reduced-motion:reduce){
+  .juice-shake{animation:none!important;}
+}
