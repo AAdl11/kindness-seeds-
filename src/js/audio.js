@@ -143,6 +143,7 @@ window.Sound = (function () {
 
   return {
     initUnlock: initUnlock, unlock: unlock, playScene: playScene, replay: replay,
+    register: function (name, src, vol, filtered) { TRACKS[name] = { src: src, vol: vol || 0.24, filtered: !!filtered }; },
     setMood: setMood, setMuted: setMuted, isMuted: isMuted,
     clue:   function () { blip(880, 0.14, 'sine', 0.10); blip(1320, 0.12, 'sine', 0.07, 0.04); },
     pick:   function () { blip(620, 0.10, 'triangle', 0.10); },

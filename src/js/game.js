@@ -162,7 +162,7 @@
     { id: 'clinic', fu: 'community', state: 'soon', stars: 3, pos: { x: 0.67, y: 0.54 },
       nm: { zh: '義診', en: 'Free clinic', es: 'Clínica gratuita' },
       ds: { zh: '醫師週末義診 @ AG', en: 'Weekend clinic @ AG', es: 'Clínica de fin de semana @ AG' } },
-    { id: 'eco', fu: 'community', state: 'soon', stars: 2, pos: { x: 0.27, y: 0.33 },
+    { id: 'eco', fu: 'community', state: 'play', stars: 1, pos: { x: 0.27, y: 0.33 },
       nm: { zh: '環保小尖兵', en: 'Eco vanguard', es: 'Vanguardia ecológica' },
       ds: { zh: '街角整理回乾淨', en: 'A corner made bright', es: 'Una esquina iluminada' } },
     { id: 'hotmeal', fu: 'community', state: 'soon', stars: 2, pos: { x: 0.73, y: 0.37 },
@@ -173,13 +173,13 @@
 
   /* ---------- 螢幕切換 ---------- */
   function show(id) {
-    ['opening', 'hub', 'level', 'ending'].forEach(function (s) {
+    ['opening', 'hub', 'level', 'level2', 'ending'].forEach(function (s) {
       var el = document.getElementById(s); if (!el) return;
-      if (s === 'level') el.style.display = (s === id) ? 'block' : 'none';
+      if (s === 'level' || s === 'level2') el.style.display = (s === id) ? 'block' : 'none';
       else el.classList.toggle('hidden', s !== id);
     });
     document.body.className = 'screen-' + id;
-    var g = (id === 'hub' || id === 'level');   // 永久 HUD / 竹筒 / 金圈米芽：hub 與關卡顯示
+    var g = (id === 'hub' || id === 'level' || id === 'level2');  // 永久 HUD / 竹筒 / 金圈米芽
     ['hudTime', 'hudCoins', 'bamboo', 'sproutRing'].forEach(function (eid) {
       document.getElementById(eid).classList.toggle('hidden', !g);
     });
@@ -242,7 +242,7 @@
       if (a.state === 'play') {
         p.innerHTML = '<span class="dot"></span>' +
           '<span class="pinlabel"><b>' + L(a.nm) + '</b><i>' + stars(a.stars) + '</i></span>';
-        p.addEventListener('pointerup', function () { startLevel(); });
+        (function (aid) { p.addEventListener('pointerup', function () { startActivity(aid); }); })(a.id);
       } else {
         p.innerHTML = '<span class="dot"></span>';
         p.title = L(a.nm) + ' · ' + T('soon');
@@ -518,8 +518,8 @@
 
   /* ---- 粒子閃光（點線索/配對成功的爽感回饋） ---- */
   function burst(x, y, o) {
-    o = o || {}; var stage = document.getElementById('stage');
-    var n = o.n || 12, spread = o.spread || (rect.rw * 0.12), color = o.color || 'rgba(255,210,110,',
+    o = o || {}; var host = document.body;     // 固定定位粒子，任何畫面都看得到
+    var n = o.n || 12, spread = o.spread || 90, color = o.color || 'rgba(255,210,110,',
       life = o.life || 700, size = o.size || 8;
     for (var i = 0; i < n; i++) {
       var s = document.createElement('div'); s.className = 'spark';
@@ -531,7 +531,7 @@
       s.style.setProperty('--dx', (Math.cos(ang) * dist).toFixed(1) + 'px');
       s.style.setProperty('--dy', (Math.sin(ang) * dist - (o.dy || 0)).toFixed(1) + 'px');
       s.style.animationDuration = life + 'ms';
-      stage.appendChild(s);
+      host.appendChild(s);
       (function (el) { setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, life + 60); })(s);
     }
   }
@@ -797,12 +797,132 @@
   }
 
   /* ---------- 語言切換時重繪 ---------- */
+  /* ===================================================================
+     關2 · 環保小尖兵（分類整理；拖放，零選擇題；純加法，不動關1）
+     =================================================================== */
+  var l2 = null;
+  function startActivity(id) { if (id === C.level2.id) startLevel2(); else startLevel(); }
+
+  function startLevel2() {
+    var D2 = C.level2;
+    l2 = { total: D2.items.length, done: 0, ended: false };
+    Sound.playScene('eco');
+    show('level2');
+    document.getElementById('level2').classList.remove('cleared');
+    document.getElementById('l2end').classList.add('hidden');
+    l2RenderChrome();
+    l2BuildBoard();
+  }
+  function l2RenderChrome() {
+    var D2 = C.level2;
+    document.getElementById('l2title').textContent = L({ zh: '環保小尖兵', en: 'Eco Vanguard', es: 'Vanguardia Ecológica' });
+    document.getElementById('l2intro').textContent = L(D2.intro);
+    var leave = document.getElementById('l2leave');
+    leave.textContent = T('toHub');
+  }
+  function l2BuildBoard() {
+    var D2 = C.level2;
+    // 回收桶（分類區）
+    var binsEl = document.getElementById('l2bins'); binsEl.innerHTML = '';
+    D2.bins.forEach(function (b) {
+      var el = document.createElement('div'); el.className = 'l2bin'; el.dataset.bin = b.id;
+      el.innerHTML = '<span class="l2bin-ico">' + b.icon + '</span><span class="l2bin-nm">' + L(b.name) + '</span>';
+      binsEl.appendChild(el);
+    });
+    // 待分類的回收物（打散）
+    var itemsEl = document.getElementById('l2items'); itemsEl.innerHTML = '';
+    var items = D2.items.slice(); shuffle(items);
+    items.forEach(function (it) {
+      var el = document.createElement('div'); el.className = 'l2item'; el.dataset.bin = it.bin;
+      el.innerHTML = '<span class="l2item-ico">' + it.icon + '</span><span class="l2item-nm">' + L(it.name) + '</span>';
+      el.addEventListener('pointerdown', function (e) { l2StartDrag(e, el, it); });
+      itemsEl.appendChild(el);
+    });
+  }
+  function l2StartDrag(e, el, it) {
+    if (l2.ended || el.classList.contains('placed')) return;
+    e.preventDefault();
+    var r = el.getBoundingClientRect();
+    var offX = e.clientX - (r.left + r.width / 2), offY = e.clientY - (r.top + r.height / 2);
+    var home = { left: el.style.left, top: el.style.top, pos: el.style.position };
+    el.classList.add('l2dragging');
+    function moveTo(x, y) { el.style.left = (x - offX) + 'px'; el.style.top = (y - offY) + 'px'; }
+    el.style.position = 'fixed'; el.style.left = r.left + 'px'; el.style.top = r.top + 'px';
+    el.style.pointerEvents = 'none';
+    moveTo(e.clientX, e.clientY);
+    function onMove(ev) { moveTo(ev.clientX, ev.clientY); }
+    function onUp(ev) {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      el.classList.remove('l2dragging'); el.style.pointerEvents = '';
+      var bin = l2BinAt(ev.clientX, ev.clientY);
+      if (bin === it.bin) { l2Place(el, it, bin); }
+      else { el.style.position = home.pos; el.style.left = home.left; el.style.top = home.top; l2Retry(); }
+    }
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+  }
+  function l2BinAt(x, y) {
+    var t = document.elementFromPoint(x, y);
+    while (t) { if (t.classList && t.classList.contains('l2bin')) return t.dataset.bin; t = t.parentElement; }
+    return null;
+  }
+  function l2Retry() {
+    Sound.soft();
+    flash('🤍 ' + L(C.level2.retry));
+  }
+  function l2Place(el, it, binId) {
+    el.classList.add('placed');
+    var binEl = document.querySelector('#l2bins .l2bin[data-bin="' + binId + '"]');
+    if (binEl) { binEl.classList.add('lit'); setTimeout(function () { binEl.classList.remove('lit'); }, 700); }
+    // 同關1的回饋：金光粒子飛向米芽長一階 ＋ 飛進竹筒投幣
+    var src = (binEl || el).getBoundingClientRect();
+    var cx = src.left + src.width / 2, cy = src.top + src.height / 2;
+    SAVE.kindnessMin += C.perHome.minutes; SAVE.coins += C.perHome.coins;
+    SAVE.bamboo += C.perHome.coins; SAVE.sprout.growth += C.perHome.growth; persist();
+    Sound.grow();
+    burst(cx, cy, { n: 18, spread: 80, life: 820, size: 9 });
+    flyTo('sproutRing', cx, cy, 'flydot', function () { refreshGlobals(); pulseRing(0); });
+    flyTo('bamboo', cx, cy, 'flycoin', function () { Sound.coin(); bambooBump(); });
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 180);
+    l2.done += 1;
+    if (l2.done >= l2.total) setTimeout(l2Complete, 600);
+  }
+  function l2Complete() {
+    if (l2.ended) return;
+    l2.ended = true;
+    SAVE.lit[C.level2.id] = true; persist();           // 推進空氣量表（meters 讀 lit.eco）
+    document.getElementById('level2').classList.add('cleared');  // 霧散、天清、長花草
+    Sound.success(2);
+    setTimeout(l2ShowEnd, 1500);
+  }
+  function l2ShowEnd() {
+    var addMin = l2.total * C.perHome.minutes;
+    document.getElementById('l2endTitle').textContent = T('ecoDone');
+    document.getElementById('l2plant').innerHTML = plantSVG(SAVE.sprout.growth, 168);
+    document.getElementById('l2endLine').innerHTML = T('noCompare') + '——' + L(C.level2.closing);
+    document.getElementById('l2reward').innerHTML =
+      '🌱 ' + T('becameStage').replace('{name}', SAVE.sprout.name || '').replace('{stage}', stageName(SAVE.sprout.growth)) +
+      ' ｜ ' + T('kindnessPlus').replace('{min}', addMin) + ' ｜ ' + T('kindnessTotal').replace('{total}', SAVE.kindnessMin);
+    document.getElementById('l2again').textContent = T('playAgain');
+    document.getElementById('l2hub').textContent = T('toHub');
+    document.getElementById('l2end').classList.remove('hidden');
+  }
+
   window.onLangChange = function () {
     document.querySelectorAll('.lang button').forEach(function (b) { b.classList.toggle('on', b.dataset.l === window.LANG); });
     if (!document.getElementById('opening').classList.contains('hidden')) renderOpening();
     if (!document.getElementById('hub').classList.contains('hidden')) renderHub();
     if (document.getElementById('level').style.display === 'block' && lvl) {
       renderLvlHud(); renderPanelLabels(); renderNotes(); renderShelf(); renderPack(); updateSend();
+    }
+    if (document.getElementById('level2').style.display === 'block' && l2) {
+      l2RenderChrome();
+      document.querySelectorAll('#l2bins .l2bin').forEach(function (el) {
+        var b = C.level2.bins.filter(function (x) { return x.id === el.dataset.bin; })[0];
+        if (b) el.querySelector('.l2bin-nm').textContent = L(b.name);
+      });
+      if (!document.getElementById('l2end').classList.contains('hidden')) l2ShowEnd();
     }
     if (!document.getElementById('ending').classList.contains('hidden')) {
       document.getElementById('endTitle').textContent = T('endTitle');
@@ -881,6 +1001,11 @@
     document.getElementById('sendBtn').addEventListener('click', sendPackage);
     document.getElementById('againBtn').addEventListener('click', startLevel);
     document.getElementById('endHubBtn').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
+    // 關2 · 環保小尖兵
+    Sound.register('eco', C.level2.music, 0.24, false);   // 關2 音樂（路徑寫在 config）
+    document.getElementById('l2leave').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
+    document.getElementById('l2again').addEventListener('click', startLevel2);
+    document.getElementById('l2hub').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
 
     // 底部面板收合
     document.getElementById('panelTab').addEventListener('click', function () {

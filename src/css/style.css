@@ -224,9 +224,9 @@ button{font-family:inherit;cursor:pointer;border:none;}
   opacity:0;transition:all .3s;pointer-events:none;max-width:84vw;text-align:center;}
 .flash.show{opacity:1;transform:translate(-50%,0);}
 
-/* 關卡時：金圈米芽/竹筒移到側邊中段，不擋底部面板 */
-body.screen-level #sproutRing{bottom:auto;top:44%;right:8px;width:70px;}
-body.screen-level #bamboo{bottom:auto;top:42%;left:10px;}
+/* 關卡時：金圈米芽/竹筒移到側邊中段，不擋底部面板/回收桶 */
+body.screen-level #sproutRing,body.screen-level2 #sproutRing{bottom:auto;top:40%;right:8px;width:70px;}
+body.screen-level #bamboo,body.screen-level2 #bamboo{bottom:auto;top:38%;left:10px;}
 body.screen-level #milestones{display:none;}
 
 /* ---------- 小芽盆栽圖示 ---------- */
@@ -292,7 +292,7 @@ body.screen-level #milestones{display:none;}
 @keyframes hlflash{0%{opacity:0;transform:translate(-50%,-50%) scale(.55);}
   22%{opacity:.95;}100%{opacity:0;transform:translate(-50%,-50%) scale(1.18);}}
 /* 粒子閃光（點線索/配對成功的爽感） */
-.spark{position:absolute;z-index:9;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);
+.spark{position:fixed;z-index:86;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);
   animation-name:sparkfly;animation-timing-function:cubic-bezier(.2,.7,.3,1);animation-fill-mode:forwards;}
 @keyframes sparkfly{0%{opacity:1;transform:translate(-50%,-50%) scale(1);}
   100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,0px))) scale(.3);}}
@@ -462,8 +462,8 @@ body.screen-level #milestones{display:none;}
   #sproutRing{bottom:calc(56px + env(safe-area-inset-bottom));width:76px;}
   #hudTime,#hudCoins{font-size:12px;}
   /* 關卡：金圈/竹筒貼邊中段，底部讓給面板 */
-  body.screen-level #sproutRing{top:38%;width:64px;}
-  body.screen-level #bamboo{top:36%;}
+  body.screen-level #sproutRing,body.screen-level2 #sproutRing{top:34%;width:64px;}
+  body.screen-level #bamboo,body.screen-level2 #bamboo{top:32%;}
 }
 /* 很窄或很矮：再縮一點，避免互相重疊 */
 @media (max-width:380px){
@@ -474,3 +474,65 @@ body.screen-level #milestones{display:none;}
 
 /* 收合把手加大，iOS 直式也好按 */
 #panelTab{width:74px;height:30px;top:-30px;font-size:18px;}
+
+/* ===================================================================
+   關2 · 環保小尖兵（分類整理；灰濛 → 清澈，CSS 場景）
+   =================================================================== */
+#level2{position:fixed;inset:0;z-index:10;display:none;overflow:hidden;background:#3a3d44;}
+#l2street{position:absolute;inset:0;z-index:0;transition:filter 1.5s ease,background 1.5s ease;
+  background:linear-gradient(180deg,#6b6f78 0%,#7d7e7c 45%,#8a857a 62%,#6d685f 100%);
+  filter:saturate(.55) brightness(.82);}
+#l2street::after{content:'';position:absolute;left:0;right:0;bottom:0;height:42%;
+  background:linear-gradient(180deg,rgba(70,66,60,0),rgba(52,49,44,.6));}
+#l2haze{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.78;transition:opacity 1.6s ease;
+  background:linear-gradient(180deg,rgba(192,192,198,.6),rgba(158,158,164,.34));}
+#l2flora{position:absolute;left:0;right:0;bottom:0;height:30%;z-index:1;pointer-events:none;opacity:0;transition:opacity 1.6s ease;
+  background:radial-gradient(20px 12px at 12% 92%,#7cc36a 60%,transparent 62%),
+             radial-gradient(16px 10px at 27% 96%,#9ad888 60%,transparent 62%),
+             radial-gradient(18px 12px at 50% 93%,#7cc36a 60%,transparent 62%),
+             radial-gradient(14px 9px at 71% 97%,#9ad888 60%,transparent 62%),
+             radial-gradient(20px 12px at 88% 92%,#7cc36a 60%,transparent 62%);}
+#level2.cleared #l2street{filter:saturate(1.05) brightness(1.08);
+  background:linear-gradient(180deg,#9fd4ee 0%,#bfe3d6 45%,#cdebc2 62%,#a9c98f 100%);}
+#level2.cleared #l2haze{opacity:0;}
+#level2.cleared #l2flora{opacity:1;}
+
+#l2top{position:absolute;top:0;left:0;right:0;z-index:30;display:flex;justify-content:center;align-items:center;
+  padding:10px 12px;pointer-events:none;}
+#l2title{pointer-events:auto;background:rgba(20,26,48,.55);color:#fff;font-weight:800;font-size:14px;
+  padding:7px 14px;border-radius:999px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+#l2leave{position:absolute;right:12px;top:9px;pointer-events:auto;background:rgba(255,255,255,.2);color:#fff;
+  border-radius:999px;padding:7px 13px;font-weight:800;font-size:13px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+#l2intro{position:absolute;top:52px;left:50%;transform:translateX(-50%);z-index:20;max-width:min(88vw,520px);
+  background:rgba(14,18,38,.5);color:#fff;font-weight:700;font-size:13px;line-height:1.5;text-align:center;
+  padding:9px 14px;border-radius:14px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+/* 待分類物：置中、wrap、不捲動 */
+#l2items{position:absolute;left:0;right:0;top:0;bottom:122px;z-index:15;
+  display:flex;flex-wrap:wrap;gap:12px;align-content:center;justify-content:center;padding:118px 16px 8px;}
+.l2item{width:84px;min-height:84px;border-radius:16px;background:rgba(255,255,255,.93);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  box-shadow:0 6px 14px rgba(0,0,0,.3);font-weight:800;font-size:12px;color:#37414f;
+  touch-action:none;cursor:grab;border:2px solid rgba(255,255,255,.65);user-select:none;-webkit-user-select:none;}
+.l2item .l2item-ico{font-size:clamp(1.8rem,6vw,2.4rem);line-height:1;}
+.l2item.l2dragging{z-index:88;cursor:grabbing;transform:scale(1.08);box-shadow:0 12px 26px rgba(0,0,0,.45);}
+.l2item.placed{opacity:0;transform:scale(.4);transition:all .18s ease;}
+/* 回收桶列：底部 */
+#l2bins{position:absolute;left:0;right:0;bottom:0;z-index:20;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;
+  padding:10px 10px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(10,12,26,0),rgba(10,12,26,.42));}
+.l2bin{min-width:60px;flex:0 1 92px;border-radius:14px 14px 10px 10px;padding:9px 6px;text-align:center;color:#fff;
+  background:rgba(255,255,255,.16);border:2px dashed rgba(255,255,255,.5);
+  display:flex;flex-direction:column;align-items:center;gap:3px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  transition:transform .15s,background .2s,box-shadow .2s;}
+.l2bin-ico{font-size:clamp(1.3rem,3.2vw,1.9rem);line-height:1;}
+.l2bin-nm{font-size:11px;font-weight:800;}
+.l2bin.lit{background:rgba(120,210,120,.5);box-shadow:0 0 22px rgba(150,230,150,.85);transform:translateY(-3px);}
+/* 結算 */
+#l2end{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,rgba(10,14,34,.42),rgba(8,11,28,.64));}
+#l2end .card{background:var(--panel-dark);color:#fff;max-height:92vh;overflow-y:auto;}
+#l2end .card h1{color:#fff;}
+@media (max-aspect-ratio:1/1){
+  #l2items{bottom:142px;padding-top:96px;}
+  .l2item{width:74px;min-height:74px;}
+}
