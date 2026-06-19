@@ -1041,54 +1041,78 @@
   }
 
   /* ===================================================================
-     關3 · 幸福校園 畢業感恩（感恩傳遞；點發光點→拿感恩→送到對的對象）
-     會動／能探索／有認同；純加法，不動關1關2
+     關3 · 幸福校園 畢業感恩 — 完整三幕（感恩三福 → 一人一信→花蓮 → 畢業慶典）
+     會動有手感、老少咸宜；純加法，不動關1關2。一人一信只由「第二幕」推進。
      =================================================================== */
   var l3 = null;
+  var REDUCE = false;
+  try { REDUCE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  function buzz(ms) { if (REDUCE) return; try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
+  function l3Shake() { if (REDUCE) return; var s = document.getElementById('l3scene'); s.classList.remove('shake'); void s.offsetWidth; s.classList.add('shake'); }
+  function l3Img2(base, cb) { resolveImg(base, cb); }
+
   function startLevel3() {
     var D3 = C.level3;
-    l3 = { total: D3.cards.length, done: 0, ended: false };
+    l3 = { act: 1, a1: 0, a2: 0, total1: D3.cards.length, total2: D3.act2.count, ended: false, combo: 0, comboT: null };
     Sound.playScene('grad');
     show('level3');
     var lv = document.getElementById('level3');
     lv.classList.remove('cleared'); lv.style.setProperty('--heal', '0');
     document.getElementById('l3end').classList.add('hidden');
-    l3RenderChrome();
+    document.getElementById('l3bloom').innerHTML = '';
+    // 背景 school_grad（載到才覆蓋漸層 fallback）
+    l3Img2(D3.img, function (u) { if (u) document.getElementById('l3bg').style.backgroundImage = "url('" + u + "')"; });
     l3BuildScene();
-    l3BuildBoard();
+    l3StartAct1();
   }
-  function l3RenderChrome() {
-    document.getElementById('l3title').textContent = L({ zh: '畢業感恩 · Bret Harte', en: 'Graduation · Bret Harte', es: 'Graduación · Bret Harte' });
-    document.getElementById('l3intro').textContent = L(C.level3.intro) + ' ' + L(C.level3.note);
+  function l3RenderChrome(titleObj, introStr) {
+    document.getElementById('l3title').textContent = L(titleObj);
+    document.getElementById('l3intro').textContent = introStr;
     document.getElementById('l3leave').textContent = T('toHub');
   }
+  function l3SetHeal() {
+    var p = (l3.a1 + l3.a2) / (l3.total1 + l3.total2);
+    document.getElementById('level3').style.setProperty('--heal', p.toFixed(3));
+  }
   function l3BuildScene() {
-    // 飄落櫻花瓣（限量，純 CSS）
     var pet = document.getElementById('l3petals'); pet.innerHTML = '';
-    for (var i = 0; i < 14; i++) {
-      var p = document.createElement('div'); p.className = 'l3petal';
-      p.textContent = '🌸';
+    var nPet = REDUCE ? 5 : 14;
+    for (var i = 0; i < nPet; i++) {
+      var p = document.createElement('div'); p.className = 'l3petal'; p.textContent = '🌸';
       p.style.left = (Math.random() * 100) + '%';
       p.style.animationDelay = (-Math.random() * 9).toFixed(2) + 's';
       p.style.animationDuration = (7 + Math.random() * 6).toFixed(2) + 's';
       p.style.fontSize = (10 + Math.random() * 12).toFixed(0) + 'px';
       pet.appendChild(p);
     }
-    // 抽象的孩子點點臉（走動；非真實可辨識的人）
     var kids = document.getElementById('l3kids'); kids.innerHTML = '';
     for (var k = 0; k < 6; k++) {
       var kd = document.createElement('div'); kd.className = 'l3kid';
-      kd.style.left = (8 + Math.random() * 84) + '%';
-      kd.style.top = (40 + Math.random() * 22) + '%';
+      kd.style.left = (10 + Math.random() * 80) + '%';
+      kd.style.top = (58 + Math.random() * 14) + '%';     // 站在廣場上
       kd.style.setProperty('--c', ['#ffd27f', '#9ad8a0', '#9ec2ff', '#f4a3c0', '#c7a9ff'][k % 5]);
       kd.style.animationDelay = (-Math.random() * 6).toFixed(2) + 's';
       kids.appendChild(kd);
     }
-    document.getElementById('l3bloom').innerHTML = '';
+    // 隱藏彩蛋：點到某棵櫻花樹 → 驚喜
+    var egg = document.getElementById('l3egg');
+    egg.onpointerup = function () { l3Egg(); };
   }
-  function l3BuildBoard() {
-    var D3 = C.level3;
-    // 三福對象（家庭／老師／社區）= 投放對象
+  function l3Egg() {
+    var r = document.getElementById('l3egg').getBoundingClientRect();
+    var x = r.left + r.width / 2, y = r.top + r.height / 2;
+    burst(x, y, { n: REDUCE ? 8 : 22, spread: 90, life: 900, size: 9 });
+    l3Confetti(x, y, REDUCE ? 6 : 14);
+    Sound.success(1); buzz(12);
+    flash('🌸✨ ' + L({ zh: '櫻花樹給你一個驚喜！', en: 'The cherry tree has a surprise!', es: '¡El cerezo te sorprende!' }));
+  }
+
+  /* ---------- 第一幕：感恩三福（拖/甩到對的對象） ---------- */
+  function l3StartAct1() {
+    var D3 = C.level3, lv = document.getElementById('level3');
+    lv.className = ''; lv.classList.add('a1'); lv.style.display = 'block';
+    l3RenderChrome(D3.act1.title, L(D3.intro));
+    document.getElementById('l3targets').style.display = '';
     var tg = document.getElementById('l3targets'); tg.innerHTML = '';
     D3.targets.forEach(function (t) {
       var el = document.createElement('div'); el.className = 'l3target'; el.dataset.t = t.id;
@@ -1096,13 +1120,12 @@
       tg.appendChild(el);
     });
     document.getElementById('l3items').innerHTML = '';
-    // 會發光的點（畢業孩子／一封封感恩）；點下去出現一份感恩
     var spots = document.getElementById('l3spots'); spots.innerHTML = '';
     var cards = D3.cards.slice(); shuffle(cards);
     cards.forEach(function (cd, i) {
       var sp = document.createElement('div'); sp.className = 'l3spot';
-      sp.style.left = (10 + (i * 80 / (cards.length - 1 || 1))) + '%';
-      sp.style.top = (44 + (i % 2 ? 8 : -3)) + '%';
+      sp.style.left = (16 + (i * 68 / (cards.length - 1 || 1))) + '%';
+      sp.style.top = (46 + (i % 2 ? 7 : -3)) + '%';
       sp.innerHTML = '<span class="l3spot-ring"></span><span class="l3spot-ico">💌</span>';
       sp.addEventListener('pointerup', function () { l3OpenSpot(sp, cd); });
       spots.appendChild(sp);
@@ -1113,10 +1136,10 @@
     sp.classList.add('opened'); Sound.clue();
     var el = document.createElement('div'); el.className = 'l3card'; el.dataset.t = cd.target;
     el.innerHTML = '<span class="l3card-ico">💌</span><span class="l3card-tx">' + L(cd.text) + '</span>';
-    el.addEventListener('pointerdown', function (e) { l3StartDrag(e, el, cd); });
+    el.addEventListener('pointerdown', function (e) { l3DragCard(e, el, cd); });
     document.getElementById('l3items').appendChild(el);
   }
-  function l3StartDrag(e, el, cd) {
+  function l3DragCard(e, el, cd) {
     if (l3.ended || el.classList.contains('placed')) return;
     e.preventDefault();
     var r = el.getBoundingClientRect();
@@ -1131,7 +1154,7 @@
     function onUp(ev) {
       fin(); el.classList.remove('l3dragging'); el.style.pointerEvents = '';
       var t = l3TargetAt(ev.clientX, ev.clientY);
-      if (t === cd.target) { l3Send(el, t); }
+      if (t === cd.target) { l3SendCard(el, t); }
       else { el.style.position = home.pos; el.style.left = home.left; el.style.top = home.top; l3Retry(); }
     }
     document.addEventListener('pointermove', onMove);
@@ -1143,45 +1166,126 @@
     while (t) { if (t.classList && t.classList.contains('l3target')) return t.dataset.t; t = t.parentElement; }
     return null;
   }
-  function l3Retry() { Sound.soft(); flash('🤍 ' + L(C.level3.retry)); }
-  function l3Send(el, tId) {
+  function l3Retry() { Sound.soft(); flash('🤍 ' + L(C.level3.retry)); l3.combo = 0; }
+  function l3SendCard(el, tId) {
     var tgEl = document.querySelector('#l3targets .l3target[data-t="' + tId + '"]');
-    el.classList.remove('l3dragging'); el.style.pointerEvents = 'none';
+    el.style.pointerEvents = 'none';
     if (tgEl) {
       var br = tgEl.getBoundingClientRect(), r = el.getBoundingClientRect();
       el.style.position = 'fixed';
-      el.style.transition = 'left .32s cubic-bezier(.4,.1,.5,1),top .32s cubic-bezier(.4,.1,.5,1),transform .32s ease,opacity .32s ease';
+      el.style.transition = 'left .3s cubic-bezier(.4,.1,.5,1),top .3s cubic-bezier(.4,.1,.5,1),transform .3s ease,opacity .3s ease';
       requestAnimationFrame(function () {
         el.style.left = (br.left + br.width / 2 - r.width / 2) + 'px';
         el.style.top = (br.top - r.height * 0.18) + 'px';
         el.style.transform = 'scale(.3)'; el.style.opacity = '0';
       });
-      tgEl.classList.add('lit'); setTimeout(function () { tgEl.classList.remove('lit'); }, 800);
-    } else { el.classList.add('placed'); }
-    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 380);
-    setTimeout(function () { l3Celebrate(tgEl); }, 300);
+      tgEl.classList.add('lit', 'bounce'); setTimeout(function () { tgEl.classList.remove('lit', 'bounce'); }, 800);
+    }
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 360);
+    setTimeout(function () {
+      var src = (tgEl || document.body).getBoundingClientRect();
+      var cx = src.left + src.width / 2, cy = src.top + src.height / 2;
+      l3Confetti(cx, cy, REDUCE ? 6 : 12);
+      l3Reward(cx, cy, false);                 // 第一幕：不推進一人一信里程碑
+      flash('🌸 ' + L(C.level3.revealLine));
+      l3.a1 += 1; l3SetHeal();
+      if (l3.a1 >= l3.total1) setTimeout(l3StartAct2, 900);
+    }, 280);
   }
-  function l3Celebrate(tgEl) {
-    var src = (tgEl || document.body).getBoundingClientRect();
-    var cx = src.left + src.width / 2, cy = src.top + src.height / 2;
-    // 該處慶祝綻放：彩帶/櫻花/光
-    l3Confetti(cx, cy, 12);
-    // 金光飛向金圈米芽（長一階）＋ 銅板進竹筒
+
+  /* 共用成功回饋：粒子＋音效＋小芽＋震動＋連擊；letter=true 時推進一人一信 */
+  function l3Reward(cx, cy, letter) {
     SAVE.kindnessMin += C.perHome.minutes; SAVE.coins += C.perHome.coins;
     SAVE.bamboo += C.perHome.coins; SAVE.sprout.growth += C.perHome.growth;
-    advanceLetters();                         // 一人一信里程碑 +1（只由本關推進）
+    if (letter) advanceLetters();             // 一人一信里程碑 +1（只由第二幕）
     persist();
-    Sound.grow();
-    burst(cx, cy, { n: 16, spread: 78, life: 800, size: 9 });
+    Sound.grow(); buzz(12); l3Shake();
+    burst(cx, cy, { n: REDUCE ? 10 : 16, spread: 78, life: 800, size: 9 });
     flyTo('sproutRing', cx, cy, 'flydot', function () { refreshGlobals(); pulseRing(0); });
     flyTo('bamboo', cx, cy, 'flycoin', function () { Sound.coin(); bambooBump(); });
-    flash('🌸 ' + L(C.level3.revealLine));
-    l3.done += 1;
-    document.getElementById('level3').style.setProperty('--heal', (l3.done / l3.total).toFixed(3));
-    if (l3.done >= l3.total) setTimeout(l3Complete, 700);
+    // 連擊心流（純感官）：連續送對→火花更多、音層疊上
+    l3.combo += 1;
+    if (l3.combo >= 2) { Sound.success(Math.min(2, l3.combo - 1)); if (!REDUCE) burst(cx, cy, { n: 8 + l3.combo * 2, spread: 60 + l3.combo * 10, life: 700, size: 7 }); }
+    clearTimeout(l3.comboT); l3.comboT = setTimeout(function () { l3.combo = 0; }, 1800);
   }
+
+  /* ---------- 第二幕：一人一信 → 花蓮（甩/拖把信拋過海面） ---------- */
+  function l3StartAct2() {
+    if (l3.ended) return;
+    var D3 = C.level3, lv = document.getElementById('level3');
+    lv.className = ''; lv.classList.add('a2');
+    l3RenderChrome(D3.act2.title, L(D3.act2.prompt));
+    document.getElementById('l3spots').innerHTML = '';
+    document.getElementById('l3targets').style.display = 'none';
+    // 海平線上發光的「花蓮」點
+    var hu = document.getElementById('l3hualien');
+    hu.classList.remove('hidden');
+    hu.style.left = (D3.act2.hualien.x * 100) + '%';
+    hu.style.top = (D3.act2.hualien.y * 100) + '%';
+    hu.innerHTML = '<span class="l3hu-ring"></span><span class="l3hu-dot"></span><span class="l3hu-nm">' + L(D3.act2.hualienName) + '</span>';
+    // 一疊信（甩/拖都能送）
+    var tray = document.getElementById('l3items'); tray.innerHTML = '';
+    for (var i = 0; i < D3.act2.count; i++) {
+      var el = document.createElement('div'); el.className = 'l3letter';
+      el.innerHTML = '<span class="l3letter-ico">✉️</span>';
+      el.addEventListener('pointerdown', (function (node) { return function (e) { l3DragLetter(e, node); }; })(el));
+      tray.appendChild(el);
+    }
+  }
+  function l3DragLetter(e, el) {
+    if (l3.ended || el.classList.contains('sent')) return;
+    e.preventDefault();
+    var r = el.getBoundingClientRect();
+    var offX = e.clientX - (r.left + r.width / 2), offY = e.clientY - (r.top + r.height / 2);
+    el.classList.add('l3dragging');
+    el.style.position = 'fixed'; el.style.transform = 'translate(-50%,-50%)';
+    function moveTo(x, y) { el.style.left = (x - offX) + 'px'; el.style.top = (y - offY) + 'px'; }
+    moveTo(e.clientX, e.clientY); el.style.pointerEvents = 'none';
+    function onMove(ev) { moveTo(ev.clientX, ev.clientY); }
+    function fin() { document.removeEventListener('pointermove', onMove); document.removeEventListener('pointerup', onUp); document.removeEventListener('pointercancel', onUp); }
+    function onUp() { fin(); el.classList.remove('l3dragging'); el.classList.add('sent'); l3FlyLetter(el); }  // 任何放開都成功（單一去處）
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+  }
+  function l3FlyLetter(el) {
+    var hu = document.getElementById('l3hualien'), hr = hu.getBoundingClientRect();
+    var ex = hr.left + hr.width / 2, ey = hr.top + hr.height / 2;
+    var r = el.getBoundingClientRect(), sx = r.left + r.width / 2, sy = r.top + r.height / 2;
+    var cx = (sx + ex) / 2, cy = Math.min(sy, ey) - 130;   // 控制點在上方 → 拋物線
+    el.style.position = 'fixed'; el.style.pointerEvents = 'none';
+    var t0 = performance.now(), dur = REDUCE ? 360 : 700;
+    function step(now) {
+      var p = Math.min(1, (now - t0) / dur), u = 1 - p;
+      var x = u * u * sx + 2 * u * p * cx + p * p * ex;
+      var y = u * u * sy + 2 * u * p * cy + p * p * ey;
+      el.style.left = x + 'px'; el.style.top = y + 'px';
+      el.style.transform = 'translate(-50%,-50%) scale(' + (1 - 0.66 * p).toFixed(3) + ') rotate(' + (p * 40).toFixed(0) + 'deg)';
+      el.style.opacity = (1 - 0.5 * p).toFixed(3);
+      if (!REDUCE && p < 0.96 && Math.random() < 0.55) l3Trail(x, y);   // 拖尾光
+      if (p < 1) requestAnimationFrame(step);
+      else { if (el.parentNode) el.parentNode.removeChild(el); l3LetterArrive(ex, ey); }
+    }
+    requestAnimationFrame(step);
+  }
+  function l3Trail(x, y) {
+    var d = document.createElement('div'); d.className = 'l3trail';
+    d.style.left = x + 'px'; d.style.top = y + 'px';
+    document.body.appendChild(d);
+    setTimeout(function () { if (d.parentNode) d.parentNode.removeChild(d); }, 520);
+  }
+  function l3LetterArrive(ex, ey) {
+    var hu = document.getElementById('l3hualien');
+    hu.classList.add('arrive'); setTimeout(function () { hu.classList.remove('arrive'); }, 700);
+    burst(ex, ey, { n: REDUCE ? 8 : 14, color: 'rgba(150,205,255,', spread: 70, life: 820, size: 9 });
+    l3Reward(ex, ey, true);                    // 第二幕：推進一人一信里程碑
+    flash('✉️➡️🌏 ' + L(C.level3.act2.arriveLine));
+    l3.a2 += 1; l3SetHeal();
+    if (l3.a2 >= l3.total2) setTimeout(l3StartAct3, 1000);
+  }
+
+  /* ---------- 第三幕：畢業慶典 ---------- */
   function l3Confetti(x, y, n) {
-    var host = document.getElementById('l3bloom'); if (!host) host = document.body;
     for (var i = 0; i < n; i++) {
       var c = document.createElement('div'); c.className = 'l3conf';
       c.style.left = x + 'px'; c.style.top = y + 'px';
@@ -1193,18 +1297,35 @@
       (function (el) { setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 1300); })(c);
     }
   }
-  function l3Complete() {
+  function l3Cap(x, y) {
+    var c = document.createElement('div'); c.className = 'l3cap'; c.textContent = '🎓';
+    c.style.left = x + 'px'; c.style.top = y + 'px';
+    c.style.setProperty('--dx', ((Math.random() - 0.5) * 120).toFixed(0) + 'px');
+    document.body.appendChild(c);
+    setTimeout(function () { if (c.parentNode) c.parentNode.removeChild(c); }, 1500);
+  }
+  function l3StartAct3() {
     if (l3.ended) return;
     l3.ended = true;
     SAVE.lit[C.level3.id] = true; persist();        // 該區永久亮 + 存進該名字
-    var lv = document.getElementById('level3'); lv.classList.add('cleared'); lv.style.setProperty('--heal', '1');
-    Sound.success(2);
+    var lv = document.getElementById('level3');
+    lv.className = ''; lv.classList.add('a3', 'cleared'); lv.style.setProperty('--heal', '1');
+    document.getElementById('l3hualien').classList.add('hidden');
+    document.getElementById('l3items').innerHTML = '';
+    l3RenderChrome(C.level3.act3.title, L(C.level3.act3.capsLine));
+    Sound.success(2); buzz(REDUCE ? 0 : 30);
     var bw = window.innerWidth, bh = window.innerHeight;
-    for (var i = 0; i < 5; i++) (function (k) { setTimeout(function () { l3Confetti(bw * (0.15 + Math.random() * 0.7), bh * (0.3 + Math.random() * 0.3), 14); }, k * 140); })(i);
-    setTimeout(l3ShowEnd, 1700);
+    var waves = REDUCE ? 2 : 6;
+    for (var i = 0; i < waves; i++) (function (k) {
+      setTimeout(function () {
+        l3Confetti(bw * (0.15 + Math.random() * 0.7), bh * (0.28 + Math.random() * 0.28), REDUCE ? 8 : 14);
+        if (!REDUCE) l3Cap(bw * (0.2 + Math.random() * 0.6), bh * (0.5 + Math.random() * 0.2));
+      }, k * 150);
+    })(i);
+    setTimeout(l3ShowEnd, 1900);
   }
   function l3ShowEnd() {
-    var addMin = l3.total * C.perHome.minutes;
+    var addMin = (l3.total1 + l3.total2) * C.perHome.minutes;
     document.getElementById('l3endTitle').textContent = T('gradDone');
     document.getElementById('l3plant').innerHTML = plantSVG(SAVE.sprout.growth, 168);
     document.getElementById('l3endLine').innerHTML = T('noCompare') + '——' + L(C.level3.closing);
@@ -1214,6 +1335,18 @@
     document.getElementById('l3again').textContent = T('playAgain');
     document.getElementById('l3hub').textContent = T('toHub');
     document.getElementById('l3end').classList.remove('hidden');
+  }
+  function l3Relabel() {
+    if (!l3) return; var D3 = C.level3, lv = document.getElementById('level3');
+    if (lv.classList.contains('a3')) l3RenderChrome(D3.act3.title, L(D3.act3.capsLine));
+    else if (lv.classList.contains('a2')) {
+      l3RenderChrome(D3.act2.title, L(D3.act2.prompt));
+      var nm = document.querySelector('#l3hualien .l3hu-nm'); if (nm) nm.textContent = L(D3.act2.hualienName);
+    } else l3RenderChrome(D3.act1.title, L(D3.intro));
+    document.querySelectorAll('#l3targets .l3target').forEach(function (el) {
+      var t = D3.targets.filter(function (x) { return x.id === el.dataset.t; })[0];
+      if (t) el.querySelector('.l3target-nm').textContent = L(t.name);
+    });
   }
 
   window.onLangChange = function () {
@@ -1232,11 +1365,7 @@
       if (!document.getElementById('l2end').classList.contains('hidden')) l2ShowEnd();
     }
     if (document.getElementById('level3').style.display === 'block' && l3) {
-      l3RenderChrome();
-      document.querySelectorAll('#l3targets .l3target').forEach(function (el) {
-        var t = C.level3.targets.filter(function (x) { return x.id === el.dataset.t; })[0];
-        if (t) el.querySelector('.l3target-nm').textContent = L(t.name);
-      });
+      l3Relabel();
       if (!document.getElementById('l3end').classList.contains('hidden')) l3ShowEnd();
     }
     if (!document.getElementById('ending').classList.contains('hidden')) {

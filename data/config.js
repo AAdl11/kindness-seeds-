@@ -43,7 +43,24 @@ window.CONFIG = {
   level3: {
     id: 'graduation',
     music: 'assets/audio/ending_warm.mp3',   // placeholder（祥和）；明暺日後換成畢業專屬曲
+    img: 'school_grad',                       // 3D 校園背景（基底檔名；.png/.jpg/.webp 自動偵測）
     milestone: 'sisterSchool',
+    act1: { title: { zh: '第一幕 · 感恩三福', en: 'Act 1 · Gratitude', es: 'Acto 1 · Gratitud' } },
+    act2: {
+      title: { zh: '第二幕 · 一人一信 → 花蓮', en: 'Act 2 · A letter to Hualien', es: 'Acto 2 · Una carta a Hualien' },
+      count: 4, hualien: { x: 0.5, y: 0.36 },
+      prompt: {
+        zh: '把每封信甩（或慢慢拖）向海平線那端的花蓮，給姊妹校的筆友。',
+        en: 'Fling (or gently drag) each letter across the sea to your pen pal in Hualien.',
+        es: 'Lanza (o arrastra suave) cada carta sobre el mar hasta tu amigo en Hualien.'
+      },
+      arriveLine: { zh: '花蓮的筆友收到了！', en: 'Your pen pal in Hualien got it!', es: '¡Tu amigo en Hualien la recibió!' },
+      hualienName: { zh: '花蓮', en: 'Hualien', es: 'Hualien' }
+    },
+    act3: {
+      title: { zh: '第三幕 · 畢業慶典', en: 'Act 3 · Graduation', es: 'Acto 3 · Graduación' },
+      capsLine: { zh: '學士帽，拋向天空！', en: 'Caps, into the sky!', es: '¡Birretes, al cielo!' }
+    },
     intro: {
       zh: 'Bret Harte 幸福校園的孩子要畢業了。幫他們把「謝謝」送到對的人——家庭、老師、社區。',
       en: 'The kids of Bret Harte are graduating. Help them send each "thank you" to the right people — family, teachers, community.',

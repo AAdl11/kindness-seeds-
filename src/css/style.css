@@ -649,3 +649,55 @@ body.screen-level #milestones{display:none;}
 #l3end .card{background:var(--panel-dark);color:#fff;max-height:92vh;overflow-y:auto;}
 #l3end .card h1{color:#fff;}
 @media (max-aspect-ratio:1/1){ #l3items{bottom:168px;padding-top:92px;} }
+
+/* ===================================================================
+   關3 升級：三幕 + school_grad 背景 + 柔光底 + 跨海送信 + 慶典 + 手感
+   =================================================================== */
+/* 背景圖（載到才覆蓋 #l3sky 漸層 fallback） */
+#l3bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;
+  filter:brightness(calc(.94 + var(--heal)*.12)) saturate(calc(.95 + var(--heal)*.3));transition:filter 1.2s ease;}
+/* 遊戲件後面的柔光底＋暗角，確保主體清楚、中央舞台乾淨 */
+#l3soft{position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(62% 52% at 50% 47%, rgba(255,250,238,.20), rgba(255,250,238,0) 70%);
+  box-shadow:inset 0 0 150px 46px rgba(38,20,42,.30);}
+/* 海面波光（第二幕較明顯） */
+#l3sea{position:absolute;left:0;right:0;top:30%;height:8%;z-index:2;pointer-events:none;opacity:.18;
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 40%,transparent);mask-image:linear-gradient(180deg,transparent,#000 40%,transparent);
+  background:repeating-linear-gradient(90deg, rgba(255,255,255,0) 0 14px, rgba(255,255,255,.3) 14px 17px);
+  animation:l3sea 5s linear infinite;}
+#level3.a2 #l3sea{opacity:.5;}
+@keyframes l3sea{0%{background-position:0 0;}100%{background-position:60px 0;}}
+/* 隱藏彩蛋（櫻花樹） */
+#l3egg{position:absolute;left:4%;top:26%;width:64px;height:96px;z-index:4;cursor:pointer;}
+/* 海平線上的「花蓮」發光點 */
+#l3hualien{position:absolute;z-index:6;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;}
+.l3hu-ring{position:absolute;left:50%;top:6px;width:46px;height:46px;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(closest-side,rgba(180,225,255,.85),rgba(150,200,255,0) 72%);
+  box-shadow:0 0 22px 7px rgba(150,205,255,.8);animation:pinpulse 1.7s ease-in-out infinite;}
+.l3hu-dot{position:relative;width:12px;height:12px;border-radius:50%;background:#eaf6ff;box-shadow:0 0 12px #bfe2ff;}
+.l3hu-nm{margin-top:6px;font-size:12px;font-weight:800;color:#fff;background:rgba(30,40,70,.55);padding:2px 9px;border-radius:999px;
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);}
+#l3hualien.arrive .l3hu-ring{animation:l3huArrive .7s ease;}
+@keyframes l3huArrive{0%{box-shadow:0 0 22px 7px rgba(150,205,255,.8);}45%{box-shadow:0 0 50px 20px rgba(210,240,255,1);}100%{box-shadow:0 0 22px 7px rgba(150,205,255,.8);}}
+/* 第二幕的信（甩/拖都能送） */
+.l3letter{pointer-events:auto;width:clamp(56px,15vw,72px);height:clamp(56px,15vw,72px);border-radius:14px;background:#fff;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(0,0,0,.3);border:2px solid #ffe0b0;
+  touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;}
+.l3letter-ico{font-size:clamp(1.8rem,6vw,2.3rem);}
+.l3letter.l3dragging{z-index:88;cursor:grabbing;transform:translate(-50%,-50%) scale(1.08);box-shadow:0 12px 26px rgba(0,0,0,.45);}
+/* 拖尾光 / 學士帽 */
+.l3trail{position:fixed;z-index:84;width:11px;height:11px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);
+  background:radial-gradient(circle,#fff,rgba(180,220,255,0));animation:l3trail .5s ease-out forwards;}
+@keyframes l3trail{to{opacity:0;transform:translate(-50%,-50%) scale(.3);}}
+.l3cap{position:fixed;z-index:86;font-size:26px;pointer-events:none;transform:translate(-50%,-50%);animation:l3cap 1.4s ease-out forwards;}
+@keyframes l3cap{0%{opacity:1;transform:translate(-50%,-50%);}100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),-260px) rotate(40deg);}}
+/* 手感：很短的畫面震動 + 目標 Q 彈 */
+#l3scene.shake{animation:l3shake .3s ease;}
+@keyframes l3shake{0%,100%{transform:translate(0,0);}25%{transform:translate(-4px,2px);}50%{transform:translate(3px,-2px);}75%{transform:translate(-2px,1px);}}
+.l3target.bounce .l3target-ico{animation:l3bounce .5s ease;}
+@keyframes l3bounce{0%,100%{transform:scale(1);}40%{transform:scale(1.2);}70%{transform:scale(.96);}}
+/* 尊重 prefers-reduced-motion */
+@media (prefers-reduced-motion:reduce){
+  .l3petal,.l3kid,#l3sea,.l3hu-ring{animation:none!important;}
+  #l3scene.shake{animation:none!important;}
+}
