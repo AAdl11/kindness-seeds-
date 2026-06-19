@@ -3,6 +3,15 @@
    換內容、複用到別的社區，只要改這個檔。
    ===================================================================== */
 window.CONFIG = {
+  /* 各關開頭「怎麼玩＋會得到什麼」小字（三語，簡短，不說教） */
+  level1: {
+    how: {
+      zh: '讀懂每一家的線索，配出他們需要的關懷包。每照顧一家 → 米芽長大、善的時數＋、銅板進竹筒。',
+      en: 'Read each family’s clues and build the care package they need. Each home → your sprout grows, kindness time +, a coin into the bamboo.',
+      es: 'Lee las pistas de cada familia y arma el paquete que necesitan. Cada hogar → tu brote crece, tiempo de bondad +, una moneda al bambú.'
+    }
+  },
+
   /* 每照顧好一家的回饋 */
   perHome: {
     minutes: 10,   // 善的時數 +10 分鐘
@@ -45,6 +54,11 @@ window.CONFIG = {
     music: 'assets/audio/ending_warm.mp3',   // placeholder（祥和）；明暺日後換成畢業專屬曲
     img: 'school_grad',                       // 3D 校園背景（基底檔名；.png/.jpg/.webp 自動偵測）
     milestone: 'sisterSchool',
+    how: {
+      zh: '送「謝謝」給家庭／老師／社區，再把信跨海送給花蓮姐妹校。每送一封信 → 一人一信里程碑 ＋1。',
+      en: 'Send "thank you" to family / teachers / community, then fling letters across the sea to the Hualien sister school. Each letter → "one letter each" +1.',
+      es: 'Envía "gracias" a familia / maestros / comunidad, y lanza cartas sobre el mar a la escuela hermana de Hualien. Cada carta → "una carta" +1.'
+    },
     act1: { title: { zh: '第一幕 · 感恩三福', en: 'Act 1 · Gratitude', es: 'Acto 1 · Gratitud' } },
     act2: {
       title: { zh: '第二幕 · 一人一信 → 花蓮', en: 'Act 2 · A letter to Hualien', es: 'Acto 2 · Una carta a Hualien' },
@@ -101,6 +115,11 @@ window.CONFIG = {
   level2: {
     id: 'eco',
     music: 'assets/audio/ending_warm.mp3',   // placeholder（祥和）；明暺日後換成 eco 專屬曲
+    how: {
+      zh: '把回收物送回對的桶，灰街一處處亮起來。每分對 → 米芽長大、銅板進竹筒；竹筒滿了可倒進社區（→ 南蘇丹）。',
+      en: 'Sort each item into the right bin; the gray street lights up piece by piece. Each match → your sprout grows, a coin into the bamboo; a full bamboo can be poured into the community (→ South Sudan).',
+      es: 'Clasifica cada objeto en el cubo correcto; la calle gris se ilumina poco a poco. Cada acierto → tu brote crece, una moneda al bambú; un bambú lleno se vierte en la comunidad (→ Sudán del Sur).'
+    },
     imgBefore: 'eco_street_before',           // 街景圖（基底檔名；.png/.jpg 皆自動偵測）
     imgAfter: 'eco_street_after',
     intro: {

@@ -381,6 +381,14 @@
     setTimeout(function () { f.classList.remove('show'); }, 1800);
     setTimeout(function () { if (f.parentNode) f.parentNode.removeChild(f); }, 2200);
   }
+  function renderHelp() {
+    document.getElementById('helpTitle').textContent = T('helpTitle');
+    document.getElementById('helpClose').textContent = T('helpClose');
+    var ul = document.getElementById('helpBody'); ul.innerHTML = '';
+    (T('helpLines') || []).forEach(function (line) {
+      var li = document.createElement('li'); li.textContent = line; ul.appendChild(li);
+    });
+  }
 
   /* 地圖 full-bleed cover（max）；節點在中央安全區，cover 裁切也看得到 */
   function hubFit() {
@@ -451,7 +459,7 @@
     // 開場先把面板展開
     document.getElementById('panel').classList.remove('collapsed');
     // 「開始這一夜」的夜晚字眼，進關卡時才出現
-    toast('🌇 ' + T('begin'), null, 1900);
+    toast('🌇 ' + T('begin'), L(C.level1.how), 4200);   // 怎麼玩＋會得到什麼
     setTimeout(spawnCar, 1300);
     requestAnimationFrame(loop);
   }
@@ -863,7 +871,7 @@
   }
   function l2RenderChrome() {
     document.getElementById('l2title').textContent = L({ zh: '你的街角', en: 'Your corner', es: 'Tu esquina' });
-    document.getElementById('l2intro').textContent = L(C.level2.intro);
+    document.getElementById('l2intro').innerHTML = L(C.level2.intro) + '<br><span class="howline">' + L(C.level2.how) + '</span>';
     document.getElementById('l2leave').textContent = T('toHub');
   }
   /* 動態場景：5 條 after 切片（就地揭曉）＋ 霧/光塵/鳥 ＋ 發光待整理點 */
@@ -1065,9 +1073,9 @@
     l3BuildScene();
     l3StartAct1();
   }
-  function l3RenderChrome(titleObj, introStr) {
+  function l3RenderChrome(titleObj, introStr, howStr) {
     document.getElementById('l3title').textContent = L(titleObj);
-    document.getElementById('l3intro').textContent = introStr;
+    document.getElementById('l3intro').innerHTML = introStr + (howStr ? '<br><span class="howline">' + howStr + '</span>' : '');
     document.getElementById('l3leave').textContent = T('toHub');
   }
   function l3SetHeal() {
@@ -1111,7 +1119,7 @@
   function l3StartAct1() {
     var D3 = C.level3, lv = document.getElementById('level3');
     lv.className = ''; lv.classList.add('a1'); lv.style.display = 'block';
-    l3RenderChrome(D3.act1.title, L(D3.intro));
+    l3RenderChrome(D3.act1.title, L(D3.intro), L(D3.how));
     document.getElementById('l3targets').style.display = '';
     var tg = document.getElementById('l3targets'); tg.innerHTML = '';
     D3.targets.forEach(function (t) {
@@ -1342,7 +1350,7 @@
     else if (lv.classList.contains('a2')) {
       l3RenderChrome(D3.act2.title, L(D3.act2.prompt));
       var nm = document.querySelector('#l3hualien .l3hu-nm'); if (nm) nm.textContent = L(D3.act2.hualienName);
-    } else l3RenderChrome(D3.act1.title, L(D3.intro));
+    } else l3RenderChrome(D3.act1.title, L(D3.intro), L(D3.how));
     document.querySelectorAll('#l3targets .l3target').forEach(function (el) {
       var t = D3.targets.filter(function (x) { return x.id === el.dataset.t; })[0];
       if (t) el.querySelector('.l3target-nm').textContent = L(t.name);
@@ -1353,6 +1361,7 @@
     document.querySelectorAll('.lang button').forEach(function (b) { b.classList.toggle('on', b.dataset.l === window.LANG); });
     if (!document.getElementById('opening').classList.contains('hidden')) renderOpening();
     if (!document.getElementById('hub').classList.contains('hidden')) renderHub();
+    if (!document.getElementById('helpPanel').classList.contains('hidden')) renderHelp();
     if (document.getElementById('level').style.display === 'block' && lvl) {
       renderLvlHud(); renderPanelLabels(); renderNotes(); renderShelf(); renderPack(); updateSend();
     }
@@ -1426,6 +1435,16 @@
     document.getElementById('msHandle').addEventListener('pointerup', function () {
       document.getElementById('milestones').classList.toggle('collapsed');
       renderMilestones();
+    });
+    // hub 低調「？」說明鈕（三語、可關閉、不擋畫面）
+    document.getElementById('hubHelp').addEventListener('click', function (e) {
+      e.stopPropagation(); renderHelp(); document.getElementById('helpPanel').classList.remove('hidden');
+    });
+    document.getElementById('helpClose').addEventListener('click', function () {
+      document.getElementById('helpPanel').classList.add('hidden');
+    });
+    document.getElementById('helpPanel').addEventListener('click', function (e) {
+      if (e.target === this) this.classList.add('hidden');   // 點背景關閉
     });
     // hub 角落齒輪 → 小選單（換名字 / 重新開始這名字 / 重聽音樂）
     document.getElementById('hubGear').addEventListener('click', function (e) {

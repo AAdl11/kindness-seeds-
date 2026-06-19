@@ -701,3 +701,20 @@ body.screen-level #milestones{display:none;}
   .l3petal,.l3kid,#l3sea,.l3hu-ring{animation:none!important;}
   #l3scene.shake{animation:none!important;}
 }
+
+/* ===================================================================
+   各關「怎麼玩＋獎勵」小字 + hub「？」說明面板
+   =================================================================== */
+.howline{display:inline-block;margin-top:5px;font-size:11.5px;font-weight:700;color:#ffe2a6;line-height:1.45;}
+#hubHelp{position:fixed;z-index:81;top:calc(54px + env(safe-area-inset-top));left:calc(56px + env(safe-area-inset-left));
+  width:38px;height:38px;border-radius:50%;background:rgba(18,24,44,.55);color:#fff;font-size:17px;font-weight:800;
+  border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+#helpPanel{position:fixed;inset:0;z-index:96;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:rgba(8,10,22,.5);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
+.help-card{background:rgba(18,22,40,.97);color:#fff;border-radius:18px;padding:18px 18px 14px;max-width:360px;width:92%;
+  box-shadow:0 12px 40px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);text-align:center;}
+.help-card h3{font-size:17px;margin-bottom:10px;color:#ffd98a;font-weight:800;}
+.help-card ul{list-style:none;display:flex;flex-direction:column;gap:8px;text-align:left;}
+.help-card li{font-size:13.5px;line-height:1.45;color:#e7ecf7;}
+.help-card #helpClose{margin-top:14px;width:100%;padding:11px;border-radius:999px;font-weight:800;font-size:15px;
+  background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:#4a3007;}
