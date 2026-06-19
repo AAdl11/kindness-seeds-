@@ -275,7 +275,9 @@
   /* 里程碑進度條：sudan 只由「倒竹筒」推進；sisterSchool 只由關3 推進。
      點任一條都顯示它代表的真實善行（簡短說明）；可倒的（竹筒滿）才會真的倒入。 */
   function renderMilestones() {
-    var box = document.getElementById('milestones'); box.innerHTML = '';
+    var collapsed = document.getElementById('milestones').classList.contains('collapsed');
+    document.getElementById('msHandle').textContent = '🎍 ' + T('milestonesLabel') + ' ' + (collapsed ? '▴' : '▾');
+    var box = document.getElementById('msBody'); box.innerHTML = '';
     C.milestones.forEach(function (ms) {
       var prog = SAVE.milestones[ms.id] || 0;
       var pourable = (ms.source === 'pour') && SAVE.bamboo >= C.bamboo.capacity;
@@ -1290,6 +1292,11 @@
     document.getElementById('switchName').addEventListener('click', function () {
       opSwitching = true; renderOpening();
       var inp = document.getElementById('sproutName'); if (inp) inp.focus();
+    });
+    // 里程碑面板收合把手（預設收合，不擋關卡點）
+    document.getElementById('msHandle').addEventListener('pointerup', function () {
+      document.getElementById('milestones').classList.toggle('collapsed');
+      renderMilestones();
     });
     // hub 角落齒輪 → 小選單（換名字 / 重新開始這名字 / 重聽音樂）
     document.getElementById('hubGear').addEventListener('click', function (e) {

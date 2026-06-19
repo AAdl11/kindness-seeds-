@@ -134,7 +134,8 @@ button{font-family:inherit;cursor:pointer;border:none;}
 #growthTree{position:absolute;transform:translate(-50%,-100%);z-index:3;pointer-events:none;
   filter:drop-shadow(0 8px 10px rgba(0,0,0,.3));transition:left .3s,top .3s;}
 /* 地圖節點（圖釘） */
-.pinnode{position:absolute;transform:translate(-50%,-50%);z-index:5;cursor:default;
+#pinLayer{position:absolute;inset:0;z-index:40;pointer-events:none;}  /* 關卡點永遠在里程碑面板之上、可點 */
+.pinnode{pointer-events:auto;position:absolute;transform:translate(-50%,-50%);z-index:5;cursor:default;
   display:flex;flex-direction:column;align-items:center;gap:5px;}
 .pinnode .dot{width:16px;height:16px;border-radius:50%;background:#9aa6bf;
   box-shadow:0 0 0 3px rgba(255,255,255,.5),0 2px 5px rgba(0,0,0,.35);}
@@ -156,9 +157,18 @@ button{font-family:inherit;cursor:pointer;border:none;}
   50%{box-shadow:0 0 0 6px rgba(255,206,77,.55),0 10px 22px rgba(216,154,31,.5);}}
 
 /* 里程碑進度（向外＝加速器；竹筒滿了可點倒入） */
-#milestones{position:absolute;left:10px;bottom:10px;z-index:25;display:flex;flex-direction:column;gap:6px;
-  max-width:60vw;}
-.ms{background:rgba(14,18,38,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+/* 里程碑＝靠底邊的可收合面板（預設收合，絕不蓋住地圖關卡點） */
+#milestones{position:absolute;left:0;right:0;bottom:0;top:auto;transform:none;z-index:24;
+  display:flex;flex-direction:column;align-items:center;pointer-events:none;max-width:none;}
+#msHandle{pointer-events:auto;background:rgba(14,18,38,.72);color:#fff;font-weight:800;font-size:12px;
+  padding:5px 16px;border-radius:13px 13px 0 0;border:1px solid rgba(255,255,255,.14);border-bottom:none;
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+#msBody{pointer-events:auto;width:100%;max-width:520px;display:flex;flex-direction:column;gap:6px;
+  padding:8px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(10,12,26,.62);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);max-height:42vh;overflow-y:auto;
+  transition:max-height .3s ease,padding .3s ease;}
+#milestones.collapsed #msBody{max-height:0;padding-top:0;padding-bottom:0;overflow:hidden;}
+.ms{width:100%;background:rgba(14,18,38,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
   border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:7px 10px;}
 .ms.canpour{border-color:rgba(255,206,77,.8);box-shadow:0 0 14px rgba(255,206,77,.5);cursor:pointer;}
 .ms-name{color:#fff;font-weight:800;font-size:12px;margin-bottom:4px;}
@@ -248,7 +258,7 @@ body.screen-level #milestones{display:none;}
 #hudBar .chip{pointer-events:auto;background:rgba(20,26,48,.62);color:#fff;border-radius:999px;
   padding:7px 12px;font-weight:800;font-size:13px;display:flex;gap:5px;align-items:center;
   border:1px solid rgba(255,255,255,.12);white-space:nowrap;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
-#hudBar #leaveBtn{pointer-events:auto;position:absolute;right:12px;top:9px;background:rgba(255,255,255,.2);color:#fff;border-radius:999px;
+#hudBar #leaveBtn{pointer-events:auto;position:fixed;left:calc(12px + env(safe-area-inset-left));top:calc(54px + env(safe-area-inset-top));right:auto;z-index:95;background:rgba(255,255,255,.2);color:#fff;border-radius:999px;
   padding:7px 13px;font-weight:800;font-size:13px;white-space:nowrap;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
 /* 舞台＝整個畫面；插畫 cover 鋪滿 */
 #stage{position:absolute;inset:0;overflow:hidden;}
@@ -445,9 +455,6 @@ body.screen-level #milestones{display:none;}
 #bamboo{left:calc(12px + env(safe-area-inset-left));bottom:calc(86px + env(safe-area-inset-bottom));}
 #sproutRing{right:calc(10px + env(safe-area-inset-right));bottom:calc(64px + env(safe-area-inset-bottom));}
 
-/* 里程碑挪到上方置中，讓左下竹筒、右下金圈各自有空間（直式不打架） */
-#milestones{left:50%;transform:translateX(-50%);top:calc(46px + env(safe-area-inset-top));bottom:auto;
-  max-width:min(82vw,440px);align-items:stretch;}
 .ms-name{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 
 /* emoji 拉開間距 + clamp 放大 */
@@ -457,7 +464,6 @@ body.screen-level #milestones{display:none;}
 
 /* ---------- 直式（portrait）優先 ---------- */
 @media (max-aspect-ratio:1/1){
-  #milestones{top:auto;bottom:calc(150px + env(safe-area-inset-bottom));max-width:min(92vw,460px);}
   #bamboo{bottom:calc(70px + env(safe-area-inset-bottom));}
   #sproutRing{bottom:calc(56px + env(safe-area-inset-bottom));width:76px;}
   #hudTime,#hudCoins{font-size:12px;}
@@ -526,7 +532,7 @@ body.screen-level #milestones{display:none;}
   padding:10px 12px;pointer-events:none;}
 #l2title{pointer-events:auto;background:rgba(20,26,48,.55);color:#fff;font-weight:800;font-size:14px;
   padding:7px 14px;border-radius:999px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
-#l2leave{position:absolute;right:12px;top:9px;pointer-events:auto;background:rgba(255,255,255,.2);color:#fff;
+#l2leave{position:fixed;left:calc(12px + env(safe-area-inset-left));top:calc(54px + env(safe-area-inset-top));right:auto;z-index:95;pointer-events:auto;background:rgba(255,255,255,.2);color:#fff;
   border-radius:999px;padding:7px 13px;font-weight:800;font-size:13px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
 #l2intro{position:absolute;top:52px;left:50%;transform:translateX(-50%);z-index:20;max-width:min(88vw,520px);
   background:rgba(14,18,38,.5);color:#fff;font-weight:700;font-size:13px;line-height:1.5;text-align:center;
@@ -610,7 +616,7 @@ body.screen-level #milestones{display:none;}
 /* 頂列 / 說明 */
 #l3top{position:absolute;top:0;left:0;right:0;z-index:30;display:flex;justify-content:center;align-items:center;padding:10px 12px;pointer-events:none;}
 #l3title{pointer-events:auto;background:rgba(40,24,48,.55);color:#fff;font-weight:800;font-size:14px;padding:7px 14px;border-radius:999px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
-#l3leave{position:absolute;right:12px;top:9px;pointer-events:auto;background:rgba(255,255,255,.2);color:#fff;border-radius:999px;padding:7px 13px;font-weight:800;font-size:13px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+#l3leave{position:fixed;left:calc(12px + env(safe-area-inset-left));top:calc(54px + env(safe-area-inset-top));right:auto;z-index:95;pointer-events:auto;background:rgba(255,255,255,.2);color:#fff;border-radius:999px;padding:7px 13px;font-weight:800;font-size:13px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
 #l3intro{position:absolute;top:52px;left:50%;transform:translateX(-50%);z-index:20;max-width:min(90vw,560px);
   background:rgba(40,24,48,.5);color:#fff;font-weight:700;font-size:13px;line-height:1.5;text-align:center;
   padding:9px 14px;border-radius:14px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
