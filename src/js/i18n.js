@@ -59,6 +59,7 @@ window.I18N = {
     switchName: '換一個名字 / 換人玩', replayMusic: '重聽音樂', restartWorld: '重新開始這個世界',
     restartConfirm: '要把「{name}」的世界從頭開始嗎？（只清這個名字，其他人不受影響）', restarted: '已為這個名字重新開始',
     ecoDone: '街角，亮起來了', noCompare: '沒有比較，沒有分數', playAgain: '再整理一次',
+    gradDone: '畢業快樂，謝謝都送到了',
     tapClue: '（點背景上發亮的點）'
   },
   en: {
@@ -113,6 +114,7 @@ window.I18N = {
     switchName: 'Switch name / new player', replayMusic: 'Replay music', restartWorld: 'Restart this world',
     restartConfirm: "Restart {name}'s world from scratch? (Only this name is cleared.)", restarted: 'This world has been restarted',
     ecoDone: 'The corner is bright again', noCompare: 'No comparing, no scores', playAgain: 'Tidy again',
+    gradDone: 'Happy graduation — every thank-you delivered',
     tapClue: '(tap the glowing dots)'
   },
   es: {
@@ -167,6 +169,7 @@ window.I18N = {
     switchName: 'Cambiar de nombre / jugador', replayMusic: 'Volver a oír la música', restartWorld: 'Reiniciar este mundo',
     restartConfirm: '¿Reiniciar el mundo de {name} desde cero? (Solo se borra este nombre.)', restarted: 'Este mundo se ha reiniciado',
     ecoDone: 'La esquina vuelve a brillar', noCompare: 'Sin comparar, sin puntajes', playAgain: 'Ordenar otra vez',
+    gradDone: 'Feliz graduación — cada gracias entregado',
     tapClue: '(toca los puntos brillantes)'
   }
 };

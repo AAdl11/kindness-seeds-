@@ -225,8 +225,8 @@ button{font-family:inherit;cursor:pointer;border:none;}
 .flash.show{opacity:1;transform:translate(-50%,0);}
 
 /* 關卡時：金圈米芽/竹筒移到側邊中段，不擋底部面板/回收桶 */
-body.screen-level #sproutRing,body.screen-level2 #sproutRing{bottom:auto;top:40%;right:8px;width:70px;}
-body.screen-level #bamboo,body.screen-level2 #bamboo{bottom:auto;top:38%;left:10px;}
+body.screen-level #sproutRing,body.screen-level2 #sproutRing,body.screen-level3 #sproutRing{bottom:auto;top:40%;right:8px;width:70px;}
+body.screen-level #bamboo,body.screen-level2 #bamboo,body.screen-level3 #bamboo{bottom:auto;top:38%;left:10px;}
 body.screen-level #milestones{display:none;}
 
 /* ---------- 小芽盆栽圖示 ---------- */
@@ -462,8 +462,8 @@ body.screen-level #milestones{display:none;}
   #sproutRing{bottom:calc(56px + env(safe-area-inset-bottom));width:76px;}
   #hudTime,#hudCoins{font-size:12px;}
   /* 關卡：金圈/竹筒貼邊中段，底部讓給面板 */
-  body.screen-level #sproutRing,body.screen-level2 #sproutRing{top:34%;width:64px;}
-  body.screen-level #bamboo,body.screen-level2 #bamboo{top:32%;}
+  body.screen-level #sproutRing,body.screen-level2 #sproutRing,body.screen-level3 #sproutRing{top:34%;width:64px;}
+  body.screen-level #bamboo,body.screen-level2 #bamboo,body.screen-level3 #bamboo{top:32%;}
 }
 /* 很窄或很矮：再縮一點，避免互相重疊 */
 @media (max-width:380px){
@@ -572,3 +572,74 @@ body.screen-level #milestones{display:none;}
   #l2items{bottom:166px;padding-top:96px;}
   .l2item{width:74px;min-height:74px;}
 }
+
+/* ===================================================================
+   關3 · 幸福校園 畢業感恩（粉彩慶典；櫻花/彩帶/光，CSS 場景）
+   =================================================================== */
+#level3{position:fixed;inset:0;z-index:10;display:none;overflow:hidden;background:#e8dfe8;--heal:0;}
+#l3scene{position:absolute;inset:0;z-index:0;overflow:hidden;}
+#l3sky{position:absolute;inset:0;background:linear-gradient(180deg,#ffe3ef 0%,#dfeafe 44%,#e7f3d8 70%,#cfe6b8 100%);
+  filter:brightness(calc(.92 + var(--heal)*.16)) saturate(calc(.85 + var(--heal)*.45));transition:filter 1.2s ease;}
+/* 抽象孩子點點臉（走動；非真實可辨識的人） */
+#l3kids{position:absolute;inset:0;z-index:2;pointer-events:none;}
+.l3kid{position:absolute;width:22px;height:22px;border-radius:50%;background:var(--c,#ffd27f);
+  box-shadow:0 3px 6px rgba(0,0,0,.22);animation:l3kid 5s ease-in-out infinite;}
+.l3kid::before{content:'';position:absolute;left:5px;top:9px;width:3px;height:3px;border-radius:50%;
+  background:#3a2f22;box-shadow:9px 0 0 #3a2f22;}
+.l3kid::after{content:'';position:absolute;left:7px;top:14px;width:8px;height:4px;border-bottom:2px solid #3a2f22;border-radius:0 0 6px 6px;}
+@keyframes l3kid{0%,100%{transform:translate(0,0);}50%{transform:translate(10px,-3px);}}
+/* 飄落櫻花瓣 */
+#l3petals{position:absolute;inset:0;z-index:3;pointer-events:none;}
+.l3petal{position:absolute;top:-6%;animation:l3petal linear infinite;}
+@keyframes l3petal{0%{transform:translateY(0) rotate(0);opacity:0;}10%{opacity:.95;}100%{transform:translateY(112vh) rotate(360deg);opacity:.4;}}
+/* 發光待整理點（一封封感恩） */
+#l3spots{position:absolute;inset:0;z-index:6;}
+.l3spot{position:absolute;transform:translate(-50%,-50%);width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.l3spot-ring{position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(255,236,150,.85),rgba(255,210,110,0) 72%);
+  box-shadow:0 0 16px 5px rgba(255,206,90,.7);animation:pinpulse 1.7s ease-in-out infinite;}
+.l3spot-ico{position:relative;font-size:20px;}
+.l3spot.opened .l3spot-ring{animation:none;opacity:.22;}
+.l3spot.opened .l3spot-ico{opacity:.4;}
+#l3bloom{position:absolute;inset:0;z-index:5;pointer-events:none;}
+/* 彩帶 */
+.l3conf{position:fixed;z-index:86;width:9px;height:14px;border-radius:2px;pointer-events:none;transform:translate(-50%,-50%);
+  animation:l3conf 1.2s ease-out forwards;}
+@keyframes l3conf{0%{opacity:1;transform:translate(-50%,-50%) rotate(0);}
+  100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),calc(-50% + var(--dy,0px))) rotate(240deg);}}
+/* 頂列 / 說明 */
+#l3top{position:absolute;top:0;left:0;right:0;z-index:30;display:flex;justify-content:center;align-items:center;padding:10px 12px;pointer-events:none;}
+#l3title{pointer-events:auto;background:rgba(40,24,48,.55);color:#fff;font-weight:800;font-size:14px;padding:7px 14px;border-radius:999px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+#l3leave{position:absolute;right:12px;top:9px;pointer-events:auto;background:rgba(255,255,255,.2);color:#fff;border-radius:999px;padding:7px 13px;font-weight:800;font-size:13px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+#l3intro{position:absolute;top:52px;left:50%;transform:translateX(-50%);z-index:20;max-width:min(90vw,560px);
+  background:rgba(40,24,48,.5);color:#fff;font-weight:700;font-size:13px;line-height:1.5;text-align:center;
+  padding:9px 14px;border-radius:14px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+/* 感恩卡（要讀內容才知道送給誰） */
+#l3items{position:absolute;left:0;right:0;top:0;bottom:150px;z-index:15;pointer-events:none;
+  display:flex;flex-wrap:wrap;gap:10px;align-content:center;justify-content:center;padding:108px 14px 8px;}
+.l3card{pointer-events:auto;max-width:min(80vw,260px);background:#fff;border-radius:14px;padding:10px 12px;
+  display:flex;align-items:center;gap:8px;box-shadow:0 6px 14px rgba(0,0,0,.3);color:#37414f;font-weight:700;
+  font-size:clamp(12px,3.2vw,14px);line-height:1.3;border:2px solid #ffd9e6;
+  touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;}
+.l3card-ico{font-size:1.5rem;flex:0 0 auto;}
+.l3card.l3dragging{z-index:88;cursor:grabbing;transform:scale(1.05);box-shadow:0 12px 26px rgba(0,0,0,.45);}
+.l3card.placed{opacity:0;transform:scale(.4);transition:all .18s ease;}
+/* 三福對象（家庭/老師/社區） */
+#l3targets{position:absolute;left:0;right:0;bottom:0;z-index:20;display:flex;gap:clamp(8px,3.5vw,22px);
+  justify-content:center;align-items:flex-end;padding:8px 10px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(30,18,38,0),rgba(30,18,38,.42));}
+.l3target{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;color:#fff;cursor:pointer;transition:transform .18s ease;}
+.l3target-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:calc(100% + 30px);height:calc(100% + 30px);border-radius:20px;}
+.l3target-ico{width:clamp(58px,16vw,98px);height:clamp(58px,16vw,98px);border-radius:20px;
+  display:flex;align-items:center;justify-content:center;font-size:clamp(2rem,7vw,3rem);
+  background:rgba(255,255,255,.92);box-shadow:0 6px 14px rgba(0,0,0,.3);transition:box-shadow .2s,transform .18s;}
+.l3target-nm{font-size:clamp(11px,2.8vw,14px);font-weight:800;background:rgba(30,18,38,.5);padding:2px 10px;border-radius:999px;
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);white-space:nowrap;}
+.l3target.lit{transform:translateY(-4px);}
+.l3target.lit .l3target-ico{box-shadow:0 0 18px rgba(255,210,120,.95),0 6px 14px rgba(0,0,0,.3);}
+/* 結算 */
+#l3end{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,rgba(40,20,44,.42),rgba(20,12,28,.64));}
+#l3end .card{background:var(--panel-dark);color:#fff;max-height:92vh;overflow-y:auto;}
+#l3end .card h1{color:#fff;}
+@media (max-aspect-ratio:1/1){ #l3items{bottom:168px;padding-top:92px;} }

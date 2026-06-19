@@ -158,6 +158,9 @@
     { id: 'cooking', fu: 'campus', state: 'soon', stars: 2, pos: { x: 0.40, y: 0.46 },
       nm: { zh: '素食烹飪班', en: 'Veggie cooking class', es: 'Clase de cocina vegetariana' },
       ds: { zh: '照順序抓時機', en: 'Timing & order', es: 'Orden y tiempo' } },
+    { id: 'graduation', fu: 'campus', state: 'play', stars: 1, pos: { x: 0.50, y: 0.52 },
+      nm: { zh: '畢業感恩', en: 'Graduation thanks', es: 'Gracias de graduación' },
+      ds: { zh: '幸福校園 · Bret Harte 姊妹校', en: 'Blessed Campus · Bret Harte', es: 'Campus · Bret Harte' } },
     // 幸福社區（右側／散布）
     { id: 'clinic', fu: 'community', state: 'soon', stars: 3, pos: { x: 0.67, y: 0.54 },
       nm: { zh: '義診', en: 'Free clinic', es: 'Clínica gratuita' },
@@ -173,13 +176,13 @@
 
   /* ---------- 螢幕切換 ---------- */
   function show(id) {
-    ['opening', 'hub', 'level', 'level2', 'ending'].forEach(function (s) {
+    ['opening', 'hub', 'level', 'level2', 'level3', 'ending'].forEach(function (s) {
       var el = document.getElementById(s); if (!el) return;
-      if (s === 'level' || s === 'level2') el.style.display = (s === id) ? 'block' : 'none';
+      if (s === 'level' || s === 'level2' || s === 'level3') el.style.display = (s === id) ? 'block' : 'none';
       else el.classList.toggle('hidden', s !== id);
     });
     document.body.className = 'screen-' + id;
-    var g = (id === 'hub' || id === 'level' || id === 'level2');  // 永久 HUD / 竹筒 / 金圈米芽
+    var g = (id === 'hub' || id === 'level' || id === 'level2' || id === 'level3');  // 永久 HUD / 竹筒 / 金圈米芽
     ['hudTime', 'hudCoins', 'bamboo', 'sproutRing'].forEach(function (eid) {
       document.getElementById(eid).classList.toggle('hidden', !g);
     });
@@ -269,21 +272,25 @@
     refreshGlobals();
   }
 
-  /* 里程碑進度條（向外＝加速器；竹筒滿了可點任一條倒入） */
+  /* 里程碑進度條：sudan 只由「倒竹筒」推進；sisterSchool 只由關3 推進。
+     點任一條都顯示它代表的真實善行（簡短說明）；可倒的（竹筒滿）才會真的倒入。 */
   function renderMilestones() {
     var box = document.getElementById('milestones'); box.innerHTML = '';
-    var canPour = SAVE.bamboo >= C.bamboo.capacity;
     C.milestones.forEach(function (ms) {
       var prog = SAVE.milestones[ms.id] || 0;
-      var row = document.createElement('div'); row.className = 'ms' + (canPour ? ' canpour' : '');
-      row.innerHTML = '<div class="ms-name">' + L(ms.name) + ' <i>' + prog + '/' + ms.target + '</i></div>' +
-        '<div class="ms-bar"><span style="width:' + Math.min(100, prog / ms.target * 100).toFixed(0) + '%"></span></div>';
-      if (canPour) row.addEventListener('pointerup', function () { pourInto(ms); });
+      var pourable = (ms.source === 'pour') && SAVE.bamboo >= C.bamboo.capacity;
+      var row = document.createElement('div'); row.className = 'ms' + (pourable ? ' canpour' : '');
+      row.innerHTML = '<div class="ms-name">' + L(ms.name) + ' <i>' + Math.min(prog, ms.target) + '/' + ms.target + '</i></div>' +
+        '<div class="ms-bar"><span style="width:' + Math.min(100, prog / ms.target * 100).toFixed(0) + '%"></span></div>' +
+        '<div class="ms-desc">' + L(ms.desc) + '</div>';
+      row.addEventListener('pointerup', function () {
+        if (pourable) pourInto(ms); else flash('ℹ️ ' + L(ms.desc));   // 點：說明這條代表什麼
+      });
       box.appendChild(row);
     });
   }
-  function pourInto(ms) {
-    if (SAVE.bamboo < C.bamboo.capacity) return;
+  function pourInto(ms) {                       // 只有「倒竹筒」來源的里程碑（南蘇丹）
+    if (ms.source !== 'pour' || SAVE.bamboo < C.bamboo.capacity) return;
     SAVE.bamboo -= C.bamboo.capacity;
     SAVE.pours += 1;
     SAVE.milestones[ms.id] = Math.min(ms.target, (SAVE.milestones[ms.id] || 0) + 1);
@@ -292,6 +299,15 @@
     Sound.pour();
     flash('🎍🌸 ' + T('poured'));
     renderHub();
+  }
+  /* 關3 送一封感恩 → 一人一信里程碑 +1（不由倒竹筒推進） */
+  function advanceLetters() {
+    var ms = C.milestones.filter(function (m) { return m.id === C.level3.milestone; })[0];
+    if (!ms) return;
+    var v = Math.min(ms.target, (SAVE.milestones[ms.id] || 0) + 1);
+    SAVE.milestones[ms.id] = v;
+    if (v >= ms.target) SAVE.bloomPour[ms.id] = true;   // 達標 → 那一區開花
+    persist();
   }
 
   /* 陽光・空氣・水 → 整體榮景（敘事：黯淡 → 溫暖 → 珍珠柔光） */
@@ -803,7 +819,11 @@
      =================================================================== */
   var l2 = null;
   var l2img = { before: null, after: null };
-  function startActivity(id) { if (id === C.level2.id) startLevel2(); else startLevel(); }
+  function startActivity(id) {
+    if (id === C.level2.id) startLevel2();
+    else if (id === C.level3.id) startLevel3();
+    else startLevel();
+  }
 
   /* 街景圖：.png/.jpg/.jpeg/.webp 自動偵測；沒有就用 CSS 漸層 fallback */
   function resolveImg(base, cb) {
@@ -1018,6 +1038,182 @@
     document.getElementById('l2end').classList.remove('hidden');
   }
 
+  /* ===================================================================
+     關3 · 幸福校園 畢業感恩（感恩傳遞；點發光點→拿感恩→送到對的對象）
+     會動／能探索／有認同；純加法，不動關1關2
+     =================================================================== */
+  var l3 = null;
+  function startLevel3() {
+    var D3 = C.level3;
+    l3 = { total: D3.cards.length, done: 0, ended: false };
+    Sound.playScene('grad');
+    show('level3');
+    var lv = document.getElementById('level3');
+    lv.classList.remove('cleared'); lv.style.setProperty('--heal', '0');
+    document.getElementById('l3end').classList.add('hidden');
+    l3RenderChrome();
+    l3BuildScene();
+    l3BuildBoard();
+  }
+  function l3RenderChrome() {
+    document.getElementById('l3title').textContent = L({ zh: '畢業感恩 · Bret Harte', en: 'Graduation · Bret Harte', es: 'Graduación · Bret Harte' });
+    document.getElementById('l3intro').textContent = L(C.level3.intro) + ' ' + L(C.level3.note);
+    document.getElementById('l3leave').textContent = T('toHub');
+  }
+  function l3BuildScene() {
+    // 飄落櫻花瓣（限量，純 CSS）
+    var pet = document.getElementById('l3petals'); pet.innerHTML = '';
+    for (var i = 0; i < 14; i++) {
+      var p = document.createElement('div'); p.className = 'l3petal';
+      p.textContent = '🌸';
+      p.style.left = (Math.random() * 100) + '%';
+      p.style.animationDelay = (-Math.random() * 9).toFixed(2) + 's';
+      p.style.animationDuration = (7 + Math.random() * 6).toFixed(2) + 's';
+      p.style.fontSize = (10 + Math.random() * 12).toFixed(0) + 'px';
+      pet.appendChild(p);
+    }
+    // 抽象的孩子點點臉（走動；非真實可辨識的人）
+    var kids = document.getElementById('l3kids'); kids.innerHTML = '';
+    for (var k = 0; k < 6; k++) {
+      var kd = document.createElement('div'); kd.className = 'l3kid';
+      kd.style.left = (8 + Math.random() * 84) + '%';
+      kd.style.top = (40 + Math.random() * 22) + '%';
+      kd.style.setProperty('--c', ['#ffd27f', '#9ad8a0', '#9ec2ff', '#f4a3c0', '#c7a9ff'][k % 5]);
+      kd.style.animationDelay = (-Math.random() * 6).toFixed(2) + 's';
+      kids.appendChild(kd);
+    }
+    document.getElementById('l3bloom').innerHTML = '';
+  }
+  function l3BuildBoard() {
+    var D3 = C.level3;
+    // 三福對象（家庭／老師／社區）= 投放對象
+    var tg = document.getElementById('l3targets'); tg.innerHTML = '';
+    D3.targets.forEach(function (t) {
+      var el = document.createElement('div'); el.className = 'l3target'; el.dataset.t = t.id;
+      el.innerHTML = '<span class="l3target-hit"></span><span class="l3target-ico">' + t.icon + '</span><span class="l3target-nm">' + L(t.name) + '</span>';
+      tg.appendChild(el);
+    });
+    document.getElementById('l3items').innerHTML = '';
+    // 會發光的點（畢業孩子／一封封感恩）；點下去出現一份感恩
+    var spots = document.getElementById('l3spots'); spots.innerHTML = '';
+    var cards = D3.cards.slice(); shuffle(cards);
+    cards.forEach(function (cd, i) {
+      var sp = document.createElement('div'); sp.className = 'l3spot';
+      sp.style.left = (10 + (i * 80 / (cards.length - 1 || 1))) + '%';
+      sp.style.top = (44 + (i % 2 ? 8 : -3)) + '%';
+      sp.innerHTML = '<span class="l3spot-ring"></span><span class="l3spot-ico">💌</span>';
+      sp.addEventListener('pointerup', function () { l3OpenSpot(sp, cd); });
+      spots.appendChild(sp);
+    });
+  }
+  function l3OpenSpot(sp, cd) {
+    if (sp.classList.contains('opened')) return;
+    sp.classList.add('opened'); Sound.clue();
+    var el = document.createElement('div'); el.className = 'l3card'; el.dataset.t = cd.target;
+    el.innerHTML = '<span class="l3card-ico">💌</span><span class="l3card-tx">' + L(cd.text) + '</span>';
+    el.addEventListener('pointerdown', function (e) { l3StartDrag(e, el, cd); });
+    document.getElementById('l3items').appendChild(el);
+  }
+  function l3StartDrag(e, el, cd) {
+    if (l3.ended || el.classList.contains('placed')) return;
+    e.preventDefault();
+    var r = el.getBoundingClientRect();
+    var offX = e.clientX - (r.left + r.width / 2), offY = e.clientY - (r.top + r.height / 2);
+    var home = { left: el.style.left, top: el.style.top, pos: el.style.position };
+    el.classList.add('l3dragging');
+    function moveTo(x, y) { el.style.left = (x - offX) + 'px'; el.style.top = (y - offY) + 'px'; }
+    el.style.position = 'fixed'; el.style.left = r.left + 'px'; el.style.top = r.top + 'px'; el.style.pointerEvents = 'none';
+    moveTo(e.clientX, e.clientY);
+    function onMove(ev) { moveTo(ev.clientX, ev.clientY); }
+    function fin() { document.removeEventListener('pointermove', onMove); document.removeEventListener('pointerup', onUp); document.removeEventListener('pointercancel', onUp); }
+    function onUp(ev) {
+      fin(); el.classList.remove('l3dragging'); el.style.pointerEvents = '';
+      var t = l3TargetAt(ev.clientX, ev.clientY);
+      if (t === cd.target) { l3Send(el, t); }
+      else { el.style.position = home.pos; el.style.left = home.left; el.style.top = home.top; l3Retry(); }
+    }
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+  }
+  function l3TargetAt(x, y) {
+    var t = document.elementFromPoint(x, y);
+    while (t) { if (t.classList && t.classList.contains('l3target')) return t.dataset.t; t = t.parentElement; }
+    return null;
+  }
+  function l3Retry() { Sound.soft(); flash('🤍 ' + L(C.level3.retry)); }
+  function l3Send(el, tId) {
+    var tgEl = document.querySelector('#l3targets .l3target[data-t="' + tId + '"]');
+    el.classList.remove('l3dragging'); el.style.pointerEvents = 'none';
+    if (tgEl) {
+      var br = tgEl.getBoundingClientRect(), r = el.getBoundingClientRect();
+      el.style.position = 'fixed';
+      el.style.transition = 'left .32s cubic-bezier(.4,.1,.5,1),top .32s cubic-bezier(.4,.1,.5,1),transform .32s ease,opacity .32s ease';
+      requestAnimationFrame(function () {
+        el.style.left = (br.left + br.width / 2 - r.width / 2) + 'px';
+        el.style.top = (br.top - r.height * 0.18) + 'px';
+        el.style.transform = 'scale(.3)'; el.style.opacity = '0';
+      });
+      tgEl.classList.add('lit'); setTimeout(function () { tgEl.classList.remove('lit'); }, 800);
+    } else { el.classList.add('placed'); }
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 380);
+    setTimeout(function () { l3Celebrate(tgEl); }, 300);
+  }
+  function l3Celebrate(tgEl) {
+    var src = (tgEl || document.body).getBoundingClientRect();
+    var cx = src.left + src.width / 2, cy = src.top + src.height / 2;
+    // 該處慶祝綻放：彩帶/櫻花/光
+    l3Confetti(cx, cy, 12);
+    // 金光飛向金圈米芽（長一階）＋ 銅板進竹筒
+    SAVE.kindnessMin += C.perHome.minutes; SAVE.coins += C.perHome.coins;
+    SAVE.bamboo += C.perHome.coins; SAVE.sprout.growth += C.perHome.growth;
+    advanceLetters();                         // 一人一信里程碑 +1（只由本關推進）
+    persist();
+    Sound.grow();
+    burst(cx, cy, { n: 16, spread: 78, life: 800, size: 9 });
+    flyTo('sproutRing', cx, cy, 'flydot', function () { refreshGlobals(); pulseRing(0); });
+    flyTo('bamboo', cx, cy, 'flycoin', function () { Sound.coin(); bambooBump(); });
+    flash('🌸 ' + L(C.level3.revealLine));
+    l3.done += 1;
+    document.getElementById('level3').style.setProperty('--heal', (l3.done / l3.total).toFixed(3));
+    if (l3.done >= l3.total) setTimeout(l3Complete, 700);
+  }
+  function l3Confetti(x, y, n) {
+    var host = document.getElementById('l3bloom'); if (!host) host = document.body;
+    for (var i = 0; i < n; i++) {
+      var c = document.createElement('div'); c.className = 'l3conf';
+      c.style.left = x + 'px'; c.style.top = y + 'px';
+      c.style.background = ['#ff9ec4', '#ffd27f', '#9ad8a0', '#9ec2ff', '#c7a9ff'][i % 5];
+      c.style.setProperty('--dx', ((Math.random() - 0.5) * 180).toFixed(0) + 'px');
+      c.style.setProperty('--dy', (-60 - Math.random() * 120).toFixed(0) + 'px');
+      c.style.animationDelay = (Math.random() * 0.1).toFixed(2) + 's';
+      document.body.appendChild(c);
+      (function (el) { setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 1300); })(c);
+    }
+  }
+  function l3Complete() {
+    if (l3.ended) return;
+    l3.ended = true;
+    SAVE.lit[C.level3.id] = true; persist();        // 該區永久亮 + 存進該名字
+    var lv = document.getElementById('level3'); lv.classList.add('cleared'); lv.style.setProperty('--heal', '1');
+    Sound.success(2);
+    var bw = window.innerWidth, bh = window.innerHeight;
+    for (var i = 0; i < 5; i++) (function (k) { setTimeout(function () { l3Confetti(bw * (0.15 + Math.random() * 0.7), bh * (0.3 + Math.random() * 0.3), 14); }, k * 140); })(i);
+    setTimeout(l3ShowEnd, 1700);
+  }
+  function l3ShowEnd() {
+    var addMin = l3.total * C.perHome.minutes;
+    document.getElementById('l3endTitle').textContent = T('gradDone');
+    document.getElementById('l3plant').innerHTML = plantSVG(SAVE.sprout.growth, 168);
+    document.getElementById('l3endLine').innerHTML = T('noCompare') + '——' + L(C.level3.closing);
+    document.getElementById('l3reward').innerHTML =
+      '🌱 ' + T('becameStage').replace('{name}', SAVE.sprout.name || '').replace('{stage}', stageName(SAVE.sprout.growth)) +
+      ' ｜ ' + T('kindnessPlus').replace('{min}', addMin) + ' ｜ ' + T('kindnessTotal').replace('{total}', SAVE.kindnessMin);
+    document.getElementById('l3again').textContent = T('playAgain');
+    document.getElementById('l3hub').textContent = T('toHub');
+    document.getElementById('l3end').classList.remove('hidden');
+  }
+
   window.onLangChange = function () {
     document.querySelectorAll('.lang button').forEach(function (b) { b.classList.toggle('on', b.dataset.l === window.LANG); });
     if (!document.getElementById('opening').classList.contains('hidden')) renderOpening();
@@ -1032,6 +1228,14 @@
         if (b) el.querySelector('.l2bin-nm').textContent = L(b.name);
       });
       if (!document.getElementById('l2end').classList.contains('hidden')) l2ShowEnd();
+    }
+    if (document.getElementById('level3').style.display === 'block' && l3) {
+      l3RenderChrome();
+      document.querySelectorAll('#l3targets .l3target').forEach(function (el) {
+        var t = C.level3.targets.filter(function (x) { return x.id === el.dataset.t; })[0];
+        if (t) el.querySelector('.l3target-nm').textContent = L(t.name);
+      });
+      if (!document.getElementById('l3end').classList.contains('hidden')) l3ShowEnd();
     }
     if (!document.getElementById('ending').classList.contains('hidden')) {
       document.getElementById('endTitle').textContent = T('endTitle');
@@ -1075,8 +1279,8 @@
     document.getElementById('pourBtn').addEventListener('click', function (e) {
       e.stopPropagation();
       if (SAVE.bamboo < C.bamboo.capacity) return;
-      var ms = C.milestones.filter(function (m) { return (SAVE.milestones[m.id] || 0) < m.target; })[0] || C.milestones[0];
-      pourInto(ms);
+      var ms = C.milestones.filter(function (m) { return m.source === 'pour'; })[0];
+      if (ms) pourInto(ms);   // 倒竹筒只推進南蘇丹
     });
     document.getElementById('beginBtn').addEventListener('click', enterFromDoor);
     document.getElementById('sproutName').addEventListener('keydown', function (e) {
@@ -1115,6 +1319,11 @@
     document.getElementById('l2leave').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
     document.getElementById('l2again').addEventListener('click', startLevel2);
     document.getElementById('l2hub').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
+    // 關3 · 畢業感恩
+    Sound.register('grad', C.level3.music, 0.26, false);
+    document.getElementById('l3leave').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
+    document.getElementById('l3again').addEventListener('click', startLevel3);
+    document.getElementById('l3hub').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
 
     // 底部面板收合
     document.getElementById('panelTab').addEventListener('click', function () {
