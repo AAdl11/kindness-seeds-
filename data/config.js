@@ -51,7 +51,7 @@ window.CONFIG = {
      學校＝幸福校園 @ Bret Harte，與花蓮慈小締結姊妹校（非「人文學校」）。 */
   level3: {
     id: 'graduation',
-    music: 'assets/audio/ending_warm.mp3',   // placeholder（祥和）；明暺日後換成畢業專屬曲
+    music: 'assets/audio/level3_grad.mp3',   // placeholder（祥和）；明暺日後換成畢業專屬曲
     img: 'school_grad',                       // 3D 校園背景（基底檔名；.png/.jpg/.webp 自動偵測）
     milestone: 'sisterSchool',
     how: {
@@ -114,7 +114,7 @@ window.CONFIG = {
   /* 關2・環保小尖兵（分類整理；資料驅動，整關可換內容＝AIAO 母模） */
   level2: {
     id: 'eco',
-    music: 'assets/audio/ending_warm.mp3',   // placeholder（祥和）；明暺日後換成 eco 專屬曲
+    music: 'assets/audio/level2_eco.mp3',   // placeholder（祥和）；明暺日後換成 eco 專屬曲
     how: {
       zh: '把回收物送回對的桶，灰街一處處亮起來。每分對 → 米芽長大、銅板進竹筒；竹筒滿了可倒進社區（→ 南蘇丹）。',
       en: 'Sort each item into the right bin; the gray street lights up piece by piece. Each match → your sprout grows, a coin into the bamboo; a full bamboo can be poured into the community (→ South Sudan).',
