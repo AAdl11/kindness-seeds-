@@ -883,8 +883,16 @@
     var binsEl = document.getElementById('l2bins'); binsEl.innerHTML = '';
     D2.bins.forEach(function (bn) {
       var el = document.createElement('div'); el.className = 'l2bin'; el.dataset.bin = bn.id;
-      el.innerHTML = '<span class="l2bin-ico">' + bn.icon + '</span><span class="l2bin-nm">' + L(bn.name) + '</span>';
+      el.innerHTML = '<span class="l2bin-hit"></span>' +
+        '<span class="l2bin-ico"><span class="l2bin-emoji">' + bn.icon + '</span></span>' +
+        '<span class="l2bin-nm">' + L(bn.name) + '</span>';
       binsEl.appendChild(el);
+      if (bn.img) resolveImg(bn.img, function (u) {      // 載到才換圖；失敗則保留 emoji
+        if (!u) return;
+        var ico = el.querySelector('.l2bin-ico');
+        ico.style.backgroundImage = "url('" + u + "')";
+        ico.classList.add('hasimg');
+      });
     });
     document.getElementById('l2items').innerHTML = '';
     // C：街上發光待整理點（點下去才出現該處的回收物）；位置＝對應切片的那一段
@@ -937,16 +945,33 @@
   function l2Retry() { Sound.soft(); flash('🤍 ' + L(C.level2.retry)); }
 
   function l2Place(el, it, band, binId) {
-    el.classList.add('placed');
     var binEl = document.querySelector('#l2bins .l2bin[data-bin="' + binId + '"]');
-    if (binEl) { binEl.classList.add('lit'); setTimeout(function () { binEl.classList.remove('lit'); }, 700); }
+    // 回收物「飛進桶子開口頂部、縮小消失」
+    el.classList.remove('l2dragging'); el.style.pointerEvents = 'none';
+    if (binEl) {
+      var br = binEl.getBoundingClientRect(), r = el.getBoundingClientRect();
+      el.style.position = 'fixed';
+      el.style.transition = 'left .32s cubic-bezier(.4,.1,.5,1),top .32s cubic-bezier(.4,.1,.5,1),transform .32s ease,opacity .32s ease';
+      requestAnimationFrame(function () {
+        el.style.left = (br.left + br.width / 2 - r.width / 2) + 'px';
+        el.style.top = (br.top - r.height * 0.18) + 'px';
+        el.style.transform = 'scale(.28)'; el.style.opacity = '0';
+      });
+      binEl.classList.add('eat'); setTimeout(function () { binEl.classList.remove('eat'); }, 420);
+    } else { el.classList.add('placed'); }
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 380);
+    // 飛進開口後，才觸發就地揭曉＋金光＋投幣
+    setTimeout(function () { l2Reveal(band, binEl); }, 300);
+  }
+  function l2Reveal(band, binEl) {
     // A：就地揭曉「對應那一塊」街景由灰濛變明亮
     var slice = document.querySelector('#l2after .l2slice[data-band="' + band + '"]');
     if (slice) slice.classList.add('on');
     var spot = document.querySelector('#l2spots .l2spot[data-band="' + band + '"]');
     if (spot) { spot.classList.add('healed'); var sr = spot.getBoundingClientRect(); l2Flower(sr.left + sr.width / 2, sr.top + sr.height / 2); }
+    if (binEl) { binEl.classList.add('lit'); setTimeout(function () { binEl.classList.remove('lit'); }, 700); }
     // 同關1的回饋：金光飛向金圈米芽（長一階）＋ 銅板進竹筒
-    var src = (spot || binEl || el).getBoundingClientRect();
+    var src = (spot || binEl || document.body).getBoundingClientRect();
     var cx = src.left + src.width / 2, cy = src.top + src.height / 2;
     SAVE.kindnessMin += C.perHome.minutes; SAVE.coins += C.perHome.coins;
     SAVE.bamboo += C.perHome.coins; SAVE.sprout.growth += C.perHome.growth; persist();
@@ -955,7 +980,6 @@
     flyTo('sproutRing', cx, cy, 'flydot', function () { refreshGlobals(); pulseRing(0); });
     flyTo('bamboo', cx, cy, 'flycoin', function () { Sound.coin(); bambooBump(); });
     flash('🌸 ' + L(C.level2.revealLine));
-    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 180);
     l2.done += 1;
     document.getElementById('level2').style.setProperty('--heal', (l2.done / l2.total).toFixed(3));
     if (l2.done >= l2.total) setTimeout(l2Complete, 700);

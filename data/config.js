@@ -62,11 +62,11 @@ window.CONFIG = {
       es: 'Toda la calle brilla ahora — luz que le devolviste, una esquina a la vez.'
     },
     bins: [
-      { id: 'paper',   icon: '🗞️', name: { zh: '紙類',   en: 'Paper',   es: 'Papel' } },
-      { id: 'plastic', icon: '🧴', name: { zh: '塑膠',   en: 'Plastic', es: 'Plástico' } },
-      { id: 'glass',   icon: '🫙', name: { zh: '玻璃',   en: 'Glass',   es: 'Vidrio' } },
-      { id: 'metal',   icon: '🥫', name: { zh: '鋁罐',   en: 'Metal',   es: 'Metal' } },
-      { id: 'compost', icon: '🍂', name: { zh: '廚餘堆肥', en: 'Compost', es: 'Compost' } }
+      { id: 'paper',   icon: '🗞️', img: 'bin_paper',   name: { zh: '紙類',   en: 'Paper',   es: 'Papel' } },
+      { id: 'plastic', icon: '🧴', img: 'bin_plastic', name: { zh: '塑膠',   en: 'Plastic', es: 'Plástico' } },
+      { id: 'glass',   icon: '🫙', img: 'bin_glass',   name: { zh: '玻璃',   en: 'Glass',   es: 'Vidrio' } },
+      { id: 'metal',   icon: '🥫', img: 'bin_metal',   name: { zh: '鋁罐',   en: 'Metal',   es: 'Metal' } },
+      { id: 'compost', icon: '🍂', img: 'bin_compost', name: { zh: '廚餘堆肥', en: 'Compost', es: 'Compost' } }
     ],
     items: [
       { id: 'newspaper', icon: '📰', bin: 'paper',   name: { zh: '報紙',   en: 'Newspaper',     es: 'Periódico' } },
