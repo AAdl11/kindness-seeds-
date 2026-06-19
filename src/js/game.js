@@ -798,48 +798,116 @@
 
   /* ---------- 語言切換時重繪 ---------- */
   /* ===================================================================
-     關2 · 環保小尖兵（分類整理；拖放，零選擇題；純加法，不動關1）
+     關2 · 環保小尖兵（會呼吸的動態關卡；拖放分類核心保留；純加法，不動關1）
+     A 漸進就地揭曉 + B 動態層 + 綻放慶祝 + C 發光待整理點
      =================================================================== */
   var l2 = null;
+  var l2img = { before: null, after: null };
   function startActivity(id) { if (id === C.level2.id) startLevel2(); else startLevel(); }
+
+  /* 街景圖：.png/.jpg/.jpeg/.webp 自動偵測；沒有就用 CSS 漸層 fallback */
+  function resolveImg(base, cb) {
+    var exts = ['png', 'jpg', 'jpeg', 'webp'], i = 0;
+    (function next() {
+      if (i >= exts.length) { cb(null); return; }
+      var url = 'assets/images/' + base + '.' + exts[i++];
+      var im = new Image();
+      im.onload = function () { cb(url); };
+      im.onerror = next;
+      im.src = url;
+    })();
+  }
 
   function startLevel2() {
     var D2 = C.level2;
     l2 = { total: D2.items.length, done: 0, ended: false };
     Sound.playScene('eco');
     show('level2');
-    document.getElementById('level2').classList.remove('cleared');
+    var lv = document.getElementById('level2');
+    lv.classList.remove('cleared');
+    lv.style.setProperty('--heal', '0');
     document.getElementById('l2end').classList.add('hidden');
+    document.getElementById('l2bloom').innerHTML = '';
     l2RenderChrome();
+    l2BuildScene();
     l2BuildBoard();
+    // 載入街景圖（非阻塞；載到才覆蓋漸層）
+    resolveImg(D2.imgBefore, function (u) {
+      if (u) { l2img.before = u; document.getElementById('l2before').style.backgroundImage = "url('" + u + "')"; }
+    });
+    resolveImg(D2.imgAfter, function (u) {
+      if (u) { l2img.after = u; document.querySelectorAll('#l2after .l2slice').forEach(function (s) { s.style.backgroundImage = "url('" + u + "')"; }); }
+    });
   }
   function l2RenderChrome() {
-    var D2 = C.level2;
-    document.getElementById('l2title').textContent = L({ zh: '環保小尖兵', en: 'Eco Vanguard', es: 'Vanguardia Ecológica' });
-    document.getElementById('l2intro').textContent = L(D2.intro);
-    var leave = document.getElementById('l2leave');
-    leave.textContent = T('toHub');
+    document.getElementById('l2title').textContent = L({ zh: '你的街角', en: 'Your corner', es: 'Tu esquina' });
+    document.getElementById('l2intro').textContent = L(C.level2.intro);
+    document.getElementById('l2leave').textContent = T('toHub');
+  }
+  /* 動態場景：5 條 after 切片（就地揭曉）＋ 霧/光塵/鳥 ＋ 發光待整理點 */
+  function l2BuildScene() {
+    var n = C.level2.items.length;
+    var after = document.getElementById('l2after'); after.innerHTML = '';
+    var spots = document.getElementById('l2spots'); spots.innerHTML = '';
+    document.getElementById('l2dust').innerHTML = '';
+    document.getElementById('l2birds').innerHTML = '';
+    for (var i = 0; i < n; i++) {
+      var left = (i * 100 / n), right = 100 - (i + 1) * 100 / n;
+      var sl = document.createElement('div'); sl.className = 'l2slice'; sl.dataset.band = i;
+      sl.style.clipPath = 'inset(0 ' + right + '% 0 ' + left + '%)';
+      sl.style.webkitClipPath = 'inset(0 ' + right + '% 0 ' + left + '%)';
+      if (l2img.after) sl.style.backgroundImage = "url('" + l2img.after + "')";
+      after.appendChild(sl);
+    }
+    if (l2img.before) document.getElementById('l2before').style.backgroundImage = "url('" + l2img.before + "')";
+    // 光塵（限制數量，純 CSS）
+    var dust = document.getElementById('l2dust');
+    for (var d = 0; d < 9; d++) {
+      var p = document.createElement('div'); p.className = 'l2mote';
+      p.style.left = (5 + Math.random() * 90) + '%';
+      p.style.animationDelay = (-Math.random() * 8).toFixed(2) + 's';
+      p.style.animationDuration = (7 + Math.random() * 6).toFixed(2) + 's';
+      dust.appendChild(p);
+    }
+    // 鳥（2 隻，療癒後才明顯）
+    var birds = document.getElementById('l2birds');
+    for (var b = 0; b < 2; b++) {
+      var bd = document.createElement('div'); bd.className = 'l2bird'; bd.textContent = '🕊️';
+      bd.style.top = (12 + b * 9) + '%';
+      bd.style.animationDelay = (b * 5).toFixed(1) + 's';
+      birds.appendChild(bd);
+    }
   }
   function l2BuildBoard() {
     var D2 = C.level2;
-    // 回收桶（分類區）
     var binsEl = document.getElementById('l2bins'); binsEl.innerHTML = '';
-    D2.bins.forEach(function (b) {
-      var el = document.createElement('div'); el.className = 'l2bin'; el.dataset.bin = b.id;
-      el.innerHTML = '<span class="l2bin-ico">' + b.icon + '</span><span class="l2bin-nm">' + L(b.name) + '</span>';
+    D2.bins.forEach(function (bn) {
+      var el = document.createElement('div'); el.className = 'l2bin'; el.dataset.bin = bn.id;
+      el.innerHTML = '<span class="l2bin-ico">' + bn.icon + '</span><span class="l2bin-nm">' + L(bn.name) + '</span>';
       binsEl.appendChild(el);
     });
-    // 待分類的回收物（打散）
-    var itemsEl = document.getElementById('l2items'); itemsEl.innerHTML = '';
-    var items = D2.items.slice(); shuffle(items);
-    items.forEach(function (it) {
-      var el = document.createElement('div'); el.className = 'l2item'; el.dataset.bin = it.bin;
-      el.innerHTML = '<span class="l2item-ico">' + it.icon + '</span><span class="l2item-nm">' + L(it.name) + '</span>';
-      el.addEventListener('pointerdown', function (e) { l2StartDrag(e, el, it); });
-      itemsEl.appendChild(el);
+    document.getElementById('l2items').innerHTML = '';
+    // C：街上發光待整理點（點下去才出現該處的回收物）；位置＝對應切片的那一段
+    var spots = document.getElementById('l2spots');
+    D2.items.forEach(function (it, i) {
+      var sp = document.createElement('div'); sp.className = 'l2spot'; sp.dataset.band = i;
+      sp.style.left = ((i + 0.5) * 100 / D2.items.length) + '%';
+      sp.style.top = (60 + (i % 2 ? 6 : -4)) + '%';
+      sp.innerHTML = '<span class="l2spot-ring"></span><span class="l2spot-ico">✨</span>';
+      sp.addEventListener('pointerup', function () { l2OpenSpot(sp, it, i); });
+      spots.appendChild(sp);
     });
   }
-  function l2StartDrag(e, el, it) {
+  function l2OpenSpot(sp, it, band) {
+    if (sp.classList.contains('opened')) return;
+    sp.classList.add('opened');
+    Sound.clue();
+    var el = document.createElement('div'); el.className = 'l2item'; el.dataset.bin = it.bin; el.dataset.band = band;
+    el.innerHTML = '<span class="l2item-ico">' + it.icon + '</span><span class="l2item-nm">' + L(it.name) + '</span>';
+    el.addEventListener('pointerdown', function (e) { l2StartDrag(e, el, it, band); });
+    document.getElementById('l2items').appendChild(el);
+  }
+  function l2StartDrag(e, el, it, band) {
     if (l2.ended || el.classList.contains('placed')) return;
     e.preventDefault();
     var r = el.getBoundingClientRect();
@@ -847,54 +915,71 @@
     var home = { left: el.style.left, top: el.style.top, pos: el.style.position };
     el.classList.add('l2dragging');
     function moveTo(x, y) { el.style.left = (x - offX) + 'px'; el.style.top = (y - offY) + 'px'; }
-    el.style.position = 'fixed'; el.style.left = r.left + 'px'; el.style.top = r.top + 'px';
-    el.style.pointerEvents = 'none';
+    el.style.position = 'fixed'; el.style.left = r.left + 'px'; el.style.top = r.top + 'px'; el.style.pointerEvents = 'none';
     moveTo(e.clientX, e.clientY);
     function onMove(ev) { moveTo(ev.clientX, ev.clientY); }
+    function done() { document.removeEventListener('pointermove', onMove); document.removeEventListener('pointerup', onUp); document.removeEventListener('pointercancel', onUp); }
     function onUp(ev) {
-      document.removeEventListener('pointermove', onMove);
-      document.removeEventListener('pointerup', onUp);
-      el.classList.remove('l2dragging'); el.style.pointerEvents = '';
+      done(); el.classList.remove('l2dragging'); el.style.pointerEvents = '';
       var bin = l2BinAt(ev.clientX, ev.clientY);
-      if (bin === it.bin) { l2Place(el, it, bin); }
+      if (bin === it.bin) { l2Place(el, it, band, bin); }
       else { el.style.position = home.pos; el.style.left = home.left; el.style.top = home.top; l2Retry(); }
     }
     document.addEventListener('pointermove', onMove);
     document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
   }
   function l2BinAt(x, y) {
     var t = document.elementFromPoint(x, y);
     while (t) { if (t.classList && t.classList.contains('l2bin')) return t.dataset.bin; t = t.parentElement; }
     return null;
   }
-  function l2Retry() {
-    Sound.soft();
-    flash('🤍 ' + L(C.level2.retry));
-  }
-  function l2Place(el, it, binId) {
+  function l2Retry() { Sound.soft(); flash('🤍 ' + L(C.level2.retry)); }
+
+  function l2Place(el, it, band, binId) {
     el.classList.add('placed');
     var binEl = document.querySelector('#l2bins .l2bin[data-bin="' + binId + '"]');
     if (binEl) { binEl.classList.add('lit'); setTimeout(function () { binEl.classList.remove('lit'); }, 700); }
-    // 同關1的回饋：金光粒子飛向米芽長一階 ＋ 飛進竹筒投幣
-    var src = (binEl || el).getBoundingClientRect();
+    // A：就地揭曉「對應那一塊」街景由灰濛變明亮
+    var slice = document.querySelector('#l2after .l2slice[data-band="' + band + '"]');
+    if (slice) slice.classList.add('on');
+    var spot = document.querySelector('#l2spots .l2spot[data-band="' + band + '"]');
+    if (spot) { spot.classList.add('healed'); var sr = spot.getBoundingClientRect(); l2Flower(sr.left + sr.width / 2, sr.top + sr.height / 2); }
+    // 同關1的回饋：金光飛向金圈米芽（長一階）＋ 銅板進竹筒
+    var src = (spot || binEl || el).getBoundingClientRect();
     var cx = src.left + src.width / 2, cy = src.top + src.height / 2;
     SAVE.kindnessMin += C.perHome.minutes; SAVE.coins += C.perHome.coins;
     SAVE.bamboo += C.perHome.coins; SAVE.sprout.growth += C.perHome.growth; persist();
     Sound.grow();
-    burst(cx, cy, { n: 18, spread: 80, life: 820, size: 9 });
+    burst(cx, cy, { n: 16, spread: 76, life: 800, size: 9 });
     flyTo('sproutRing', cx, cy, 'flydot', function () { refreshGlobals(); pulseRing(0); });
     flyTo('bamboo', cx, cy, 'flycoin', function () { Sound.coin(); bambooBump(); });
+    flash('🌸 ' + L(C.level2.revealLine));
     setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 180);
     l2.done += 1;
-    if (l2.done >= l2.total) setTimeout(l2Complete, 600);
+    document.getElementById('level2').style.setProperty('--heal', (l2.done / l2.total).toFixed(3));
+    if (l2.done >= l2.total) setTimeout(l2Complete, 700);
+  }
+  function l2Flower(x, y) {
+    var f = document.createElement('div'); f.className = 'l2flower';
+    f.textContent = ['🌼', '🌸', '🌷', '🌻'][Math.floor(Math.random() * 4)];
+    f.style.left = x + 'px'; f.style.top = y + 'px';
+    document.body.appendChild(f);
+    setTimeout(function () { if (f.parentNode) f.parentNode.removeChild(f); }, 2600);
   }
   function l2Complete() {
     if (l2.ended) return;
     l2.ended = true;
-    SAVE.lit[C.level2.id] = true; persist();           // 推進空氣量表（meters 讀 lit.eco）
-    document.getElementById('level2').classList.add('cleared');  // 霧散、天清、長花草
+    SAVE.lit[C.level2.id] = true; persist();           // 推進空氣量表（meters 讀 lit.eco）＋ hub 永久亮
+    var lv = document.getElementById('level2');
+    lv.classList.add('cleared'); lv.style.setProperty('--heal', '1');
+    document.querySelectorAll('#l2after .l2slice').forEach(function (s) { s.classList.add('on'); });
     Sound.success(2);
-    setTimeout(l2ShowEnd, 1500);
+    // 綻放慶祝：一波花 + 柔光
+    var bw = window.innerWidth, bh = window.innerHeight;
+    for (var i = 0; i < 10; i++) (function (k) { setTimeout(function () { l2Flower(bw * (0.1 + Math.random() * 0.8), bh * (0.3 + Math.random() * 0.4)); }, k * 90); })(i);
+    burst(bw / 2, bh * 0.42, { n: 36, spread: bw * 0.32, life: 1100, size: 11 });
+    setTimeout(l2ShowEnd, 1700);
   }
   function l2ShowEnd() {
     var addMin = l2.total * C.perHome.minutes;

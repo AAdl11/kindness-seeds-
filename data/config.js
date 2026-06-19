@@ -39,10 +39,17 @@ window.CONFIG = {
   level2: {
     id: 'eco',
     music: 'assets/audio/ending_warm.mp3',   // placeholder（祥和）；明暺日後換成 eco 專屬曲
+    imgBefore: 'eco_street_before',           // 街景圖（基底檔名；.png/.jpg 皆自動偵測）
+    imgAfter: 'eco_street_after',
     intro: {
-      zh: '一條灰濛濛的街角，等人把它整理回乾淨明亮。把每樣東西，送回它該去的地方。',
-      en: 'A gray, hazy street corner waiting to be made bright again. Send each thing back where it belongs.',
-      es: 'Una esquina gris y brumosa esperando volver a brillar. Devuelve cada cosa a donde pertenece.'
+      zh: '這是你的街角，灰濛濛的。點亮街上發光的點，把每樣東西送回它該去的家。',
+      en: 'This corner is yours, and it is gray. Tap the glowing spots and send each thing home.',
+      es: 'Esta esquina es tuya, y está gris. Toca los puntos brillantes y devuelve cada cosa a su lugar.'
+    },
+    revealLine: {
+      zh: '這一角，因你亮起來了。',
+      en: 'This corner — bright again, because of you.',
+      es: 'Esta esquina — brilla otra vez, gracias a ti.'
     },
     retry: {
       zh: '這樣好像不太對，沒關係，再看看它是什麼，換一個桶試試。',
@@ -50,9 +57,9 @@ window.CONFIG = {
       es: 'Eso no parece correcto — tranquilo. Mira otra vez qué es e intenta otro cubo.'
     },
     closing: {
-      zh: '街角乾淨了，風裡都是草香——乾淨，是我們一起還給土地的禮物。',
-      en: 'The corner is clean, the air smells of grass — cleanliness is the gift we give the land together.',
-      es: 'La esquina está limpia, el aire huele a hierba — la limpieza es el regalo que devolvemos juntos a la tierra.'
+      zh: '整條街都亮起來了——這是你一處一處，親手還給它的光。',
+      en: 'The whole street is bright now — light you gave back to it, one corner at a time.',
+      es: 'Toda la calle brilla ahora — luz que le devolviste, una esquina a la vez.'
     },
     bins: [
       { id: 'paper',   icon: '🗞️', name: { zh: '紙類',   en: 'Paper',   es: 'Papel' } },
