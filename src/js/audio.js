@@ -59,24 +59,32 @@ window.Sound = (function () {
     } catch (e) {}
   }
 
+  /* 立即硬停某軌：靜音 + pause + currentTime=0，確保全場只剩一軌在播 */
   function stopScene(scene) {
     var n = nodes[scene]; if (!n) return;
-    setGain(n, 0, FADE / 3);
-    setTimeout(function () {
-      if (current !== scene && n.audio) { try { n.audio.pause(); } catch (e) {} }
-    }, FADE * 1000 + 60);
+    setGain(n, 0, 0.01);
+    if (n.audio) { try { n.audio.pause(); n.audio.currentTime = 0; } catch (e) {} }
   }
 
   function playScene(scene) {
     try {
       if (!TRACKS[scene]) return;
       if (!unlocked) { pending = scene; return; }     // 解鎖前只記住，不播
+      var def = TRACKS[scene];
+      // 防重複觸發：要播的跟正在播的是同一首（同場景或同 src）就不重開一軌
       if (current === scene) { var nn = nodes[scene]; if (nn && nn.audio) safePlay(nn.audio); return; }
+      if (current && TRACKS[current] && TRACKS[current].src === def.src) {
+        var cn = nodes[current]; if (cn && cn.audio) safePlay(cn.audio); return;
+      }
       ensureCtx();
-      var prev = current; current = scene;
-      if (prev && prev !== scene) stopScene(prev);
+      current = scene;
+      // 全場只允許一軌：切場景／換曲前，先把其它任何軌 pause()+歸零，杜絕兩軌疊播
+      Object.keys(nodes).forEach(function (s) { if (s !== scene) stopScene(s); });
       var n = build(scene);
-      if (n && n.audio) { try { n.audio.currentTime = 0; } catch (e) {} safePlay(n.audio); }
+      if (n && n.audio) {
+        try { n.audio.loop = true; n.audio.currentTime = 0; } catch (e) {}   // 連續循環、從頭播
+        safePlay(n.audio);
+      }
       setGain(n, n.def.vol, FADE);
     } catch (e) { /* 音訊絕不中斷流程 */ }
   }
