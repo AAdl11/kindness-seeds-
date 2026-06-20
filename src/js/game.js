@@ -405,10 +405,10 @@
     });
   }
 
-  /* 地圖 full-bleed cover（max）；節點在中央安全區，cover 裁切也看得到 */
+  /* 地圖完整顯示（contain，min）：任何方向三關圖釘都在畫面內、點得到；四周留白用天色填 */
   function hubFit() {
     var st = document.getElementById('mapStage');
-    var W = st.clientWidth, H = st.clientHeight, s = Math.max(W / IW, H / IH);
+    var W = st.clientWidth, H = st.clientHeight, s = Math.min(W / IW, H / IH);
     var rw = IW * s, rh = IH * s;
     hubRect = { ox: (W - rw) / 2, oy: (H - rh) / 2, rw: rw, rh: rh, s: s };
   }
@@ -1599,15 +1599,18 @@
       setTimeout(layout, 380);
     });
 
-    // 版面：場景／地圖隨容器大小重新對位
+    // 版面：場景／地圖隨容器大小重新對位（旋轉/直橫切換都重算）
     function relayout() { if (lvl) layout(); hubLayout(); }
+    var relayoutTimer = null;
+    function relayoutDebounced() { clearTimeout(relayoutTimer); relayoutTimer = setTimeout(relayout, 150); }
     if (window.ResizeObserver) {
-      var ro = new ResizeObserver(relayout);
+      var ro = new ResizeObserver(relayoutDebounced);
       ro.observe(document.getElementById('stage'));
       ro.observe(document.getElementById('mapStage'));
     }
-    window.addEventListener('resize', relayout);
-    window.addEventListener('orientationchange', function () { setTimeout(relayout, 250); });
+    window.addEventListener('resize', relayoutDebounced);
+    // 旋轉：立即重算一次，再於回報新尺寸後補算一次（某些瀏覽器旋轉當下尺寸仍是舊的）
+    window.addEventListener('orientationchange', function () { relayoutDebounced(); setTimeout(relayout, 300); });
 
     renderOpening(); show('opening');
     if (window.Opening) Opening.start();             // 啟動善的任意門開場動畫

@@ -91,9 +91,11 @@ button{font-family:inherit;cursor:pointer;border:none;}
 #hubTop h2{font-size:20px;font-weight:800;color:#2a3550;text-shadow:0 1px 8px rgba(255,255,255,.7);}
 #hubSub{font-size:12px;color:#3f5170;font-weight:700;text-shadow:0 1px 6px rgba(255,255,255,.6);}
 
-#mapStage{position:absolute;inset:0;overflow:hidden;}
+/* 地圖完整顯示（contain）：四周留白用柔和天色漸層填，直式看起來乾淨刻意、不刺眼 */
+#mapStage{position:absolute;inset:0;overflow:hidden;
+  background:linear-gradient(180deg,#cfe6f4 0%,#e6f0ec 55%,#f6efe0 100%);}
 #hubMap{position:absolute;inset:0;background-image:url('../../assets/images/KS_hunters_point_map.png');
-  background-size:cover;background-position:center;z-index:0;transition:filter 1.2s ease;}
+  background-size:contain;background-repeat:no-repeat;background-position:center;z-index:0;transition:filter 1.2s ease;}
 /* 敘事：起點黯淡（昔日深淵）→ 越玩越亮 */
 #dawnVeil{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:multiply;
   background:linear-gradient(180deg,#3a3f63,#222a44);opacity:.5;transition:opacity 1.2s ease;}
@@ -142,9 +144,12 @@ button{font-family:inherit;cursor:pointer;border:none;}
 .pinnode.soon{opacity:.78;}
 .pinnode.soon .dot{width:13px;height:13px;background:radial-gradient(circle,#b9c2d6,#7e8aa6);}
 .pinnode.play{cursor:pointer;z-index:6;}
-.pinnode.play .dot{width:24px;height:24px;background:radial-gradient(circle,#fff3c4,#ffb938);
+.pinnode.play .dot{position:relative;width:24px;height:24px;background:radial-gradient(circle,#fff3c4,#ffb938);
   box-shadow:0 0 0 4px rgba(255,255,255,.65),0 0 18px 6px rgba(255,196,70,.85),0 3px 8px rgba(120,70,0,.4);
   animation:pinpulse 1.8s ease-in-out infinite;}
+/* 放大手指觸控範圍（透明），地圖縮小時也好點 */
+.pinnode.play .dot::before{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:52px;height:52px;border-radius:50%;}
 .pinnode.play:active .dot{transform:scale(.9);}
 .pinnode .pinlabel{background:var(--panel-dark);color:#fff;border-radius:10px;padding:4px 9px;
   text-align:center;line-height:1.2;box-shadow:0 4px 10px rgba(0,0,0,.35);white-space:nowrap;}
