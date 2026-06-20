@@ -1093,7 +1093,7 @@
     var addMin = l2.total * C.perHome.minutes;
     document.getElementById('l2endTitle').textContent = T('ecoDone');
     document.getElementById('l2plant').innerHTML = plantSVG(SAVE.sprout.growth, 168);
-    document.getElementById('l2endLine').innerHTML = T('noCompare') + '——' + L(C.level2.closing);
+    document.getElementById('l2endLine').innerHTML = L(C.level2.closing);
     document.getElementById('l2reward').innerHTML =
       '🌱 ' + T('becameStage').replace('{name}', SAVE.sprout.name || '').replace('{stage}', stageName(SAVE.sprout.growth)) +
       ' ｜ ' + T('kindnessPlus').replace('{min}', addMin) + ' ｜ ' + T('kindnessTotal').replace('{total}', SAVE.kindnessMin);
@@ -1400,7 +1400,7 @@
     var addMin = (l3.total1 + l3.total2) * C.perHome.minutes;
     document.getElementById('l3endTitle').textContent = T('gradDone');
     document.getElementById('l3plant').innerHTML = plantSVG(SAVE.sprout.growth, 168);
-    document.getElementById('l3endLine').innerHTML = T('noCompare') + '——' + L(C.level3.closing);
+    document.getElementById('l3endLine').innerHTML = L(C.level3.closing);
     document.getElementById('l3reward').innerHTML =
       '🌱 ' + T('becameStage').replace('{name}', SAVE.sprout.name || '').replace('{stage}', stageName(SAVE.sprout.growth)) +
       ' ｜ ' + T('kindnessPlus').replace('{min}', addMin) + ' ｜ ' + T('kindnessTotal').replace('{total}', SAVE.kindnessMin);
