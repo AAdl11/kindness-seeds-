@@ -97,9 +97,9 @@ window.CONFIG = {
       es: 'Birretes al aire, cada gracias entregado — esta generación crece con la bendición de toda la comunidad.'
     },
     targets: [
-      { id: 'family',    icon: '🏠', name: { zh: '家庭', en: 'Family',    es: 'Familia' } },
-      { id: 'teacher',   icon: '🏫', name: { zh: '老師', en: 'Teachers',  es: 'Maestros' } },
-      { id: 'community', icon: '🏘️', name: { zh: '社區', en: 'Community', es: 'Comunidad' } }
+      { id: 'family',    icon: '🏠', img: 'icon_family',    name: { zh: '家庭', en: 'Family',    es: 'Familia' } },
+      { id: 'teacher',   icon: '🏫', img: 'icon_teacher',   name: { zh: '老師', en: 'Teachers',  es: 'Maestros' } },
+      { id: 'community', icon: '🏘️', img: 'icon_community', name: { zh: '社區', en: 'Community', es: 'Comunidad' } }
     ],
     cards: [
       { target: 'family',    text: { zh: '謝謝您每天為我準備晚餐', en: 'Thank you for dinner every night', es: 'Gracias por la cena cada noche' } },

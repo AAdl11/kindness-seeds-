@@ -1161,12 +1161,23 @@
       pet.appendChild(p);
     }
     var kids = document.getElementById('l3kids'); kids.innerHTML = '';
-    for (var k = 0; k < 6; k++) {
+    // 畢業生：洗牌多膚色、彼此不擺太近；圖載不到時退回原本 CSS 笑臉
+    var gpool = ['grad_kid_light', 'grad_kid_tan', 'grad_kid_girl', 'grad_kid_deep', 'grad_kid_asia_girl', 'grad_kid_asia_boy'];
+    shuffle(gpool);
+    var gplaced = [];
+    for (var k = 0; k < gpool.length; k++) {
+      var gx, gy, tries = 0;
+      do {
+        gx = 8 + Math.random() * 82; gy = 56 + Math.random() * 16; tries++;
+      } while (tries < 24 && gplaced.some(function (q) { return Math.abs(q.x - gx) < 15 && Math.abs(q.y - gy) < 9; }));
+      gplaced.push({ x: gx, y: gy });
       var kd = document.createElement('div'); kd.className = 'l3kid';
-      kd.style.left = (10 + Math.random() * 80) + '%';
-      kd.style.top = (58 + Math.random() * 14) + '%';     // 站在廣場上
+      kd.style.left = gx + '%'; kd.style.top = gy + '%';
       kd.style.setProperty('--c', ['#ffd27f', '#9ad8a0', '#9ec2ff', '#f4a3c0', '#c7a9ff'][k % 5]);
       kd.style.animationDelay = (-Math.random() * 6).toFixed(2) + 's';
+      (function (node, name) {
+        resolveImg(name, function (u) { if (!u) return; node.style.backgroundImage = "url('" + u + "')"; node.classList.add('hasimg'); });
+      })(kd, gpool[k]);
       kids.appendChild(kd);
     }
     // 隱藏彩蛋：點到某棵櫻花樹 → 驚喜
@@ -1191,8 +1202,15 @@
     var tg = document.getElementById('l3targets'); tg.innerHTML = '';
     D3.targets.forEach(function (t) {
       var el = document.createElement('div'); el.className = 'l3target'; el.dataset.t = t.id;
-      el.innerHTML = '<span class="l3target-hit"></span><span class="l3target-ico">' + t.icon + '</span><span class="l3target-nm">' + L(t.name) + '</span>';
+      el.innerHTML = '<span class="l3target-hit"></span>' +
+        '<span class="l3target-ico"><span class="l3target-emoji">' + t.icon + '</span></span>' +
+        '<span class="l3target-nm">' + L(t.name) + '</span>';
       tg.appendChild(el);
+      if (t.img) resolveImg(t.img, function (u) {        // 圖片優先；載不到才退回 emoji
+        if (!u) return;
+        var ico = el.querySelector('.l3target-ico');
+        ico.style.backgroundImage = "url('" + u + "')"; ico.classList.add('hasimg');
+      });
     });
     document.getElementById('l3items').innerHTML = '';
     var spots = document.getElementById('l3spots'); spots.innerHTML = '';
@@ -1210,7 +1228,12 @@
     if (sp.classList.contains('opened')) return;
     sp.classList.add('opened'); Sound.clue();
     var el = document.createElement('div'); el.className = 'l3card'; el.dataset.t = cd.target;
-    el.innerHTML = '<span class="l3card-ico">💌</span><span class="l3card-tx">' + L(cd.text) + '</span>';
+    el.innerHTML = '<span class="l3card-ico"><span class="l3card-emoji">💌</span></span><span class="l3card-tx">' + L(cd.text) + '</span>';
+    resolveImg('icon_heart', function (u) {              // 感恩愛心圖；載不到退回 emoji
+      if (!u) return;
+      var ico = el.querySelector('.l3card-ico');
+      ico.style.backgroundImage = "url('" + u + "')"; ico.classList.add('hasimg');
+    });
     el.addEventListener('pointerdown', function (e) { l3DragCard(e, el, cd); });
     document.getElementById('l3items').appendChild(el);
   }
@@ -1299,7 +1322,14 @@
     var tray = document.getElementById('l3items'); tray.innerHTML = '';
     for (var i = 0; i < D3.act2.count; i++) {
       var el = document.createElement('div'); el.className = 'l3letter';
-      el.innerHTML = '<span class="l3letter-ico">✉️</span>';
+      el.innerHTML = '<span class="l3letter-ico"><span class="l3letter-emoji">✉️</span></span>';
+      (function (node) {                                 // 信封圖；載不到退回 emoji
+        resolveImg('icon_letter', function (u) {
+          if (!u) return;
+          var ico = node.querySelector('.l3letter-ico');
+          ico.style.backgroundImage = "url('" + u + "')"; ico.classList.add('hasimg');
+        });
+      })(el);
       el.addEventListener('pointerdown', (function (node) { return function (e) { l3DragLetter(e, node); }; })(el));
       tray.appendChild(el);
     }
