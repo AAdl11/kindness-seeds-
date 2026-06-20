@@ -862,6 +862,7 @@
     l2RenderChrome();
     l2BuildScene();
     l2BuildBoard();
+    l2BuildDolls();
     // 載入街景圖（非阻塞；載到才覆蓋漸層）
     resolveImg(D2.imgBefore, function (u) {
       if (u) { l2img.before = u; document.getElementById('l2before').style.backgroundImage = "url('" + u + "')"; }
@@ -998,6 +999,7 @@
     // A：就地揭曉「對應那一塊」街景由灰濛變明亮
     var slice = document.querySelector('#l2after .l2slice[data-band="' + band + '"]');
     if (slice) slice.classList.add('on');
+    l2SpawnBand(band);                                   // 這一區乾淨了 → 對應小尖兵走出來
     var spot = document.querySelector('#l2spots .l2spot[data-band="' + band + '"]');
     if (spot) { spot.classList.add('healed'); var sr = spot.getBoundingClientRect(); l2Flower(sr.left + sr.width / 2, sr.top + sr.height / 2); }
     if (binEl) { binEl.classList.add('lit', 'bounce'); setTimeout(function () { binEl.classList.remove('lit', 'bounce'); }, 800); }  // 桶子 Q 彈
@@ -1015,6 +1017,56 @@
     l2.done += 1;
     document.getElementById('level2').style.setProperty('--heal', (l2.done / l2.total).toFixed(3));
     if (l2.done >= l2.total) setTimeout(l2Complete, 700);
+  }
+  /* 街越乾淨、社區越多人走出來（純氛圍）：綁在療癒進度，無分數、無排名 */
+  var l2DollPool = [];
+  function l2BuildDolls() {
+    var box = document.getElementById('l2dolls');
+    var D = C.level2 && C.level2.dolls;
+    if (!box || !D) return;
+    box.innerHTML = '';
+    l2.spawnedBands = {};
+    l2.dollIdx = 0;
+    // 洗牌小尖兵，讓膚色／姿態看起來多元、不重複
+    l2DollPool = D.rangers.slice();
+    for (var i = l2DollPool.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = l2DollPool[i]; l2DollPool[i] = l2DollPool[j]; l2DollPool[j] = t;
+    }
+    // 督導：一開始整理就站在旁邊帶（只站著，不撿、不拿袋）
+    (D.supSlots || []).forEach(function (s, k) {
+      var nm = D.supervisors[k % D.supervisors.length];
+      l2SpawnDoll(box, s, nm, 'l2sup', k * 220);
+    });
+    // 回訪：街已乾淨（lit.eco）→ 大家早就都在了（沿用既有存檔，不另開 key）
+    if (SAVE.lit && SAVE.lit[C.level2.id]) {
+      for (var b = 0; b < C.level2.items.length; b++) l2SpawnBand(b, true);
+    }
+  }
+  function l2SpawnBand(band, instant) {
+    var box = document.getElementById('l2dolls');
+    var D = C.level2 && C.level2.dolls;
+    if (!box || !D) return;
+    if (!l2.spawnedBands) l2.spawnedBands = {};
+    if (l2.spawnedBands[band]) return;
+    l2.spawnedBands[band] = true;
+    D.slots.filter(function (s) { return s.band === band; }).forEach(function (s, k) {
+      var nm = l2DollPool[(l2.dollIdx++) % l2DollPool.length];
+      l2SpawnDoll(box, s, nm, 'l2doll', instant ? 0 : k * 180);
+    });
+  }
+  function l2SpawnDoll(box, slot, name, cls, delay) {
+    resolveImg(name, function (u) {
+      if (!u || !box.isConnected) return;                 // 沒圖就不放，避免破圖
+      var d = document.createElement('div');
+      d.className = cls;
+      d.style.left = slot.x + '%';
+      d.style.top = slot.y + '%';
+      d.style.backgroundImage = "url('" + u + "')";
+      box.appendChild(d);
+      var begin = function () { d.classList.add('in'); };  // 淡入 + 輕微走出/彈跳
+      if (delay > 0 && !REDUCE) setTimeout(begin, delay); else requestAnimationFrame(begin);
+    });
   }
   function l2Flower(x, y) {
     var f = document.createElement('div'); f.className = 'l2flower';

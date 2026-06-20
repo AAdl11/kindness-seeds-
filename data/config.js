@@ -155,6 +155,22 @@ window.CONFIG = {
       { id: 'jar',       icon: '🍯', bin: 'glass',   name: { zh: '玻璃罐', en: 'Glass jar',      es: 'Frasco' } },
       { id: 'can',       icon: '🥫', bin: 'metal',   name: { zh: '鋁罐',   en: 'Can',           es: 'Lata' } },
       { id: 'peel',      icon: '🍌', bin: 'compost', name: { zh: '果皮',   en: 'Fruit peel',    es: 'Cáscara' } }
-    ]
+    ],
+    // 街越乾淨、社區越多人走出來幫忙（純氛圍，不是分數、不排名）。
+    // 綁在現有療癒進度上：每療癒一區 → 對應 band 的小尖兵走出來；5/5 全亮 → 8 隻都在。
+    dolls: {
+      rangers: ['ranger_pickup', 'ranger_stand', 'ranger_wave', 'ranger_thumbsup_girl',
+                'ranger_thumbsup_deep', 'ranger_bagopen_deep', 'ranger_bagopen_brown', 'ranger_plant_asia'],
+      supervisors: ['supervisor_vest', 'supervisor_bun'],   // 只站著帶，不撿、不拿袋
+      // 沿街兩側 + 下緣，避開中央配對舞台（x 約 33–67% 留空）；y 在桶子上方
+      slots: [
+        { x: 6,  y: 76, band: 0 }, { x: 94, y: 76, band: 0 },
+        { x: 13, y: 70, band: 1 },
+        { x: 87, y: 70, band: 2 }, { x: 20, y: 82, band: 2 },
+        { x: 80, y: 82, band: 3 },
+        { x: 27, y: 66, band: 4 }, { x: 73, y: 66, band: 4 }
+      ],
+      supSlots: [ { x: 30, y: 60 }, { x: 70, y: 60 } ]
+    }
   }
 };

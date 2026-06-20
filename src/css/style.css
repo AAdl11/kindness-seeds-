@@ -569,6 +569,23 @@ body.screen-level #milestones{display:none;}
 .l2bin.lit .l2bin-ico{filter:drop-shadow(0 0 14px rgba(150,230,150,.95)) drop-shadow(0 4px 8px rgba(0,0,0,.35));}
 .l2bin.eat .l2bin-ico{animation:l2eat .42s ease;}
 @keyframes l2eat{0%{transform:translateY(0) scale(1);}35%{transform:translateY(-6px) scale(1.08);}100%{transform:translateY(0) scale(1);}}
+/* 街越乾淨、社區越多人走出來（純氛圍；只用 transform/opacity，數量上限 10） */
+#l2dolls{position:absolute;inset:0;z-index:5;pointer-events:none;}
+.l2doll,.l2sup{position:absolute;background-size:contain;background-position:center bottom;
+  background-repeat:no-repeat;opacity:0;will-change:transform,opacity;
+  filter:drop-shadow(0 3px 5px rgba(0,0,0,.32));
+  transform:translate(-50%,-100%) translateY(9px);
+  transition:opacity .5s ease,transform .55s cubic-bezier(.34,1.56,.64,1);}
+.l2doll{width:clamp(38px,9vw,64px);height:clamp(58px,14vw,104px);}
+.l2sup{width:clamp(44px,10.5vw,74px);height:clamp(66px,16vw,120px);}
+.l2doll.in{opacity:1;transform:translate(-50%,-100%);animation:l2sway 4.6s ease-in-out .55s infinite;}
+.l2sup.in{opacity:1;transform:translate(-50%,-100%);animation:l2sway 5.6s ease-in-out .3s infinite;}
+@keyframes l2sway{0%,100%{transform:translate(-50%,-100%) rotate(-1.6deg);}
+  50%{transform:translate(-50%,-100%) rotate(1.6deg);}}
+@media (prefers-reduced-motion:reduce){
+  .l2doll,.l2sup{transform:translate(-50%,-100%);transition:opacity .5s ease;}
+  .l2doll.in,.l2sup.in{transform:translate(-50%,-100%);animation:none;}
+}
 /* 結算 */
 #l2end{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(180deg,rgba(10,14,34,.42),rgba(8,11,28,.64));}
