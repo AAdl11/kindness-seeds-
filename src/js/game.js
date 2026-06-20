@@ -763,7 +763,7 @@
     document.getElementById('coldLayer').style.opacity = (p * 0.62).toFixed(3);
     document.getElementById('vignette').style.opacity = (0.4 + p * 0.45).toFixed(3);
     document.getElementById('sceneImg').style.filter =
-      'brightness(' + (1 - 0.55 * p).toFixed(3) + ') saturate(' + (1 - 0.2 * p).toFixed(3) + ')';
+      'brightness(' + (1 - 0.38 * p).toFixed(3) + ') saturate(' + (1 - 0.2 * p).toFixed(3) + ')';
     D.spots.forEach(function (_, i) {
       var g = document.getElementById('wg' + i);
       if (g && !g.classList.contains('lit')) g.style.opacity = (0.08 + 0.5 * p).toFixed(3);
