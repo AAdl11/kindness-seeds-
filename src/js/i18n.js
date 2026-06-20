@@ -48,6 +48,7 @@ window.I18N = {
     endWarm: '沒有比較，沒有分數——只有一扇扇亮起來的窗。',
     againNight: '再來一夜',
     toHub: '回三福',
+    feedback: '留言',
     // misc
     sproutStages: ['種子', '發芽', '小苗', '開花小樹'],
     becameStage: '{name} 長成「{stage}」',
@@ -112,6 +113,7 @@ window.I18N = {
     endWarm: 'No ranking, no score — only windows, one by one, lit from within.',
     againNight: 'One more night',
     toHub: 'Back to the map',
+    feedback: 'Feedback',
     sproutStages: ['a seed', 'a sprout', 'a sapling', 'a blooming tree'],
     becameStage: '{name} is now {stage}',
     kindnessPlus: 'Kindness time +{min} min',
@@ -175,6 +177,7 @@ window.I18N = {
     endWarm: 'Sin clasificación, sin puntaje — solo ventanas, una a una, encendidas por dentro.',
     againNight: 'Otra noche más',
     toHub: 'Volver al mapa',
+    feedback: 'Comentar',
     sproutStages: ['una semilla', 'un brote', 'un retoño', 'un árbol en flor'],
     becameStage: '{name} ahora es {stage}',
     kindnessPlus: 'Tiempo de bondad +{min} min',

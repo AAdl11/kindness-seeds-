@@ -228,7 +228,22 @@
   function stars(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
   function completedCount() { return ACTIVITIES.filter(function (a) { return SAVE.lit[a.id]; }).length; }
 
+  /* 意見箱：開啟 mailto（純加法，不動玩法/存檔）；三語標籤隨語言更新 */
+  var FB_MAIL = 'mailto:hsu.meihsien@gmail.com?subject=' +
+    encodeURIComponent('小芽遊戲意見') + '&body=' +
+    encodeURIComponent('（請寫下你的心得：哪關最喜歡、哪裡可以更好）');
+  function applyFeedback() {
+    var label = T('feedback');
+    var circle = document.getElementById('hubFeedback');
+    if (circle) { circle.href = FB_MAIL; circle.title = label; circle.setAttribute('aria-label', label); }
+    ['endFb', 'l2fb', 'l3fb'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) { el.href = FB_MAIL; el.textContent = '💬 ' + label; }
+    });
+  }
+
   function renderHub() {
+    applyFeedback();
     document.getElementById('hubTitle').textContent = T('hubTitle');
     document.getElementById('hubSub').textContent = T('subtitle');
     document.getElementById('miSwitch').textContent = T('switchName');
@@ -807,6 +822,7 @@
       ' ｜ ' + T('kindnessTotal').replace('{total}', SAVE.kindnessMin);
     document.getElementById('againBtn').textContent = T('againNight');
     document.getElementById('endHubBtn').textContent = T('toHub');
+    applyFeedback();
     show('ending');
   }
 
@@ -1099,6 +1115,7 @@
       ' ｜ ' + T('kindnessPlus').replace('{min}', addMin) + ' ｜ ' + T('kindnessTotal').replace('{total}', SAVE.kindnessMin);
     document.getElementById('l2again').textContent = T('playAgain');
     document.getElementById('l2hub').textContent = T('toHub');
+    applyFeedback();
     document.getElementById('l2end').classList.remove('hidden');
   }
 
@@ -1436,6 +1453,7 @@
       ' ｜ ' + T('kindnessPlus').replace('{min}', addMin) + ' ｜ ' + T('kindnessTotal').replace('{total}', SAVE.kindnessMin);
     document.getElementById('l3again').textContent = T('playAgain');
     document.getElementById('l3hub').textContent = T('toHub');
+    applyFeedback();
     document.getElementById('l3end').classList.remove('hidden');
   }
   function l3Relabel() {
@@ -1478,6 +1496,7 @@
       document.getElementById('endWarm').textContent = T('endWarm');
       document.getElementById('againBtn').textContent = T('againNight');
       document.getElementById('endHubBtn').textContent = T('toHub');
+      applyFeedback();
     }
   };
 

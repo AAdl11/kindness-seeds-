@@ -446,6 +446,14 @@ body.screen-level #milestones{display:none;}
 #hubMenu button{background:rgba(255,255,255,.1);color:#fff;font-weight:700;font-size:13px;
   padding:10px 13px;border-radius:9px;text-align:left;white-space:nowrap;}
 #hubMenu #miRestart{color:#ffb39e;}
+/* 意見箱：hub 圓鈕（玻璃感，跟齒輪/說明一致）＋ 結算列文字鈕 */
+#hubFeedback{position:fixed;z-index:81;top:calc(54px + env(safe-area-inset-top));left:calc(100px + env(safe-area-inset-left));
+  width:38px;height:38px;border-radius:50%;background:rgba(18,24,44,.55);color:#fff;font-size:17px;
+  display:flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer;
+  border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+.fbBtn{text-decoration:none;background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.3);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 6px 16px rgba(0,0,0,.28);}
+.card .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
 
 /* 安全區（瀏海/圓角）— 固定四角浮層內縮 */
 #hudTime{top:calc(12px + env(safe-area-inset-top));left:calc(58px + env(safe-area-inset-left));}
