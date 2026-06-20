@@ -711,7 +711,7 @@ body.screen-level #milestones{display:none;}
 #l3hualien.arrive .l3hu-ring{animation:l3huArrive .7s ease;}
 @keyframes l3huArrive{0%{box-shadow:0 0 22px 7px rgba(150,205,255,.8);}45%{box-shadow:0 0 50px 20px rgba(210,240,255,1);}100%{box-shadow:0 0 22px 7px rgba(150,205,255,.8);}}
 /* 第二幕的信（甩/拖都能送） */
-.l3letter{pointer-events:auto;width:clamp(56px,15vw,72px);height:clamp(56px,15vw,72px);border-radius:14px;background:#fff;
+.l3letter{pointer-events:auto;width:clamp(76px,20vw,104px);height:clamp(76px,20vw,104px);border-radius:14px;background:#fff;
   display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(0,0,0,.3);border:2px solid #ffe0b0;
   touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;}
 .l3letter-ico{font-size:clamp(1.8rem,6vw,2.3rem);}
