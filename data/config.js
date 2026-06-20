@@ -170,7 +170,7 @@ window.CONFIG = {
         { x: 80, y: 82, band: 3 },
         { x: 27, y: 66, band: 4 }, { x: 73, y: 66, band: 4 }
       ],
-      supSlots: [ { x: 30, y: 60 }, { x: 70, y: 60 } ]
+      supSlots: [ { x: 26, y: 82 }, { x: 74, y: 80 } ]
     }
   }
 };

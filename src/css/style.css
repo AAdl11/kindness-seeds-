@@ -611,7 +611,7 @@ body.screen-level #milestones{display:none;}
   background:#3a2f22;box-shadow:9px 0 0 #3a2f22;}
 .l3kid::after{content:'';position:absolute;left:7px;top:14px;width:8px;height:4px;border-bottom:2px solid #3a2f22;border-radius:0 0 6px 6px;}
 /* 圖片版畢業生（去背、夠大看得清；圖載不到才退回上面的 CSS 笑臉） */
-.l3kid.hasimg{width:clamp(64px,15vw,108px);height:clamp(92px,22vw,156px);
+.l3kid.hasimg{width:clamp(96px,23vw,152px);height:clamp(138px,33vw,218px);
   transform:translate(-50%,-100%);border-radius:0;background-color:transparent;
   background-size:contain;background-position:center bottom;background-repeat:no-repeat;
   box-shadow:none;filter:drop-shadow(0 4px 7px rgba(0,0,0,.3));animation:l3kidImg 5s ease-in-out infinite;}
@@ -652,7 +652,7 @@ body.screen-level #milestones{display:none;}
   font-size:clamp(12px,3.2vw,14px);line-height:1.3;border:2px solid #ffd9e6;
   touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;}
 .l3card-ico{font-size:1.5rem;flex:0 0 auto;}
-.l3card-ico.hasimg{width:clamp(34px,9vw,44px);height:clamp(34px,9vw,44px);
+.l3card-ico.hasimg{width:clamp(52px,13vw,70px);height:clamp(52px,13vw,70px);
   background-size:contain;background-position:center;background-repeat:no-repeat;
   filter:drop-shadow(0 2px 4px rgba(0,0,0,.28));}
 .l3card-ico.hasimg .l3card-emoji{display:none;}
@@ -664,7 +664,7 @@ body.screen-level #milestones{display:none;}
   background:linear-gradient(180deg,rgba(30,18,38,0),rgba(30,18,38,.42));}
 .l3target{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;color:#fff;cursor:pointer;transition:transform .18s ease;}
 .l3target-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:calc(100% + 30px);height:calc(100% + 30px);border-radius:20px;}
-.l3target-ico{width:clamp(58px,16vw,98px);height:clamp(58px,16vw,98px);border-radius:20px;
+.l3target-ico{width:clamp(76px,21vw,128px);height:clamp(76px,21vw,128px);border-radius:20px;
   display:flex;align-items:center;justify-content:center;font-size:clamp(2rem,7vw,3rem);
   background:rgba(255,255,255,.92);box-shadow:0 6px 14px rgba(0,0,0,.3);transition:box-shadow .2s,transform .18s;}
 .l3target-nm{font-size:clamp(11px,2.8vw,14px);font-weight:800;background:rgba(30,18,38,.5);padding:2px 10px;border-radius:999px;
@@ -672,7 +672,7 @@ body.screen-level #milestones{display:none;}
 .l3target.lit{transform:translateY(-4px);}
 .l3target.lit .l3target-ico{box-shadow:0 0 18px rgba(255,210,120,.95),0 6px 14px rgba(0,0,0,.3);}
 /* 圖片版（去背可愛圖；載入失敗才退回 emoji） */
-.l3target-ico.hasimg{background-size:84% auto;background-position:center;background-repeat:no-repeat;}
+.l3target-ico.hasimg{background-size:96% auto;background-position:center;background-repeat:no-repeat;}
 .l3target-ico.hasimg .l3target-emoji{display:none;}
 /* 結算 */
 #l3end{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
@@ -715,7 +715,7 @@ body.screen-level #milestones{display:none;}
   display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(0,0,0,.3);border:2px solid #ffe0b0;
   touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;}
 .l3letter-ico{font-size:clamp(1.8rem,6vw,2.3rem);}
-.l3letter-ico.hasimg{width:clamp(42px,11vw,58px);height:clamp(42px,11vw,58px);
+.l3letter-ico.hasimg{width:clamp(64px,16vw,90px);height:clamp(64px,16vw,90px);
   background-size:contain;background-position:center;background-repeat:no-repeat;}
 .l3letter-ico.hasimg .l3letter-emoji{display:none;}
 .l3letter.l3dragging{z-index:88;cursor:grabbing;transform:translate(-50%,-50%) scale(1.08);box-shadow:0 12px 26px rgba(0,0,0,.45);}
