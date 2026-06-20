@@ -576,8 +576,8 @@ body.screen-level #milestones{display:none;}
   filter:drop-shadow(0 3px 5px rgba(0,0,0,.32));
   transform:translate(-50%,-100%) translateY(9px);
   transition:opacity .5s ease,transform .55s cubic-bezier(.34,1.56,.64,1);}
-.l2doll{width:clamp(38px,9vw,64px);height:clamp(58px,14vw,104px);}
-.l2sup{width:clamp(44px,10.5vw,74px);height:clamp(66px,16vw,120px);}
+.l2doll{width:clamp(72px,18vw,128px);height:clamp(116px,28vw,200px);}
+.l2sup{width:clamp(79px,20vw,141px);height:clamp(128px,31vw,220px);}
 .l2doll.in{opacity:1;transform:translate(-50%,-100%);animation:l2sway 4.6s ease-in-out .55s infinite;}
 .l2sup.in{opacity:1;transform:translate(-50%,-100%);animation:l2sway 5.6s ease-in-out .3s infinite;}
 @keyframes l2sway{0%,100%{transform:translate(-50%,-100%) rotate(-1.6deg);}
