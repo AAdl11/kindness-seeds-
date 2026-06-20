@@ -152,7 +152,7 @@ window.CONFIG = {
     items: [
       { id: 'newspaper', icon: '📰', bin: 'paper',   name: { zh: '報紙',   en: 'Newspaper',     es: 'Periódico' } },
       { id: 'bottle',    icon: '🥤', bin: 'plastic', name: { zh: '寶特瓶', en: 'Plastic bottle', es: 'Botella' } },
-      { id: 'jar',       icon: '🍯', bin: 'glass',   name: { zh: '玻璃罐', en: 'Glass jar',      es: 'Frasco' } },
+      { id: 'jar',       icon: '🫙', bin: 'glass',   name: { zh: '玻璃罐', en: 'Glass jar',      es: 'Frasco' } },
       { id: 'can',       icon: '🥫', bin: 'metal',   name: { zh: '鋁罐',   en: 'Can',           es: 'Lata' } },
       { id: 'peel',      icon: '🍌', bin: 'compost', name: { zh: '果皮',   en: 'Fruit peel',    es: 'Cáscara' } }
     ],
