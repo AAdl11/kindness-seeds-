@@ -115,7 +115,7 @@ window.LEVEL1 = {
     /* 干擾項 / distractors —— 用不上，配到也沒關係 */
     { id: 'umbrella',  icon: '☂️', satisfies: null, distractor: true, name: { zh: '雨傘', en: 'Umbrella', es: 'Paraguas' } },
     { id: 'fan',       icon: '🌀', satisfies: null, distractor: true, name: { zh: '電風扇', en: 'Electric fan', es: 'Ventilador' } },
-    { id: 'boardgame', icon: '🎲', satisfies: null, distractor: true, name: { zh: '桌遊', en: 'Board game', es: 'Juego de mesa' } }
+    { id: 'boardgame', icon: '🧩', satisfies: null, distractor: true, name: { zh: '桌遊', en: 'Board game', es: 'Juego de mesa' } }
   ],
 
   /* 真摯話輪播 —— 一家收到關懷包後的一句話（讀家不畫人，講的是「家」與感恩，不描述人）。

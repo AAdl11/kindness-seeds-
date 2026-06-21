@@ -1618,6 +1618,10 @@
     if (window.Opening) Opening.start();             // 啟動善的任意門開場動畫
     Sound.initUnlock();                              // 第一次互動就解鎖
     Sound.playScene('door');                         // 想播開門音樂（解鎖後立刻響）
+    // 不論新玩家或回訪：第一次「點/碰畫面任何地方」就解鎖並確實播放歡迎音樂（別等打字）
+    window.addEventListener('pointerdown', function firstTapWelcome() {
+      try { Sound.unlock(); Sound.playScene('door'); } catch (e) {}
+    }, { once: true });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire);
