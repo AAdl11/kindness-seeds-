@@ -41,7 +41,7 @@
     if (oldRaw) {
       try {
         var old = normalize(JSON.parse(oldRaw));
-        var nm = old.sprout.name || '小芽';
+        var nm = old.sprout.name || '米芽';
         old.sprout.name = nm;
         store.saves[nm] = old; store.currentPlayer = nm;   // 舊存檔遷到目前名字底下
       } catch (e) {}
@@ -63,7 +63,7 @@
   }
   function hasSave(name) { return !!(name && STORE.saves[name]); }
   function loadPlayer(name) {               // 取名：同名接續、新名字新世界
-    name = (name || '').trim() || '小芽';
+    name = (name || '').trim() || '米芽';
     SAVE = hasSave(name) ? normalize(STORE.saves[name]) : newSave(name);
     STORE.currentPlayer = name; persist();
   }

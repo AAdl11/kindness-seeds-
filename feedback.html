@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>小芽 · 意見箱 · Little Sprout Feedback</title>
+<title>米芽 · 意見箱 · Miya Feedback</title>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BKBPRQQQ1Y"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BKBPRQQQ1Y');</script>
 <style>
@@ -44,9 +44,9 @@
   .q{font-size:14.5px;font-weight:700;margin:16px 2px 9px;}
   .faces{display:flex;justify-content:space-between;gap:6px;}
   .faces button{flex:1;font-size:32px;background:none;border:2px solid transparent;border-radius:14px;
-    padding:8px 0;cursor:pointer;line-height:1;filter:grayscale(.55) opacity(.65);transition:transform .12s,filter .12s,background .12s;}
+    padding:8px 0;cursor:pointer;line-height:1;opacity:.82;transition:transform .12s,opacity .12s,background .12s;}
   .faces button:active{transform:scale(.9);}
-  .faces button.sel{filter:none;background:#fff6e6;border-color:var(--gold);transform:scale(1.14);}
+  .faces button.sel{background:#fff6e6;border-color:var(--gold);transform:scale(1.14);opacity:1;}
   textarea,input[type=text]{width:100%;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:15px;
     padding:11px 12px;resize:vertical;background:#fffdf9;}
   textarea:focus,input:focus{outline:2px solid var(--gold);outline-offset:1px;}
@@ -74,11 +74,16 @@
   .thanks p{color:var(--ink-soft);font-size:15px;margin:0;}
   .thanks .back{display:inline-block;margin-top:24px;background:var(--green);color:#fff;text-decoration:none;
     font-weight:800;font-size:16px;padding:13px 28px;border-radius:14px;box-shadow:0 8px 18px rgba(63,138,82,.34);}
+  .topback{position:sticky;top:0;z-index:30;align-self:flex-start;display:inline-flex;align-items:center;
+    margin:10px 0 0;padding:8px 16px;border:none;border-radius:999px;cursor:pointer;
+    background:rgba(255,255,255,.82);color:var(--ink-soft);font:inherit;font-weight:800;font-size:14px;
+    box-shadow:0 3px 10px rgba(120,90,60,.15);backdrop-filter:blur(4px);}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <button type="button" class="topback" data-t="back2" onclick="backToGame()">← 回到遊戲</button>
   <div class="lang">
     <button data-lang="zh" class="on">中文</button>
     <button data-lang="en">English</button>
@@ -138,7 +143,7 @@
       <button data-v="環保小尖兵" data-t="g2">環保小尖兵</button>
       <button data-v="畢業感恩" data-t="g3">畢業感恩</button>
     </div>
-    <div class="q" data-t="say">想對小芽說的話 🌱</div>
+    <div class="q" data-t="say">想對米芽說的話 🌱</div>
     <textarea data-say rows="3"></textarea>
     <button class="send" data-t="send">送出 💌</button>
     <p class="hint" data-t="hint">不用具名,放心寫</p>
@@ -148,8 +153,8 @@
 <div class="thanks" id="thanks">
   <div class="bloom">🌷</div>
   <h2 data-t="tyt">謝謝你!</h2>
-  <p data-t="typ">你的心意,小芽收到了 🌱</p>
-  <a class="back" data-t="back" href="https://aadl11.github.io/kindness-seeds-/">← 回到小芽</a>
+  <p data-t="typ">你的心意,米芽收到了 🌱</p>
+  <a class="back" data-t="back" href="https://aadl11.github.io/kindness-seeds-/">← 回到米芽</a>
 </div>
 
 <script>
@@ -161,14 +166,14 @@ const FORM={action:"https://docs.google.com/forms/d/e/1FAIpQLScKNF-Zf4MCRWkgPi8Q
   fav:"entry.2064432295",say:"entry.1867267801"};
 const T={
  zh:{fun:"你玩得開心嗎?",sub:"玩完留個心得,大小事都歡迎 🙏",g1:"關懷之夜",g2:"環保小尖兵",g3:"畢業感恩",
-   like:"喜歡這一關嗎?",part:"最喜歡哪裡、想更好的地方?",fav:"最喜歡哪一關?",say:"想對小芽說的話 🌱",
-   send:"送出 💌",hint:"不用具名,放心寫",tyt:"謝謝你!",typ:"你的心意,小芽收到了 🌱",back:"← 回到小芽"},
+   like:"喜歡這一關嗎?",part:"最喜歡哪裡、想更好的地方?",fav:"最喜歡哪一關?",say:"想對米芽說的話 🌱",
+   send:"送出 💌",hint:"不用具名,放心寫",tyt:"謝謝你!",typ:"你的心意,米芽收到了 🌱",back2:"← 回到遊戲",back:"← 回到米芽"},
  en:{fun:"Did you have fun?",sub:"Played it? Tell us anything 🙏",g1:"Care at Dusk",g2:"Eco Rangers",g3:"Graduation",
-   like:"Did you like it?",part:"Favorite part, or anything to improve?",fav:"Favorite level?",say:"Anything else for Little Sprout 🌱",
-   send:"Send 💌",hint:"No name needed",tyt:"Thank you!",typ:"The little sprout received your heart 🌱",back:"← Back to the game"},
+   like:"Did you like it?",part:"Favorite part, or anything to improve?",fav:"Favorite level?",say:"Anything else for Miya 🌱",
+   send:"Send 💌",hint:"No name needed",tyt:"Thank you!",typ:"Miya received your heart 🌱",back2:"← Back to the game",back:"← Back to Miya"},
  es:{fun:"¿Te divertiste?",sub:"¿Lo jugaste? Cuéntanos 🙏",g1:"Cuidado al Atardecer",g2:"Eco-guardianes",g3:"Graduación",
-   like:"¿Te gustó?",part:"¿Parte favorita o por mejorar?",fav:"¿Nivel favorito?",say:"¿Algo más para el brote 🌱?",
-   send:"Enviar 💌",hint:"Sin nombre",tyt:"¡Gracias!",typ:"El brote recibió tu cariño 🌱",back:"← Volver al juego"}};
+   like:"¿Te gustó?",part:"¿Parte favorita o por mejorar?",fav:"¿Nivel favorito?",say:"¿Algo más para Miya 🌱?",
+   send:"Enviar 💌",hint:"Sin nombre",tyt:"¡Gracias!",typ:"Miya recibió tu cariño 🌱",back2:"← Volver al juego",back:"← Volver con Miya"}};
 const EM=["😞","🙁","😐","😀","😍"];const data={rate:{},fav:""};
 document.querySelectorAll('[data-rate]').forEach(row=>{const k=row.dataset.rate;
   EM.forEach((e,i)=>{const b=document.createElement('button');b.type='button';b.textContent=e;
@@ -182,4 +187,25 @@ document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>setLang(b.dat
 var qlang=new URLSearchParams(location.search).get('lang');
 const val=s=>{const el=document.querySelector(s);return el?el.value:'';};
 document.querySelector('.send').onclick=()=>{const p=new URLSearchParams();
-  const put=(id,v)
+  const put=(id,v)=>{if(id&&id.indexOf('entry.A')!==0&&v!=='' &&v!=null)p.append(id,v);};
+  put(FORM.rate_dusk,data.rate.dusk);put(FORM.note_dusk,val('[data-note=dusk]'));
+  put(FORM.rate_eco,data.rate.eco);put(FORM.note_eco,val('[data-note=eco]'));
+  put(FORM.rate_grad,data.rate.grad);put(FORM.note_grad,val('[data-note=grad]'));
+  put(FORM.fav,data.fav);put(FORM.say,val('[data-say]'));
+  try{if(FORM.action.startsWith('http'))fetch(FORM.action,{method:'POST',mode:'no-cors',body:p});}catch(e){}
+  document.getElementById('thanks').classList.add('show');window.scrollTo(0,0);};
+setLang(['zh','en','es'].indexOf(qlang)>=0?qlang:'zh');
+// 優先用瀏覽器返回（回到玩家剛剛的遊戲狀態），否則回首頁
+function backToGame(){
+  if(history.length>1){ history.back(); }
+  else{ location.href='https://aadl11.github.io/kindness-seeds-/'; }
+}
+// #thanks 一顯示，停留約 3 秒自動回遊戲（手動返回鈕仍保留）
+new MutationObserver(()=>{
+  if(document.getElementById('thanks').classList.contains('show')){
+    setTimeout(backToGame, 3000);
+  }
+}).observe(document.getElementById('thanks'),{attributes:true,attributeFilter:['class']});
+</script>
+</body>
+</html>
