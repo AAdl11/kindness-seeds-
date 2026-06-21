@@ -1617,10 +1617,14 @@
       var rising = Math.sin(bt) > 0;                  // 吸氣中？
       if (REDUCE) { breath = 0.45; rising = true; }   // 減動效：定住、不脹縮、不轉
 
-      // 呼吸引導環（吸大吐小）
-      var pacerR = baseR * (0.95 + 0.55 * breath);
-      ctx.strokeStyle = 'rgba(255,240,200,' + (0.10 + 0.10 * breath) + ')'; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.arc(cx, cy, pacerR, 0, 7); ctx.stroke();
+      // 呼吸引導環（吸大吐小・柔光暈）
+      var pacerR = baseR * (0.95 + 0.55 * breath), pacerOuter = pacerR * 1.20;
+      var prg = ctx.createRadialGradient(cx, cy, pacerR * 0.74, cx, cy, pacerOuter);
+      prg.addColorStop(0, 'rgba(255,240,200,0)');
+      prg.addColorStop(0.70, 'rgba(255,240,200,0)');
+      prg.addColorStop(0.87, 'rgba(255,238,196,' + (0.10 + 0.10 * breath) + ')');
+      prg.addColorStop(1, 'rgba(255,238,196,0)');
+      ctx.fillStyle = prg; ctx.beginPath(); ctx.arc(cx, cy, pacerOuter, 0, 7); ctx.fill();
       // 座下柔光
       var lp = ctx.createRadialGradient(cx, cy + baseR * 0.95, 2, cx, cy + baseR * 0.95, baseR * 1.4); lp.addColorStop(0, 'rgba(255,226,160,0.22)'); lp.addColorStop(1, 'rgba(255,226,160,0)');
       ctx.save(); ctx.translate(cx, cy + baseR * 0.95); ctx.scale(1, 0.4); ctx.fillStyle = lp; ctx.beginPath(); ctx.arc(0, 0, baseR * 1.4, 0, 7); ctx.fill(); ctx.restore();
