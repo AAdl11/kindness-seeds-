@@ -9,7 +9,8 @@ window.Sound = (function () {
     door:   { src: 'assets/audio/welcome_intro.mp3',     vol: 0.30, filtered: false },
     hub:    { src: 'assets/audio/hub_abundance.mp3',     vol: 0.26, filtered: false },
     level:  { src: 'assets/audio/a-curious-discovery.mp3', vol: 0.18, filtered: true },
-    ending: { src: 'assets/audio/ending_warm.mp3',       vol: 0.28, filtered: false }
+    ending: { src: 'assets/audio/ending_warm.mp3',       vol: 0.28, filtered: false },
+    stillness: { src: 'assets/audio/stillness.mp3',      vol: 0.18, filtered: false }
   };
   var ctx = null, ctxTried = false;
   var nodes = {}, current = null, pending = null, unlocked = false, muted = false;
