@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>小芽 · 意見箱 · Little Sprout Feedback</title>
+<style>
+  :root{
+    --sky1:#fde7d2; --sky2:#f7d7e6; --sky3:#dbeafe; --grass:#cde6bf;
+    --card:#ffffff; --ink:#3a3030; --ink-soft:#857a72;
+    --green:#5fae6e; --green-d:#3f8a52; --gold:#e9a93a;
+    --line:rgba(80,60,50,.12); --shadow:0 10px 26px rgba(120,90,60,.16);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{font-family:"Noto Sans TC","PingFang TC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;
+    background:linear-gradient(160deg,var(--sky1),var(--sky2) 45%,var(--sky3));min-height:100vh;
+    padding:0 16px calc(40px + env(safe-area-inset-bottom));}
+  .wrap{max-width:600px;margin:0 auto;}
+  /* language toggle */
+  .lang{position:sticky;top:0;z-index:20;display:flex;gap:8px;justify-content:center;
+    padding:12px 0 8px;background:linear-gradient(180deg,var(--sky1),rgba(253,231,210,.0));}
+  .lang button{border:2px solid rgba(255,255,255,.8);background:rgba(255,255,255,.65);color:var(--ink-soft);
+    font:inherit;font-weight:800;font-size:15px;padding:8px 22px;border-radius:999px;cursor:pointer;backdrop-filter:blur(4px);}
+  .lang button.on{background:var(--gold);color:#fff;border-color:var(--gold);box-shadow:0 4px 12px rgba(233,169,58,.4);}
+  /* welcome */
+  .welcome{display:flex;align-items:flex-end;justify-content:center;gap:1px;margin:6px 0 0;
+    padding:12px 4px 8px;background:linear-gradient(180deg,transparent 52%,var(--grass));border-radius:0 0 30px 30px;}
+  .welcome img{width:clamp(54px,17vw,82px);height:auto;object-fit:contain;filter:drop-shadow(0 5px 7px rgba(0,0,0,.18));}
+  .welcome img.big{width:clamp(74px,23vw,108px);}
+  header{text-align:center;padding:8px 8px 4px;}
+  h1{font-size:25px;font-weight:800;margin:8px 0 4px;letter-spacing:-.01em;}
+  .sub{color:var(--ink-soft);font-size:14px;margin:0;}
+  .card{background:var(--card);border-radius:22px;box-shadow:var(--shadow);padding:0 0 18px;margin:16px 0;overflow:hidden;}
+  .cardimg{height:188px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(160deg,#fff7ec,#ffe9f0);}
+  .cardimg img{max-height:182px;max-width:84%;object-fit:contain;filter:drop-shadow(0 7px 10px rgba(0,0,0,.16));}
+  .cardimg.wide img{width:100%;height:188px;max-height:none;object-fit:cover;filter:none;}
+  .body{padding:6px 16px 0;}
+  .gt{font-size:19px;font-weight:800;margin:12px 0 0;}
+  .q{font-size:14.5px;font-weight:700;margin:16px 2px 9px;}
+  .faces{display:flex;justify-content:space-between;gap:6px;}
+  .faces button{flex:1;font-size:32px;background:none;border:2px solid transparent;border-radius:14px;
+    padding:8px 0;cursor:pointer;line-height:1;filter:grayscale(.55) opacity(.65);transition:transform .12s,filter .12s,background .12s;}
+  .faces button:active{transform:scale(.9);}
+  .faces button.sel{filter:none;background:#fff6e6;border-color:var(--gold);transform:scale(1.14);}
+  textarea,input[type=text]{width:100%;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:15px;
+    padding:11px 12px;resize:vertical;background:#fffdf9;}
+  textarea:focus,input:focus{outline:2px solid var(--gold);outline-offset:1px;}
+  /* favorite card with faint background */
+  .favcard{position:relative;overflow:hidden;}
+  .favcard::before{content:"";position:absolute;inset:0;
+    background:url('https://aadl11.github.io/kindness-seeds-/assets/images/KS_hunters_point_map.png') center/cover;
+    opacity:.14;}
+  .favcard .body{position:relative;}
+  .chips{display:flex;flex-direction:column;gap:9px;}
+  .chips button{border:1.5px solid var(--line);background:rgba(255,255,255,.92);font:inherit;font-weight:800;font-size:15px;
+    padding:13px 16px;border-radius:14px;cursor:pointer;text-align:center;}
+  .chips button.sel{background:var(--green);color:#fff;border-color:var(--green);}
+  .send{display:block;width:100%;margin:18px 0 0;background:var(--green);color:#fff;border:none;font:inherit;
+    font-weight:800;font-size:18px;padding:16px;border-radius:16px;cursor:pointer;box-shadow:0 8px 18px rgba(63,138,82,.34);}
+  .send:active{transform:translateY(1px);}
+  .hint{text-align:center;color:var(--ink-soft);font-size:12px;margin:10px 2px 0;}
+  .thanks{position:fixed;inset:0;background:linear-gradient(160deg,var(--sky1),var(--sky3));display:none;
+    flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;z-index:60;}
+  .thanks.show{display:flex;animation:fade .5s ease;}
+  @keyframes fade{from{opacity:0;}to{opacity:1;}}
+  .thanks .bloom{font-size:88px;animation:pop .6s cubic-bezier(.2,1.4,.4,1);}
+  @keyframes pop{0%{transform:scale(0) rotate(-18deg);}100%{transform:scale(1);}}
+  .thanks h2{font-size:26px;margin:14px 0 6px;}
+  .thanks p{color:var(--ink-soft);font-size:15px;margin:0;}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="lang">
+    <button data-lang="zh" class="on">中文</button>
+    <button data-lang="en">English</button>
+    <button data-lang="es">Español</button>
+  </div>
+
+  <div class="welcome">
+    <img src="https://aadl11.github.io/kindness-seeds-/assets/images/ranger_pickup.png" alt="">
+    <img src="https://aadl11.github.io/kindness-seeds-/assets/images/ranger_bagopen_brown.png" alt="">
+    <img class="big" src="https://aadl11.github.io/kindness-seeds-/assets/images/ranger_thumbsup_deep.png" alt="">
+    <img src="https://aadl11.github.io/kindness-seeds-/assets/images/ranger_wave.png" alt="">
+    <img src="https://aadl11.github.io/kindness-seeds-/assets/images/grad_kid_asia_girl.png" alt="">
+  </div>
+
+  <header>
+    <h1 data-t="fun">你玩得開心嗎?</h1>
+    <p class="sub" data-t="sub">玩完留個心得,大小事都歡迎 🙏</p>
+  </header>
+
+  <div class="card">
+    <div class="cardimg wide"><img src="https://aadl11.github.io/kindness-seeds-/assets/images/rv_park_dusk.png" alt=""></div>
+    <div class="body">
+      <div class="gt" data-t="g1">關懷之夜</div>
+      <div class="q" data-t="like">喜歡這一關嗎?</div>
+      <div class="faces" data-rate="dusk"></div>
+      <div class="q" data-t="part">最喜歡哪裡、想更好的地方?</div>
+      <input type="text" data-note="dusk">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cardimg"><img src="https://aadl11.github.io/kindness-seeds-/assets/images/ranger_plant_asia.png" alt=""></div>
+    <div class="body">
+      <div class="gt" data-t="g2">環保小尖兵</div>
+      <div class="q" data-t="like">喜歡這一關嗎?</div>
+      <div class="faces" data-rate="eco"></div>
+      <div class="q" data-t="part">最喜歡哪裡、想更好的地方?</div>
+      <input type="text" data-note="eco">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cardimg"><img src="https://aadl11.github.io/kindness-seeds-/assets/images/grad_kid_tan.png" alt=""></div>
+    <div class="body">
+      <div class="gt" data-t="g3">畢業感恩</div>
+      <div class="q" data-t="like">喜歡這一關嗎?</div>
+      <div class="faces" data-rate="grad"></div>
+      <div class="q" data-t="part">最喜歡哪裡、想更好的地方?</div>
+      <input type="text" data-note="grad">
+    </div>
+  </div>
+
+  <div class="card favcard"><div class="body" style="padding-top:18px">
+    <div class="q" data-t="fav">最喜歡哪一關?</div>
+    <div class="chips" data-fav>
+      <button data-v="關懷之夜" data-t="g1">關懷之夜</button>
+      <button data-v="環保小尖兵" data-t="g2">環保小尖兵</button>
+      <button data-v="畢業感恩" data-t="g3">畢業感恩</button>
+    </div>
+    <div class="q" data-t="say">想對小芽說的話 🌱</div>
+    <textarea data-say rows="3"></textarea>
+    <button class="send" data-t="send">送出 💌</button>
+    <p class="hint" data-t="hint">不用具名,放心寫</p>
+  </div></div>
+</div>
+
+<div class="thanks" id="thanks">
+  <div class="bloom">🌷</div>
+  <h2 data-t="tyt">謝謝你!</h2>
+  <p data-t="typ">你的心意,小芽收到了 🌱</p>
+</div>
+
+<script>
+/* 回饋進你的 Google 表單（收在試算表，不進信箱）。用「取得預先填入的連結」拿這 9 個值 */
+const FORM={action:"https://docs.google.com/forms/d/e/1FAIpQLScKNF-Zf4MCRWkgPi8QtvzAM-bjwyX4MUyQxSX6hhBUyjPyPg/formResponse",
+  rate_dusk:"entry.1512668895",note_dusk:"entry.1210453746",
+  rate_eco:"entry.1299571165",note_eco:"entry.1619848509",
+  rate_grad:"entry.1405941511",note_grad:"entry.477412929",
+  fav:"entry.2064432295",say:"entry.1867267801"};
+const T={
+ zh:{fun:"你玩得開心嗎?",sub:"玩完留個心得,大小事都歡迎 🙏",g1:"關懷之夜",g2:"環保小尖兵",g3:"畢業感恩",
+   like:"喜歡這一關嗎?",part:"最喜歡哪裡、想更好的地方?",fav:"最喜歡哪一關?",say:"想對小芽說的話 🌱",
+   send:"送出 💌",hint:"不用具名,放心寫",tyt:"謝謝你!",typ:"你的心意,小芽收到了 🌱"},
+ en:{fun:"Did you have fun?",sub:"Played it? Tell us anything 🙏",g1:"Care at Dusk",g2:"Eco Rangers",g3:"Graduation",
+   like:"Did you like it?",part:"Favorite part, or anything to improve?",fav:"Favorite level?",say:"Anything else for Little Sprout 🌱",
+   send:"Send 💌",hint:"No name needed",tyt:"Thank you!",typ:"The little sprout received your heart 🌱"},
+ es:{fun:"¿Te divertiste?",sub:"¿Lo jugaste? Cuéntanos 🙏",g1:"Cuidado al Atardecer",g2:"Eco-guardianes",g3:"Graduación",
+   like:"¿Te gustó?",part:"¿Parte favorita o por mejorar?",fav:"¿Nivel favorito?",say:"¿Algo más para el brote 🌱?",
+   send:"Enviar 💌",hint:"Sin nombre",tyt:"¡Gracias!",typ:"El brote recibió tu cariño 🌱"}};
+const EM=["😞","🙁","😐","😀","😍"];const data={rate:{},fav:""};
+document.querySelectorAll('[data-rate]').forEach(row=>{const k=row.dataset.rate;
+  EM.forEach((e,i)=>{const b=document.createElement('button');b.type='button';b.textContent=e;
+    b.onclick=()=>{data.rate[k]=i+1;[...row.children].forEach(c=>c.classList.toggle('sel',c===b));};row.appendChild(b);});});
+document.querySelectorAll('[data-fav] button').forEach(b=>{
+  b.onclick=()=>{data.fav=b.dataset.v;document.querySelectorAll('[data-fav] button').forEach(x=>x.classList.toggle('sel',x===b));};});
+function setLang(l){document.documentElement.lang=l;
+  document.querySelectorAll('[data-t]').forEach(el=>{const v=T[l][el.dataset.t];if(v)el.textContent=v;});
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));}
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>setLang(b.dataset.lang));
+var qlang=new URLSearchParams(location.search).get('lang');
+const val=s=>{const el=document.querySelector(s);return el?el.value:'';};
+document.querySelector('.send').onclick=()=>{const p=new URLSearchParams();
+  const put=(id,v)=>{if(id&&id.indexOf('entry.A')!==0&&v!=='' &&v!=null)p.append(id,v);};
+  put(FORM.rate_dusk,data.rate.dusk);put(FORM.note_dusk,val('[data-note=dusk]'));
+  put(FORM.rate_eco,data.rate.eco);put(FORM.note_eco,val('[data-note=eco]'));
+  put(FORM.rate_grad,data.rate.grad);put(FORM.note_grad,val('[data-note=grad]'));
+  put(FORM.fav,data.fav);put(FORM.say,val('[data-say]'));
+  try{if(FORM.action.startsWith('http'))fetch(FORM.action,{method:'POST',mode:'no-cors',body:p});}catch(e){}
+  document.getElementById('thanks').classList.add('show');window.scrollTo(0,0);};
+setLang(['zh','en','es'].indexOf(qlang)>=0?qlang:'zh');
+</script>
+</body>
+</html>
