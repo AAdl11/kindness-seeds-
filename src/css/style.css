@@ -21,6 +21,14 @@ html,body{height:100%;font-family:'Nunito','Noto Sans TC','PingFang TC',system-u
 button{font-family:inherit;cursor:pointer;border:none;}
 .hidden{display:none !important;}
 
+/* ---------- 靜心之門 Stillness Gate ---------- */
+#stillness{position:fixed;inset:0;z-index:50;background:#0e1626;overflow:hidden;}
+#stillCanvas{display:block;width:100%;height:100%;}
+.still-skip{position:fixed;top:14px;right:14px;z-index:52;font-family:'Baloo 2',Nunito,sans-serif;
+  font-weight:800;font-size:14px;color:#5a3a12;background:rgba(255,236,170,.92);border:none;
+  border-radius:999px;padding:8px 16px;cursor:pointer;box-shadow:0 3px 10px rgba(20,30,50,.3);}
+.still-skip:active{transform:scale(.95);}
+
 /* ---------- 通用全螢幕場景 ---------- */
 .screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
   flex-direction:column;text-align:center;}

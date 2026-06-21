@@ -49,6 +49,17 @@ window.I18N = {
     againNight: '再來一夜',
     toHub: '回三福',
     feedback: '留言',
+    stillLead: '閉上眼，先陪自己坐一會兒。',
+    stillLines: [
+      '好好說的一句話，會在別人心裡開一朵花。',
+      '心裡先放一個好念頭，話和手都會跟著溫柔。',
+      '你剛剛伸出去的手，讓世界軟了一點點。',
+      '不必做很大的事，把好意放進一件小事就好。',
+      '一個善念，從你這裡發芽。',
+      '被好好對待過的人，會把溫柔再傳下去。',
+      '慢慢呼吸。你願意對人好——這份心，很珍貴。'
+    ],
+    stillBreatheIn: '吸氣…', stillBreatheOut: '吐氣…', stillSkip: '略過 ›', stillTap: '輕觸繼續',
     // misc
     sproutStages: ['種子', '發芽', '小苗', '開花小樹'],
     becameStage: '{name} 長成「{stage}」',
@@ -114,6 +125,17 @@ window.I18N = {
     againNight: 'One more night',
     toHub: 'Back to the map',
     feedback: 'Feedback',
+    stillLead: "Close your eyes, and sit with yourself a moment.",
+    stillLines: [
+      "A kindly spoken word blooms in someone's heart.",
+      "Set a good thought first, and your words and hands turn gentle.",
+      "The hand you just reached out softened the world a little.",
+      "It needn't be big — slip your kindness into one small thing.",
+      "A good thought, sprouting right here, from you.",
+      "Kindness, once received, gets passed along.",
+      "Breathe slowly. Your wish to be kind — that heart is precious."
+    ],
+    stillBreatheIn: 'Breathe in…', stillBreatheOut: 'Breathe out…', stillSkip: 'Skip ›', stillTap: 'tap to continue',
     sproutStages: ['a seed', 'a sprout', 'a sapling', 'a blooming tree'],
     becameStage: '{name} is now {stage}',
     kindnessPlus: 'Kindness time +{min} min',
@@ -178,6 +200,17 @@ window.I18N = {
     againNight: 'Otra noche más',
     toHub: 'Volver al mapa',
     feedback: 'Comentar',
+    stillLead: 'Cierra los ojos y quédate contigo un momento.',
+    stillLines: [
+      'Una palabra dicha con cariño florece en el corazón de alguien.',
+      'Pon primero un buen pensamiento, y tus palabras y manos se vuelven tiernas.',
+      'La mano que acabas de tender ablandó un poco el mundo.',
+      'No tiene que ser grande: pon tu bondad en una cosa pequeña.',
+      'Un buen pensamiento, brotando aquí mismo, en ti.',
+      'La bondad, una vez recibida, se transmite.',
+      'Respira despacio. Tu deseo de ser amable — ese corazón es precioso.'
+    ],
+    stillBreatheIn: 'Inhala…', stillBreatheOut: 'Exhala…', stillSkip: 'Saltar ›', stillTap: 'toca para continuar',
     sproutStages: ['una semilla', 'un brote', 'un retoño', 'un árbol en flor'],
     becameStage: '{name} ahora es {stage}',
     kindnessPlus: 'Tiempo de bondad +{min} min',

@@ -175,8 +175,10 @@
   var TREE_POS = { x: 0.55, y: 0.82 };   // 中央總成長樹（base 落點，往上長）
 
   /* ---------- 螢幕切換 ---------- */
+  function returnToHub() { Sound.playScene('hub'); show('hub'); renderHub(); }
+
   function show(id) {
-    ['opening', 'hub', 'level', 'level2', 'level3', 'ending'].forEach(function (s) {
+    ['opening', 'hub', 'level', 'level2', 'level3', 'ending', 'stillness'].forEach(function (s) {
       var el = document.getElementById(s); if (!el) return;
       if (s === 'level' || s === 'level2' || s === 'level3') el.style.display = (s === id) ? 'block' : 'none';
       else el.classList.toggle('hidden', s !== id);
@@ -536,7 +538,7 @@
     hud.appendChild(chip('🚐 ' + lvl.served + '/' + CARS));
     var leave = document.createElement('button');
     leave.id = 'leaveBtn'; leave.textContent = T('toHub');
-    leave.addEventListener('click', function () { lvl.ended = true; Sound.playScene('hub'); show('hub'); renderHub(); });
+    leave.addEventListener('click', function () { lvl.ended = true; returnToHub(); });
     hud.appendChild(leave);
   }
 
@@ -1519,6 +1521,102 @@
   }
 
   /* ===================================================================
+     靜心之門 Stillness Gate（關卡之間・零比較金句；純加法，不動關卡/存檔/音訊）
+     =================================================================== */
+  var Stillness = (function () {
+    var cv, ctx, raf = 0, t0 = 0, phase = 'breathe', lineTxt = '', leadTxt = '', onDone = null, lineStart = 0;
+    var DPR = 1, W = 0, H = 0;
+    var REDUCE = false; try { REDUCE = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    var img = new Image(), imgReady = false;
+    img.onload = function () { imgReady = true; }; img.src = 'assets/images/miya_meditate.png';
+
+    function resize() {
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth; H = window.innerHeight;
+      cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    function pickLine() {
+      var lines = (window.T && T('stillLines')) || ['']; if (!lines.length) lines = [''];
+      lineTxt = lines[Math.floor(Math.random() * lines.length)];
+      leadTxt = (window.T && T('stillLead')) || '';
+    }
+    function open(next) {
+      onDone = next; phase = 'breathe'; t0 = performance.now(); pickLine();
+      var sk = document.getElementById('stillSkip'); if (sk) sk.textContent = (window.T && T('stillSkip')) || 'Skip ›';
+      show('stillness'); resize();
+      cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
+    }
+    function close() { cancelAnimationFrame(raf); raf = 0; var n = onDone; onDone = null; if (n) n(); }
+    function advance() { if (phase === 'breathe') { phase = 'line'; lineStart = performance.now(); } else close(); }
+
+    function wrap(txt, cx, cy, maxw, lh) {
+      var lines = [], i, c;
+      if (/[一-鿿]/.test(txt) && txt.indexOf(' ') < 0) {
+        c = ''; for (i = 0; i < txt.length; i++) { var ch = txt[i]; if (ctx.measureText(c + ch).width > maxw) { lines.push(c); c = ch; } else c += ch; } if (c) lines.push(c);
+      } else {
+        var w = txt.split(' '); c = ''; for (i = 0; i < w.length; i++) { var tw = c ? c + ' ' + w[i] : w[i]; if (ctx.measureText(tw).width > maxw) { lines.push(c); c = w[i]; } else c = tw; } if (c) lines.push(c);
+      }
+      var sY = cy - (lines.length - 1) * lh / 2;
+      for (i = 0; i < lines.length; i++) ctx.fillText(lines[i], cx, sY + i * lh);
+    }
+    function loop(now) {
+      var tt = (now - t0) / 1000;
+      var g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#1b2942'); g.addColorStop(1, '#0e1626');
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+      var cx = W / 2, cy = H * 0.42, baseR = Math.min(Math.min(W, H) * 0.26, H * 0.19);
+      var period = REDUCE ? 5.5 : 6.5, pulse = (Math.sin(tt / period * Math.PI * 2) + 1) / 2;
+      // aura（隨呼吸脹縮）
+      var auraR = baseR * (1.3 + 0.16 * pulse);
+      var ag = ctx.createRadialGradient(cx, cy, baseR * 0.3, cx, cy, auraR);
+      ag.addColorStop(0, 'rgba(255,226,150,' + (0.30 + 0.13 * pulse) + ')'); ag.addColorStop(0.55, 'rgba(255,210,120,0.10)'); ag.addColorStop(1, 'rgba(255,210,120,0)');
+      ctx.fillStyle = ag; ctx.beginPath(); ctx.arc(cx, cy, auraR, 0, 7); ctx.fill();
+      // 斜 15° 360° 繞身金環
+      var rx = baseR * 1.22, ry = rx * 0.30, phi = -0.26, a = tt * (REDUCE ? 0 : 0.9);
+      function pt(th) { return { x: cx + rx * Math.cos(th) * Math.cos(phi) - ry * Math.sin(th) * Math.sin(phi), y: cy + rx * Math.cos(th) * Math.sin(phi) + ry * Math.sin(th) * Math.cos(phi), front: Math.sin(th) > 0 }; }
+      var comet = pt(a);
+      function drawComet(pass) { if (comet.front !== pass) return; var r = comet.front ? 3.4 : 2.2, al = comet.front ? 0.95 : 0.4;
+        var gg = ctx.createRadialGradient(comet.x, comet.y, 0, comet.x, comet.y, r * 4);
+        gg.addColorStop(0, 'rgba(255,248,210,' + al + ')'); gg.addColorStop(1, 'rgba(255,230,150,0)');
+        ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(comet.x, comet.y, r * 4, 0, 7); ctx.fill();
+        ctx.fillStyle = 'rgba(255,252,235,' + al + ')'; ctx.beginPath(); ctx.arc(comet.x, comet.y, r, 0, 7); ctx.fill(); }
+      function sparks(pass) { for (var i = 1; i <= 3; i++) { var p = pt(a - i * 0.5); if (p.front !== pass) continue; ctx.fillStyle = 'rgba(255,244,200,' + (0.5 / i) + ')'; ctx.beginPath(); ctx.arc(p.x, p.y, 2.2 - 0.4 * i, 0, 7); ctx.fill(); } }
+      // 後半弧（身後・暗）
+      ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(255,232,170,0.22)'; ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, phi, Math.PI, Math.PI * 2); ctx.stroke();
+      drawComet(false); sparks(false);
+      // 米芽
+      if (imgReady) { var mh = baseR * 2.1, mw = mh * (img.naturalWidth / img.naturalHeight), bob = REDUCE ? 0 : Math.sin(tt * 0.9) * 4; ctx.drawImage(img, cx - mw / 2, cy - mh / 2 + bob, mw, mh); }
+      // 前半弧（身前・亮）
+      ctx.lineWidth = 2.4; ctx.strokeStyle = 'rgba(255,240,190,0.6)'; ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, phi, 0, Math.PI); ctx.stroke();
+      drawComet(true); sparks(true);
+      // 文字
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      var breatheDur = REDUCE ? 2.6 : 8.5;
+      if (phase === 'breathe') {
+        var rising = Math.cos(tt / period * Math.PI * 2) > 0;
+        ctx.fillStyle = 'rgba(255,246,222,0.85)'; ctx.font = '600 19px "Baloo 2",Nunito,sans-serif';
+        ctx.fillText(rising ? T('stillBreatheIn') : T('stillBreatheOut'), cx, cy + baseR * 1.55);
+        if (tt >= breatheDur) { phase = 'line'; lineStart = now; }
+      } else {
+        var lt = (now - lineStart) / 1000, fade = Math.min(1, lt / 0.9);
+        ctx.save(); ctx.globalAlpha = fade;
+        ctx.fillStyle = 'rgba(255,244,214,0.72)'; ctx.font = '600 14px Nunito,sans-serif'; wrap(leadTxt, cx, cy + baseR * 1.5, W * 0.8, 20);
+        ctx.fillStyle = '#fff3d6'; ctx.font = '700 20px "Baloo 2",Nunito,sans-serif'; wrap(lineTxt, cx, cy + baseR * 1.95, W * 0.86, 28);
+        ctx.restore();
+        if (fade >= 1) { ctx.fillStyle = 'rgba(255,255,255,0.4)'; ctx.font = '600 12px Nunito,sans-serif'; ctx.fillText(T('stillTap'), cx, H - 22); }
+      }
+      raf = requestAnimationFrame(loop);
+    }
+    function init() {
+      cv = document.getElementById('stillCanvas'); ctx = cv.getContext('2d');
+      document.getElementById('stillSkip').addEventListener('click', function (e) { e.stopPropagation(); close(); });
+      cv.addEventListener('pointerdown', advance);
+      window.addEventListener('resize', function () { if (document.body.className === 'screen-stillness') resize(); });
+    }
+    return { open: open, init: init };
+  })();
+
+  /* ===================================================================
      啟動 / 事件綁定
      =================================================================== */
   function wire() {
@@ -1583,17 +1681,17 @@
     });
     document.getElementById('sendBtn').addEventListener('click', sendPackage);
     document.getElementById('againBtn').addEventListener('click', startLevel);
-    document.getElementById('endHubBtn').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
+    document.getElementById('endHubBtn').addEventListener('click', function () { Stillness.open(returnToHub); });
     // 關2 · 環保小尖兵
     Sound.register('eco', C.level2.music, 0.24, false);   // 關2 音樂（路徑寫在 config）
-    document.getElementById('l2leave').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
+    document.getElementById('l2leave').addEventListener('click', function () { returnToHub(); });
     document.getElementById('l2again').addEventListener('click', startLevel2);
-    document.getElementById('l2hub').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
+    document.getElementById('l2hub').addEventListener('click', function () { Stillness.open(returnToHub); });
     // 關3 · 畢業感恩
     Sound.register('grad', C.level3.music, 0.26, false);
-    document.getElementById('l3leave').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
+    document.getElementById('l3leave').addEventListener('click', function () { returnToHub(); });
     document.getElementById('l3again').addEventListener('click', startLevel3);
-    document.getElementById('l3hub').addEventListener('click', function () { Sound.playScene('hub'); show('hub'); renderHub(); });
+    document.getElementById('l3hub').addEventListener('click', function () { Stillness.open(returnToHub); });
 
     // 底部面板收合
     document.getElementById('panelTab').addEventListener('click', function () {
@@ -1614,6 +1712,7 @@
     // 旋轉：立即重算一次，再於回報新尺寸後補算一次（某些瀏覽器旋轉當下尺寸仍是舊的）
     window.addEventListener('orientationchange', function () { relayoutDebounced(); setTimeout(relayout, 300); });
 
+    Stillness.init();                                // 靜心之門（關卡之間）
     renderOpening(); show('opening');
     if (window.Opening) Opening.start();             // 啟動善的任意門開場動畫
     Sound.initUnlock();                              // 第一次互動就解鎖
