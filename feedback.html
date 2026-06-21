@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>小芽 · 意見箱 · Little Sprout Feedback</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BKBPRQQQ1Y"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-BKBPRQQQ1Y');</script>
 <style>
   :root{
     --sky1:#fde7d2; --sky2:#f7d7e6; --sky3:#dbeafe; --grass:#cde6bf;
@@ -70,6 +72,8 @@
   @keyframes pop{0%{transform:scale(0) rotate(-18deg);}100%{transform:scale(1);}}
   .thanks h2{font-size:26px;margin:14px 0 6px;}
   .thanks p{color:var(--ink-soft);font-size:15px;margin:0;}
+  .thanks .back{display:inline-block;margin-top:24px;background:var(--green);color:#fff;text-decoration:none;
+    font-weight:800;font-size:16px;padding:13px 28px;border-radius:14px;box-shadow:0 8px 18px rgba(63,138,82,.34);}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 </style>
 </head>
@@ -145,6 +149,7 @@
   <div class="bloom">🌷</div>
   <h2 data-t="tyt">謝謝你!</h2>
   <p data-t="typ">你的心意,小芽收到了 🌱</p>
+  <a class="back" data-t="back" href="https://aadl11.github.io/kindness-seeds-/">← 回到小芽</a>
 </div>
 
 <script>
@@ -157,13 +162,13 @@ const FORM={action:"https://docs.google.com/forms/d/e/1FAIpQLScKNF-Zf4MCRWkgPi8Q
 const T={
  zh:{fun:"你玩得開心嗎?",sub:"玩完留個心得,大小事都歡迎 🙏",g1:"關懷之夜",g2:"環保小尖兵",g3:"畢業感恩",
    like:"喜歡這一關嗎?",part:"最喜歡哪裡、想更好的地方?",fav:"最喜歡哪一關?",say:"想對小芽說的話 🌱",
-   send:"送出 💌",hint:"不用具名,放心寫",tyt:"謝謝你!",typ:"你的心意,小芽收到了 🌱"},
+   send:"送出 💌",hint:"不用具名,放心寫",tyt:"謝謝你!",typ:"你的心意,小芽收到了 🌱",back:"← 回到小芽"},
  en:{fun:"Did you have fun?",sub:"Played it? Tell us anything 🙏",g1:"Care at Dusk",g2:"Eco Rangers",g3:"Graduation",
    like:"Did you like it?",part:"Favorite part, or anything to improve?",fav:"Favorite level?",say:"Anything else for Little Sprout 🌱",
-   send:"Send 💌",hint:"No name needed",tyt:"Thank you!",typ:"The little sprout received your heart 🌱"},
+   send:"Send 💌",hint:"No name needed",tyt:"Thank you!",typ:"The little sprout received your heart 🌱",back:"← Back to the game"},
  es:{fun:"¿Te divertiste?",sub:"¿Lo jugaste? Cuéntanos 🙏",g1:"Cuidado al Atardecer",g2:"Eco-guardianes",g3:"Graduación",
    like:"¿Te gustó?",part:"¿Parte favorita o por mejorar?",fav:"¿Nivel favorito?",say:"¿Algo más para el brote 🌱?",
-   send:"Enviar 💌",hint:"Sin nombre",tyt:"¡Gracias!",typ:"El brote recibió tu cariño 🌱"}};
+   send:"Enviar 💌",hint:"Sin nombre",tyt:"¡Gracias!",typ:"El brote recibió tu cariño 🌱",back:"← Volver al juego"}};
 const EM=["😞","🙁","😐","😀","😍"];const data={rate:{},fav:""};
 document.querySelectorAll('[data-rate]').forEach(row=>{const k=row.dataset.rate;
   EM.forEach((e,i)=>{const b=document.createElement('button');b.type='button';b.textContent=e;
@@ -177,14 +182,4 @@ document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>setLang(b.dat
 var qlang=new URLSearchParams(location.search).get('lang');
 const val=s=>{const el=document.querySelector(s);return el?el.value:'';};
 document.querySelector('.send').onclick=()=>{const p=new URLSearchParams();
-  const put=(id,v)=>{if(id&&id.indexOf('entry.A')!==0&&v!=='' &&v!=null)p.append(id,v);};
-  put(FORM.rate_dusk,data.rate.dusk);put(FORM.note_dusk,val('[data-note=dusk]'));
-  put(FORM.rate_eco,data.rate.eco);put(FORM.note_eco,val('[data-note=eco]'));
-  put(FORM.rate_grad,data.rate.grad);put(FORM.note_grad,val('[data-note=grad]'));
-  put(FORM.fav,data.fav);put(FORM.say,val('[data-say]'));
-  try{if(FORM.action.startsWith('http'))fetch(FORM.action,{method:'POST',mode:'no-cors',body:p});}catch(e){}
-  document.getElementById('thanks').classList.add('show');window.scrollTo(0,0);};
-setLang(['zh','en','es'].indexOf(qlang)>=0?qlang:'zh');
-</script>
-</body>
-</html>
+  const put=(id,v)
