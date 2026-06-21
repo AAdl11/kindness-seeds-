@@ -228,17 +228,19 @@
   function stars(n) { return '★★★★★'.slice(0, n) + '☆☆☆☆☆'.slice(0, 5 - n); }
   function completedCount() { return ACTIVITIES.filter(function (a) { return SAVE.lit[a.id]; }).length; }
 
-  /* 意見箱：開啟 mailto（純加法，不動玩法/存檔）；三語標籤隨語言更新 */
-  var FB_MAIL = 'mailto:hsu.meihsien@gmail.com?subject=' +
-    encodeURIComponent('小芽遊戲意見') + '&body=' +
-    encodeURIComponent('（請寫下你的心得：哪關最喜歡、哪裡可以更好）');
+  /* 意見箱：開新分頁到問卷頁，帶上目前語言（純改連結，不動玩法/存檔）；三語標籤隨語言更新 */
+  var FB_BASE = 'https://aadl11.github.io/kindness-seeds-/feedback.html';
+  function fbUrl() {
+    var lang = window.LANG || 'zh';
+    return FB_BASE + '?lang=' + encodeURIComponent(lang);
+  }
   function applyFeedback() {
-    var label = T('feedback');
+    var label = T('feedback'), url = fbUrl();
     var circle = document.getElementById('hubFeedback');
-    if (circle) { circle.href = FB_MAIL; circle.title = label; circle.setAttribute('aria-label', label); }
+    if (circle) { circle.href = url; circle.title = label; circle.setAttribute('aria-label', label); }
     ['endFb', 'l2fb', 'l3fb'].forEach(function (id) {
       var el = document.getElementById(id);
-      if (el) { el.href = FB_MAIL; el.textContent = '💬 ' + label; }
+      if (el) { el.href = url; el.textContent = '💬 ' + label; }
     });
   }
 
