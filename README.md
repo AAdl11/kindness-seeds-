@@ -8,6 +8,7 @@
 &nbsp;![Languages](https://img.shields.io/badge/EN_·_ZH_·_ES-trilingual-4c8bf5?style=for-the-badge)
 &nbsp;![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 &nbsp;![Made with](https://img.shields.io/badge/HTML_·_CSS_·_JS-no_framework-f7931e?style=for-the-badge)
+&nbsp;[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20818912.svg)](https://doi.org/10.5281/zenodo.20818912)
 
 **▶ Play / 立即遊玩 / Jugar:** https://aadl11.github.io/kindness-seeds-/
 
@@ -58,6 +59,8 @@ Pure static site, offline-friendly, no build step, no framework. **Data-driven**
 ### 🙏 Acknowledgements
 
 For the Hunters Point community — its young people, its families — and the volunteers who have not missed a single year. With deep gratitude to Sister Roxanne Buchwitz (慈昂), who leads this work in Hunters Point, where a single handful of rice grew into twenty years of care.
+
+*Built with Claude Code, under the author's direction; the vision, the judgment, and the community are hers.*
 
 > This game honors every home: it shows the home and the care, never the people being helped.
 
@@ -111,6 +114,8 @@ Built for the commons. Code is MIT; this project's own writing and documentation
 
 獻給獵人角的社區、青少年與家庭,以及二十年來不曾缺席的志工們。深深感念慈昂師姐(Roxanne Buchwitz),她在獵人角帶領這份工作;一把生米,在這裡長成了二十年的關懷。
 
+*由作者主導、以 Claude Code 開發;願景、判斷與社區,皆出自作者。*
+
 > 遊戲尊重每一個家:畫面只呈現「家」與關懷,不描繪受助的人。
 
 ### 📄 授權
@@ -162,6 +167,8 @@ Sitio estático puro, jugable sin conexión, sin compilación ni framework. **Ba
 ### 🙏 Agradecimientos
 
 Para la comunidad de Hunters Point — sus jóvenes, sus familias — y los voluntarios que no han faltado ni un solo año. Con profunda gratitud a la hermana Roxanne Buchwitz (慈昂), que dirige este trabajo en Hunters Point, donde un solo puñado de arroz creció hasta volverse veinte años de cuidado.
+
+*Desarrollado con Claude Code, bajo la dirección de la autora; la visión, el criterio y la comunidad son suyos.*
 
 > Este juego honra cada hogar: muestra el hogar y el cuidado, nunca a las personas ayudadas.
 
