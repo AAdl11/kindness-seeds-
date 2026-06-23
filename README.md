@@ -2,7 +2,7 @@
 
 > A community you can step into and care for — Hunters Point, toward twenty years of companionship.
 > 一座你走得進去、照顧得到的社區。獵人角,邁向第二十年的陪伴。
-> Una comunidad en la que puedes entrar y cuidar — Hunters Point, hacia veinte años de compañía.
+> Una comunidad en la que puedes entrar y cuidar — Hunters Point, hacia veinte años de acompañamiento.
 
 [![▶ Play Now](https://img.shields.io/badge/▶-Play_Now-2ea44f?style=for-the-badge)](https://aadl11.github.io/kindness-seeds-/)
 &nbsp;![Languages](https://img.shields.io/badge/EN_·_ZH_·_ES-trilingual-4c8bf5?style=for-the-badge)
@@ -22,9 +22,9 @@
 
 ### 📖 The Story
 
-In 2006, in a Hunters Point elementary school, Sister Roxanne Buchwitz — who leads the charity group's companionship here — saw a child who didn't even have a handful of rice for breakfast. That handful of rice was the beginning of this path. From it grew food shares, blankets, tutoring, free clinics, and outreach to the families living in the RV Park — a companionship now approaching its twentieth year.
+In 2006, in a Hunters Point elementary school, Sister Roxanne Buchwitz — who leads the charity group's work here — saw a child who didn't even have a handful of rice for breakfast. That handful of rice was the start of this path. From it came food shares, blankets, tutoring, free clinics, and outreach to the families in the RV Park — a companionship now approaching its twentieth year.
 
-This game is a love letter to that work. You step into the community and stand beside its young people, families, and volunteers: lighting a window at the RV Park, watching a whole street breathe back to life, carrying gratitude across a graduation hall. Level by level, you tend the **Three Blessings — home, neighborhood, and school** — into what this place has always been.
+This game is a love letter to that work. You step into the community and stand beside its young people, families, and volunteers — lighting a window at the RV Park, helping a gray street wake back to life at dawn, carrying gratitude across a graduation hall. Level by level, you care for the **Three Blessings — home, neighborhood, and school** — one corner at a time.
 
 ### 🎮 The Three Levels
 
@@ -49,7 +49,7 @@ Three chapters, each with its own mood and play — one community, one story.
 
 ### 🧑‍🏫 For Educators & Developers
 
-This repository also documents a **backstage, AI-assisted stewardship layer** — a small multi-agent system for quest generation, story stewardship, safety review, and volunteer support. It is designed on one firm principle: **unreviewed AI output never reaches a player's screen.** Players only ever see human-reviewed, static content. See [`docs/AI_ARCHITECTURE.md`](docs/AI_ARCHITECTURE.md).
+This repository also documents a **backstage, AI-assisted stewardship layer** — a small multi-agent system for quest generation, story stewardship, safety review, and volunteer support. It is built on one firm principle: **unreviewed AI output never reaches a player's screen.** Players only ever see human-reviewed, static content. See [`docs/AI_ARCHITECTURE.md`](docs/AI_ARCHITECTURE.md).
 
 ### 🛠️ Tech
 
@@ -57,7 +57,7 @@ Pure static site, offline-friendly, no build step, no framework. **Data-driven**
 
 ### 🙏 Acknowledgements
 
-For the Hunters Point community — its young people, its families — and the volunteers who have not missed a single year. With deep gratitude to Sister Roxanne Buchwitz (慈昂), who has led this companionship in Hunters Point, turning a single handful of rice into twenty years of care.
+For the Hunters Point community — its young people, its families — and the volunteers who have not missed a single year. With deep gratitude to Sister Roxanne Buchwitz (慈昂), who leads this work in Hunters Point, where a single handful of rice grew into twenty years of care.
 
 > This game honors every home: it shows the home and the care, never the people being helped.
 
@@ -74,9 +74,9 @@ Code: MIT. Real stories, community materials, and background artwork are used fo
 
 ### 📖 故事
 
-2006 年,慈昂師姐——帶領這裡慈善組陪伴工作的師姐——在獵人角的一所小學,看見一個孩子連早餐的一把生米都沒有。那一把生米,是這條路的起點。從一把米,長出食物發放、毛毯、課輔、義診,以及對 RV Park 家庭的關懷——這份陪伴,正邁向第二十年。
+2006 年,慈昂師姐在獵人角帶領慈善組。她在一所小學裡,看見一個孩子連早餐的一把生米都沒有。那一把生米,成了這條路的起點。後來,食物發放、毛毯、課後輔導、義診,還有對 RV Park 家庭的關懷,一樣一樣做了起來;這份陪伴,如今邁向第二十年。
 
-這款遊戲,是寫給這份工作的一封情書。你走進這座社區,和這裡的青少年、家庭與志工並肩:在 RV Park 的窗前點一盞燈,在一條會呼吸的街道上看它重新亮起來,在畢業的禮堂裡把感恩送出去。一關一關,把**幸福家園、幸福社區、幸福校園**——這片三福之地,照顧成它本來的樣子。
+這款遊戲,是寫給這份工作的一封情書。你走進這座社區,和這裡的青少年、家庭和志工站在一起——在 RV Park 為一戶人家點亮窗,在清晨的街角陪它一點一點乾淨、亮起來,在畢業典禮上把一份感恩送到。幸福家園、幸福社區、幸福校園,這片三福之地,你一處一處,好好照顧。
 
 ### 🎮 三關
 
@@ -95,7 +95,7 @@ Code: MIT. Real stories, community materials, and background artwork are used fo
 - **你的小芽**——親手命名,每照顧一處就長一截、開花,回 hub 仍在。
 - **按名字延續**——同名接續你的世界,換名開另一個世界,絕不清空(以 `localStorage` 在同一台裝置保存)。
 - **手感**——粒子、Q 彈、清脆音效與很輕的震動;連對火花更多(純感官、非分數);尊重「減少動態」。
-- **老少咸宜**——難度是選配的深度,不是門檻或懲罰。
+- **老少咸宜**——難度是選配的深度,不是門檻,也不是懲罰。
 - **鐵律**——沒有分數、排名、淘汰或懲罰;軟失敗只是溫柔提醒。畫面只呈現「家」與關懷,不描繪受助的人。
 - **三語**——EN / ZH / ES 隨時切換。
 
@@ -109,7 +109,7 @@ Code: MIT. Real stories, community materials, and background artwork are used fo
 
 ### 🙏 致謝
 
-獻給獵人角的社區、青少年與家庭,以及二十年來不曾缺席的志工們。深深感念慈昂師姐(Roxanne Buchwitz),她在獵人角帶領這份陪伴,把一把生米化成二十年的關懷。
+獻給獵人角的社區、青少年與家庭,以及二十年來不曾缺席的志工們。深深感念慈昂師姐(Roxanne Buchwitz),她在獵人角帶領這份工作;一把生米,在這裡長成了二十年的關懷。
 
 > 遊戲尊重每一個家:畫面只呈現「家」與關懷,不描繪受助的人。
 
@@ -126,9 +126,9 @@ Code: MIT. Real stories, community materials, and background artwork are used fo
 
 ### 📖 La Historia
 
-En 2006, en una escuela primaria de Hunters Point, la hermana Roxanne Buchwitz — que dirige la compañía del grupo de caridad aquí — vio a un niño que no tenía ni un puñado de arroz para el desayuno. Ese puñado de arroz fue el comienzo de este camino. De él nacieron los repartos de alimentos, las mantas, las tutorías, las clínicas gratuitas y el apoyo a las familias del RV Park — una compañía que se acerca ya a su vigésimo año.
+En 2006, en una escuela primaria de Hunters Point, la hermana Roxanne Buchwitz — que dirige aquí el trabajo del grupo de caridad — vio a un niño que no tenía ni un puñado de arroz para el desayuno. Ese puñado de arroz fue el inicio de este camino. De ahí surgieron los repartos de alimentos, las cobijas, las tutorías, las clínicas gratuitas y el apoyo a las familias del RV Park — un acompañamiento que ya casi cumple veinte años.
 
-Este juego es una carta de amor a esa labor. Entras en la comunidad y te pones al lado de sus jóvenes, familias y voluntarios: enciendes una ventana en el RV Park, ves cómo toda una calle vuelve a la vida, llevas gratitud por un salón de graduación. Nivel a nivel, cuidas las **Tres Bendiciones — hogar, vecindario y escuela** — hasta darles la forma que este lugar siempre tuvo.
+Este juego es una carta de amor a esa labor. Entras en la comunidad y te pones del lado de sus jóvenes, familias y voluntarios: enciendes una ventana en el RV Park, ayudas a que una calle gris vuelva a la vida al amanecer, llevas gratitud por un salón de graduación. Nivel a nivel, cuidas las **Tres Bendiciones — hogar, vecindario y escuela** — un rincón a la vez.
 
 ### 🎮 Los Tres Niveles
 
@@ -161,7 +161,7 @@ Sitio estático puro, jugable sin conexión, sin compilación ni framework. **Ba
 
 ### 🙏 Agradecimientos
 
-Para la comunidad de Hunters Point — sus jóvenes, sus familias — y los voluntarios que no han faltado ni un solo año. Con profunda gratitud a la hermana Roxanne Buchwitz (慈昂), que ha dirigido esta compañía en Hunters Point, convirtiendo un solo puñado de arroz en veinte años de cuidado.
+Para la comunidad de Hunters Point — sus jóvenes, sus familias — y los voluntarios que no han faltado ni un solo año. Con profunda gratitud a la hermana Roxanne Buchwitz (慈昂), que dirige este trabajo en Hunters Point, donde un solo puñado de arroz creció hasta volverse veinte años de cuidado.
 
 > Este juego honra cada hogar: muestra el hogar y el cuidado, nunca a las personas ayudadas.
 
