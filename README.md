@@ -63,7 +63,7 @@ For the Hunters Point community — its young people, its families — and the v
 
 ### 📄 License
 
-Code: MIT. Real stories, community materials, and background artwork are used for this nonprofit project only; all rights remain with their respective owners.
+Built for the commons. Code is MIT; this project's own writing and documentation are CC BY-SA 4.0 — learn from it, adapt it, just give credit and keep it open. Real community stories, materials, and artwork are used for this nonprofit project only and remain with their respective owners.
 
 ---
 
@@ -115,7 +115,7 @@ Code: MIT. Real stories, community materials, and background artwork are used fo
 
 ### 📄 授權
 
-程式碼:MIT。真實故事、社區素材與背景插畫僅供本公益專案使用,著作權歸各自所有者所有。
+為公共而作。程式碼採 MIT;本專案自己的文字與文件採 CC BY-SA 4.0——歡迎學習、改作,只要署名並維持同樣開放。真實的社區故事、素材與背景插畫僅供本公益專案使用,著作權歸各自所有者所有。
 
 ---
 
@@ -167,4 +167,4 @@ Para la comunidad de Hunters Point — sus jóvenes, sus familias — y los volu
 
 ### 📄 Licencia
 
-Código: MIT. Las historias reales, los materiales comunitarios y las ilustraciones se usan solo para este proyecto sin fines de lucro; todos los derechos pertenecen a sus respectivos propietarios.
+Hecho para el bien común. El código es MIT; los textos y la documentación propios están bajo CC BY-SA 4.0 — apréndelo, adáptalo, solo da crédito y mantenlo abierto. Las historias, materiales e ilustraciones reales de la comunidad se usan solo para este proyecto sin fines de lucro y pertenecen a sus respectivos propietarios.
