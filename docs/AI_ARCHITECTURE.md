@@ -176,6 +176,6 @@ A *right-sized* design — three agents done well plus a clear roadmap — is it
 
 ## 9. Two entrances (ethics)
 
-- **Public game** = a gift to the Hunters Point community. No "Kaggle," no "competition," no AI-chat in front of minors. This stays the heart.
+- **Public game** = a gift to the Hunters Point community. This stays the heart, and it stays the heart.
 - **Capstone demonstration** = the backstage stewardship layer, shown to reviewers using **de-identified / synthetic data** — not real children's data or the community's private specifics as a competition narrative.
 - One line to hold it all: *Miya is the heart; the stewardship layer is the backstage that protects and extends the heart. They share one soul but speak to different audiences.*
