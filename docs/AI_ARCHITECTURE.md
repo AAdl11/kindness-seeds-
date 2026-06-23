@@ -157,3 +157,23 @@ Three agents done well, with a documented roadmap, is itself a demonstration of 
 - **Public game** — a gift to the Hunters Point community. This is the heart, and it stays the heart.
 - **Stewardship layer** — the backstage system, demonstrated with de-identified, synthetic data rather than real community specifics.
 - One line to hold it together: *Miya is the heart; the stewardship layer is the backstage that protects and extends it. One soul, two audiences.*
+
+---
+
+## Built on — references and acknowledgements
+
+This architecture stands on work that others shared openly, and it is offered in the same spirit:
+
+- The recent **StraTA** research on strategic planning for long-horizon agents — the "draw the map before setting out" idea behind the Strategy Planner (Layer 0).
+- **Carol Dweck's** growth mindset (praising process over ability) and **Rudolf Dreikurs'** Adlerian positive discipline (encouragement over praise), which together shape the Guide's voice.
+- The open agent-tooling ecosystem (ADK, the Model Context Protocol) and Anthropic's *AI Fluency* materials.
+
+With gratitude to the researchers and communities who keep their work open. We pass it forward.
+
+## License and citation
+
+© 2026 **Miya · Seeds of Kindness** (AAdl11). This document is shared under **CC BY-SA 4.0**: you are warmly welcome to learn from it, adapt it, and build on it for your own community — as long as you (1) give attribution and (2) keep your adaptations open under the same terms.
+
+Suggested citation:
+
+> *Miya · Seeds of Kindness — AI Stewardship Architecture* (2026). https://github.com/AAdl11/kindness-seeds-
