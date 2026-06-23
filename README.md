@@ -42,9 +42,9 @@ Three chapters, each with its own mood and play — one community, one story.
 - **The communal bamboo bank & milestones** — drop a coin for every place you tend; pour it into the community to advance two real milestones.
 - **Your sprout** — name it; it grows and blooms as you care, and is still there when you return.
 - **Memory by name** — the same name continues your world; a new name opens its own; nothing is ever erased (saved locally on the same device/browser).
-- **Game feel** — particles, bounce, crisp sound and a light buzz; combos build (sensory, not scored); respects `prefers-reduced-motion`.
-- **For everyone** — difficulty is optional depth, never a barrier or a punishment.
-- **The vows** — no scores, ranking, elimination, or punishment; soft failure is only a gentle nudge. We show the home and the care, never the people being helped.
+- **Game feel** — particles, bounce, crisp sound and a light buzz; combos build (sensory); respects `prefers-reduced-motion`.
+- **For everyone** — difficulty is optional depth: go deeper if you like, or keep it gentle.
+- **Gentle by design** — this is companionship: take your time, and we try again together; the screen holds homes, and the care within them.
 - **Trilingual** — EN / ZH / ES, switch any time.
 
 ### 🧑‍🏫 For Educators & Developers
@@ -94,9 +94,9 @@ Code: MIT. Real stories, community materials, and background artwork are used fo
 - **共善竹筒與里程碑**——每照顧一處投一枚銅板;倒進社區推進兩條真實里程碑。
 - **你的小芽**——親手命名,每照顧一處就長一截、開花,回 hub 仍在。
 - **按名字延續**——同名接續你的世界,換名開另一個世界,絕不清空(以 `localStorage` 在同一台裝置保存)。
-- **手感**——粒子、Q 彈、清脆音效與很輕的震動;連對火花更多(純感官、非分數);尊重「減少動態」。
-- **老少咸宜**——難度是選配的深度,不是門檻,也不是懲罰。
-- **鐵律**——沒有分數、排名、淘汰或懲罰;軟失敗只是溫柔提醒。畫面只呈現「家」與關懷,不描繪受助的人。
+- **手感**——粒子、Q 彈、清脆音效與很輕的震動;連對火花更多(純感官);尊重「減少動態」。
+- **老少咸宜**——難度是選配的深度;想深入的有進階,輕鬆玩也很好。
+- **溫柔為先**——這是一段陪伴:慢慢來,我們陪你一次次試;畫面裡是一個個「家」,和那份關懷。
 - **三語**——EN / ZH / ES 隨時切換。
 
 ### 🧑‍🏫 給教育者與開發者
@@ -146,9 +146,9 @@ Tres capítulos, cada uno con su propio ambiente y juego — una comunidad, una 
 - **La alcancía de bambú e hitos** — una moneda por cada lugar que cuidas; viértela en la comunidad para avanzar dos hitos reales.
 - **Tu brote** — ponle nombre; crece y florece según cuidas, y sigue ahí cuando vuelves.
 - **Memoria por nombre** — el mismo nombre continúa tu mundo; uno nuevo abre el suyo; nada se borra (guardado localmente en el mismo dispositivo).
-- **Sensación de juego** — partículas, rebote, sonido nítido y una vibración suave; los combos crecen (sensorial, sin puntaje); respeta `prefers-reduced-motion`.
-- **Para todos** — la dificultad es profundidad opcional, nunca una barrera ni un castigo.
-- **Los votos** — sin puntajes, clasificación, eliminación ni castigo; el fallo suave es solo un recordatorio amable. Mostramos el hogar y el cuidado, nunca a las personas ayudadas.
+- **Sensación de juego** — partículas, rebote, sonido nítido y una vibración suave; los combos crecen (sensorial); respeta `prefers-reduced-motion`.
+- **Para todos** — la dificultad es profundidad opcional: profundiza si quieres, o juega con calma.
+- **Con ternura** — esto es compañía: con calma, lo intentamos juntos otra vez; en la pantalla están los hogares y el cuidado que los habita.
 - **Trilingüe** — EN / ZH / ES, cambia cuando quieras.
 
 ### 🧑‍🏫 Para educadores y desarrolladores
