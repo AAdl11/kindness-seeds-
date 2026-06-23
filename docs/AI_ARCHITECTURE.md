@@ -1,170 +1,181 @@
-# 🌱 Miya · Seeds of Kindness · Semillas de Bondad
+# Miya · Seeds of Kindness — AI Stewardship Architecture
 
-> A community you can step into and care for — Hunters Point, toward twenty years of companionship.
-> 一座你走得進去、照顧得到的社區。獵人角,邁向第二十年的陪伴。
-> Una comunidad en la que puedes entrar y cuidar — Hunters Point, hacia veinte años de acompañamiento.
-
-[![▶ Play Now](https://img.shields.io/badge/▶-Play_Now-2ea44f?style=for-the-badge)](https://aadl11.github.io/kindness-seeds-/)
-&nbsp;![Languages](https://img.shields.io/badge/EN_·_ZH_·_ES-trilingual-4c8bf5?style=for-the-badge)
-&nbsp;![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
-&nbsp;![Made with](https://img.shields.io/badge/HTML_·_CSS_·_JS-no_framework-f7931e?style=for-the-badge)
-
-**▶ Play / 立即遊玩 / Jugar:** https://aadl11.github.io/kindness-seeds-/
-
-**🌐 Read in:  [English](#english) · [中文](#中文) · [Español](#español)**
+> **One line / 一句話定位:** Miya does not put AI in front of children. Miya uses a backstage multi-agent system to help **organize, protect, and extend** a community's kindness — and the people stay human.
+> 米芽不是讓 AI 取代人情,而是讓 AI 在後台幫忙整理、保護、延伸社區的善。
+>
+> **Audience:** Hunters Point Summer Camp teens (primary, ages 14–16); rural children in Taiwan (future). All minors.
+> **Status:** Architecture of record. The public game ships as reviewed static content; this document describes the backstage AI layer.
 
 ---
 
-<a id="english"></a>
-## English
+## 0. The non-negotiable constraint (read first)
 
-> Choose your language above — each version is complete on its own.
+**Unreviewed AI output never reaches a player's screen.** Players (minors) only ever see human-reviewed, static content. Every generative agent runs **backstage**, behind a safety review and a human sign-off. This is not a limitation to apologize for — it is the design's strongest feature: a *human-in-the-loop, privacy-first, community-centered* system.
 
-### 📖 The Story
-
-In 2006, in a Hunters Point elementary school, Sister Roxanne Buchwitz — who leads the charity group's work here — saw a child who didn't even have a handful of rice for breakfast. That handful of rice was the start of this path. From it came food shares, blankets, tutoring, free clinics, and outreach to the families in the RV Park — a companionship now approaching its twentieth year.
-
-This game is a love letter to that work. You step into the community and stand beside its young people, families, and volunteers — lighting a window at the RV Park, helping a gray street wake back to life at dawn, carrying gratitude across a graduation hall. Level by level, you care for the **Three Blessings — home, neighborhood, and school** — one corner at a time.
-
-### 🎮 The Three Levels
-
-Three chapters, each with its own mood and play — one community, one story.
-
-**🌆 1 · Care at Dusk — A Home of Blessing.** At dusk in the RV Park, trailers roll in to shelter from the sea wind. You have only this sliver of sunset: read the glowing clues on each trailer, understand what that family needs, hand-build a care package, and deliver it before dark. The sky deepens and cools; windows light up one by one. No score, no ranking, no winning or losing — when night falls, only a gentle line: *"Before dark, you reached N / 5 trailer homes."*
-
-**♻️ 2 · Eco Rangers — A Neighborhood of Blessing.** The street starts gray at dawn. Rangers — young people partnering with the city works crew — sort five kinds of recycling. Match one and that patch of street *heals in place*: trash vanishes, flowers bloom, light flies toward your sprout. It is no static matching screen but a street that breathes — mist drifts apart, treetops sway, birds cross. The cleaner it gets, the more helpers walk out, with golden-vested supervisors guiding alongside, never picking trash themselves. One gentle line: *"Your street — this corner is bright because of you."*
-
-**🎓 3 · Graduation Gratitude — A School of Blessing.** In graduation season at Bret Harte Elementary, three acts weave one gesture of gratitude: send your heart to those who walked the road with you; fling a hand-written letter in an arc across the ocean to a sister school in Hualien; and, under cherry blossoms, celebrate these young people growing up. Two shared-good milestones run through it — the communal bamboo bank (*Love for South Sudan*) and *One Person, One Letter* (Hualien).
-
-### 🔗 What Ties the Levels Together
-
-- **Three Blessings** — home · neighborhood · school: three levels, one hub, one community.
-- **The communal bamboo bank & milestones** — drop a coin for every place you tend; pour it into the community to advance two real milestones.
-- **Your sprout** — name it; it grows and blooms as you care, and is still there when you return.
-- **Memory by name** — the same name continues your world; a new name opens its own; nothing is ever erased (saved locally on the same device/browser).
-- **Game feel** — particles, bounce, crisp sound and a light buzz; combos build (sensory, not scored); respects `prefers-reduced-motion`.
-- **For everyone** — difficulty is optional depth, never a barrier or a punishment.
-- **The vows** — no scores, ranking, elimination, or punishment; soft failure is only a gentle nudge. We show the home and the care, never the people being helped.
-- **Trilingual** — EN / ZH / ES, switch any time.
-
-### 🧑‍🏫 For Educators & Developers
-
-This repository also documents a **backstage, AI-assisted stewardship layer** — a small multi-agent system for quest generation, story stewardship, safety review, and volunteer support. It is built on one firm principle: **unreviewed AI output never reaches a player's screen.** Players only ever see human-reviewed, static content. See [`docs/AI_ARCHITECTURE.md`](docs/AI_ARCHITECTURE.md).
-
-### 🛠️ Tech
-
-Pure static site, offline-friendly, no build step, no framework. **Data-driven**: each level's needs, clues, supplies, thresholds, and music live in `data/`; new content changes data, not the engine. Saved progress uses `localStorage` (by player name). Deployed on GitHub Pages.
-
-### 🙏 Acknowledgements
-
-For the Hunters Point community — its young people, its families — and the volunteers who have not missed a single year. With deep gratitude to Sister Roxanne Buchwitz (慈昂), who leads this work in Hunters Point, where a single handful of rice grew into twenty years of care.
-
-> This game honors every home: it shows the home and the care, never the people being helped.
-
-### 📄 License
-
-Code: MIT. Real stories, community materials, and background artwork are used for this nonprofit project only; all rights remain with their respective owners.
+Two independent axes, never confused:
+- **Simple** is for engineering — do not stack systems we cannot finish. Keep the build small.
+- **Juvenile** is a content question — candy colors, decorative emoji, "pick-up-trash-for-points" play. This we mature for a teen audience.
+Engineering can be simple *and* content mature at the same time.
 
 ---
 
-<a id="中文"></a>
-## 中文
+## 1. Layered architecture
 
-> 在上方選擇你的語言——每個版本都各自完整。
+```
+┌─ Layer ∞  Meta-Harness  (RESERVED — future, see §6)
+│           the system observes and improves itself
+│
+├─ Layer 0  Strategy Planner   (StraTA-inspired — "draw the map before setting out")
+│           sets goal + vows(constraints) + steps + done-criteria; binds everything below;
+│           re-plans when the situation changes
+│
+├─ Layer 1  Miya Coordinator   (orchestrator)
+│           interprets state, decides which worker to call, holds the plan
+│
+├─ Layer 2  Worker agents
+│           ├ Guide   — companionship, hints, encouragement (the voice/soul)
+│           ├ Content — generates levels / quests / branches as DATA (config JSON)
+│           └ Safety  — a real blocking function + human-in-the-loop
+│
+├─ Extension (Tier 2)   Memory — remembers a player's progress & preferences
+└─ Roadmap   (Tier 3)   Report (parent/teacher summaries) · Social (trilingual posts)
+```
 
-### 📖 故事
+### Layer 0 — Strategy Planner (StraTA)
+The cure for "AI amnesia": before any content is produced, a planner emits a short, high-level **strategy** that constrains every downstream step, so the system never "forgets the goal one step at a time."
 
-2006 年,慈昂師姐在獵人角帶領慈善組。她在一所小學裡,看見一個孩子連早餐的一把生米都沒有。那一把生米,成了這條路的起點。後來,食物發放、毛毯、課後輔導、義診,還有對 RV Park 家庭的關懷,一樣一樣做了起來;這份陪伴,如今邁向第二十年。
+- **Input:** task (e.g. "design a food-share branch level"), player/community context, the vows.
+- **Output (machine-readable, MCP-friendly):**
+```json
+{
+  "global_goal": "Help a teen feel a real trade-off under scarcity — without judging them",
+  "audience": "teens 14-16, Hunters Point",
+  "constraints": ["no scores/ranking", "no preaching", "no stigma of the vulnerable",
+                  "respect every person's dignity", "age-appropriate"],
+  "steps": ["set scene", "two costed options", "optional third mutual-aid path", "open reflection"],
+  "done_when": "player has made a choice and seen an honest consequence; no 'correct answer' shown"
+}
+```
+- **No reinforcement learning required.** This is architecture + prompting; we adopt StraTA's *idea* (strategy-on-top), not its training.
+- **Dynamic re-plan trigger (the Tyson rule — "everyone has a plan until they get punched"):** a static map fails in a live, human environment. If the situation diverges from the plan (a player refuses, gets upset, goes off-script), the Coordinator interrupts and asks the Planner to redraw the map rather than forcing the old one.
 
-這款遊戲,是寫給這份工作的一封情書。你走進這座社區,和這裡的青少年、家庭和志工站在一起——在 RV Park 為一戶人家點亮窗,在清晨的街角陪它一點一點乾淨、亮起來,在畢業典禮上把一份感恩送到。幸福家園、幸福社區、幸福校園,這片三福之地,你一處一處,好好照顧。
+### Layer 1 — Miya Coordinator (orchestrator)
+Holds the current strategy, reads game state, and routes work to the right worker agent. Re-checks alignment to the global goal at each major step (institutionalized "never forget the original intention").
 
-### 🎮 三關
+### Layer 2 — Worker agents (the three that ship)
 
-三個篇章,各有不同的氛圍與玩法,串成同一個社區的故事。
+**Guide agent — the soul.** Companionship, hints, encouragement. Behavior is fixed by five rules (grounded in two independent bodies of research: Carol Dweck's growth mindset — *process vs. ability praise* — and Adlerian / Dreikurs positive discipline — *encouragement vs. praise*):
+1. Praise effort and method, never "you're smart."
+2. Make mistakes normal and safe — first reaction is "tricky one," not "wrong."
+3. Don't give the answer; hand the ball back with a question.
+4. Connect first, then guide.
+5. No fake praise — warm but honest.
 
-**🌆 一 · 關懷之夜 — 幸福家園。** 黃昏的 RV Park,露營車一台台開進來避海風。你只有夕陽這段時間:讀懂每一台車上發光的線索、看出這一家需要什麼,親手配出關懷包,趕在天黑前送到。天一點一點變暗變冷,車窗一盞盞亮起。沒有分數、沒有排名、沒有輸贏——天黑時,只有一句溫柔的話:「你在入夜前,照顧到了 N／5 台車的家。」
+> Note for teens (14–16): the *principles* above hold; the *expression* matures — drop cutesy tone and candy reward framing; lean into agency and grey-zone reflection. The final wording is set by the human designer's own voice (gratitude, respect, love; like water; never preachy), in EN / ZH / ES.
 
-**♻️ 二 · 環保小尖兵 — 幸福社區。** 清晨的街道灰濛濛的。和工務局合作的小尖兵走上街,五種回收一一分類;每分對一樣,那一塊街景就**就地由灰變亮**——垃圾消失、長出花、金光飛向你的小芽。這不是靜止的配對畫面,而是一條**會呼吸的街**:飄霧漸散、樹梢輕搖、飛鳥掠過;街越乾淨,走出來的人越多,旁邊金黃背心的督導志工靜靜帶領,不親自撿。一句話:「你的街,這一角因你亮起來。」
+**Content agent — generates content as DATA, not as live chat.** It outputs a **level-config JSON** that the existing data-driven engine renders (see §4). It is bound by the Layer 0 strategy and the vows. It never speaks to a player directly.
 
-**🎓 三 · 畢業感恩 — 幸福校園。** 在 Bret Harte 小學的畢業季,三幕串成一場感恩:把心意送給一路相伴的人;親手把一封信沿著拋物線甩過大海,送到花蓮的姐妹校;在櫻花下,和社區一起慶祝這群青少年長大。兩條共善里程碑織在其中——**共善竹筒(募愛 → 南蘇丹)**與**一人一信(花蓮)**。
+**Safety agent — a function that actually blocks, not a paragraph in a README.** Before any generated content can proceed, Safety checks it against explicit forbidden clauses (see §5), age-appropriateness (14–16), and bias/stigma. Output that fails is blocked, not shown. In the demo this must be *demonstrable*: show the reviewer it catches and stops unsuitable content.
 
-### 🔗 串起三關的設計
+### Tier 2 (extension) — Memory
+Remembers a player's progress, preferences, and where their sprout has grown. "It remembers me" is the strongest delight, for one extra layer. Built only if time allows.
 
-- **三福骨架**——幸福家園 · 社區 · 校園:三關共用一座 hub、同屬一個社區。
-- **共善竹筒與里程碑**——每照顧一處投一枚銅板;倒進社區推進兩條真實里程碑。
-- **你的小芽**——親手命名,每照顧一處就長一截、開花,回 hub 仍在。
-- **按名字延續**——同名接續你的世界,換名開另一個世界,絕不清空(以 `localStorage` 在同一台裝置保存)。
-- **手感**——粒子、Q 彈、清脆音效與很輕的震動;連對火花更多(純感官、非分數);尊重「減少動態」。
-- **老少咸宜**——難度是選配的深度,不是門檻,也不是懲罰。
-- **鐵律**——沒有分數、排名、淘汰或懲罰;軟失敗只是溫柔提醒。畫面只呈現「家」與關懷,不描繪受助的人。
-- **三語**——EN / ZH / ES 隨時切換。
-
-### 🧑‍🏫 給教育者與開發者
-
-本專案也記錄了一個**後台、AI 協作的內容產線**——一個小型多代理系統,協助任務生成、故事守護、安全審查與志工支援。它建立在一條鐵律上:**未審的 AI 內容絕不直接進入使用者畫面**,使用者只接觸由人類審定的靜態成品。詳見 [`docs/AI_ARCHITECTURE.md`](docs/AI_ARCHITECTURE.md)。
-
-### 🛠️ 技術
-
-純靜態網站,離線可玩,無建置步驟、無框架。**資料驅動**:三關的需求、線索、物資、門檻與配樂都寫在 `data/`,新增內容只改資料、不動引擎。進度以 `localStorage` 按名字保存。部署於 GitHub Pages。
-
-### 🙏 致謝
-
-獻給獵人角的社區、青少年與家庭,以及二十年來不曾缺席的志工們。深深感念慈昂師姐(Roxanne Buchwitz),她在獵人角帶領這份工作;一把生米,在這裡長成了二十年的關懷。
-
-> 遊戲尊重每一個家:畫面只呈現「家」與關懷,不描繪受助的人。
-
-### 📄 授權
-
-程式碼:MIT。真實故事、社區素材與背景插畫僅供本公益專案使用,著作權歸各自所有者所有。
+### Tier 3 (roadmap, documented not built) — Report, Social
+- **Report:** turns a learning trajectory into a summary a parent/teacher can read.
+- **Social:** turns outcomes into trilingual community posts (the Tzu Chi outreach line).
 
 ---
 
-<a id="español"></a>
-## Español
+## 2. Tools & boundaries (MCP) and Skills
 
-> Elige tu idioma arriba — cada versión es completa por sí misma.
+**MCP server — "Miya content server."** Clean tool boundaries between game data, content generation, social drafting, and safety review:
+```
+read_game_config()        read_level_data()       analyze_player_state()
+generate_next_quest()     generate_branch()       draft_social_post()
+safety_review()           evaluate_alignment(state, strategy)
+```
+This lets the writeup state, honestly: *Miya uses MCP-style tool boundaries to separate game data, storytelling, social generation, and safety review.* We build a **minimal** hub, not a cloud backend — clarity over size, given the deadline.
 
-### 📖 La Historia
+**Agent Skills (`SKILL.md`, loaded on demand):**
+- `guide_encouragement/` — the five-rule voice.
+- `content_branch_design/` — how to build a costed moral-dilemma branch (see §7).
+- `safety_review/` — the forbidden-clause checklist as an executable review.
 
-En 2006, en una escuela primaria de Hunters Point, la hermana Roxanne Buchwitz — que dirige aquí el trabajo del grupo de caridad — vio a un niño que no tenía ni un puñado de arroz para el desayuno. Ese puñado de arroz fue el inicio de este camino. De ahí surgieron los repartos de alimentos, las cobijas, las tutorías, las clínicas gratuitas y el apoyo a las familias del RV Park — un acompañamiento que ya casi cumple veinte años.
+---
 
-Este juego es una carta de amor a esa labor. Entras en la comunidad y te pones del lado de sus jóvenes, familias y voluntarios: enciendes una ventana en el RV Park, ayudas a que una calle gris vuelva a la vida al amanecer, llevas gratitud por un salón de graduación. Nivel a nivel, cuidas las **Tres Bendiciones — hogar, vecindario y escuela** — un rincón a la vez.
+## 3. The Definition of Done (scope discipline)
 
-### 🎮 Los Tres Niveles
+> **Tier 1 — Guide + Content + Safety run one complete loop, and the "wow moment" can be performed on camera = this round is done. Everything else is v2.**
 
-Tres capítulos, cada uno con su propio ambiente y juego — una comunidad, una historia.
+The wow moment (teen version): a player faces a **real trade-off** (a 善經濟 / mutual-aid dilemma), makes a choice, sees an honest, AI-generated-then-human-reviewed consequence branch, and the Guide reflects by honoring their *reasoning* — not by telling them right or wrong.
 
-**🌆 1 · Cuidado al Atardecer — Un Hogar de Bendición.** Al atardecer en el RV Park, los remolques llegan para resguardarse del viento del mar. Solo tienes este rato de sol: lee las pistas brillantes en cada remolque, comprende qué necesita esa familia, arma a mano un paquete de cuidado y entrégalo antes de que anochezca. El cielo se oscurece y enfría; las ventanas se encienden una a una. Sin puntaje, sin clasificación, sin ganar ni perder — al caer la noche, solo una frase amable: *"Antes de anochecer, llegaste a N / 5 hogares sobre ruedas."*
+Brakes: depth beats agent count; don't refactor the front-end, don't add accounts or cloud sync, don't add a branch to all three levels — **one** demonstration branch is enough.
 
-**♻️ 2 · Eco-guardianes — Un Vecindario de Bendición.** La calle empieza gris al amanecer. Los eco-guardianes — jóvenes que colaboran con la cuadrilla municipal — clasifican cinco tipos de reciclaje. Aciertas uno y ese trozo de calle *sana en el sitio*: la basura desaparece, brotan flores, la luz vuela hacia tu brote. No es una pantalla estática, sino una calle que respira — la niebla se dispersa, las copas se mecen, cruzan pájaros. Cuanto más limpia, más ayudantes salen, con voluntarios supervisores de chaleco dorado guiando con calma. Una frase: *"Tu calle — este rincón brilla gracias a ti."*
+---
 
-**🎓 3 · Gratitud de Graduación — Una Escuela de Bendición.** En la graduación de la primaria Bret Harte, tres actos tejen un gesto de gratitud: entrega tu corazón a quienes recorrieron el camino contigo; lanza una carta escrita a mano en un arco sobre el océano a una escuela hermana en Hualien; y, bajo cerezos, celebra a estos jóvenes que crecen. Dos hitos del bien común lo recorren — la alcancía de bambú comunitaria (*Amor para Sudán del Sur*) y *Una Persona, Una Carta* (Hualien).
+## 4. How the AI layer plugs into the game (no engine rewrite)
 
-### 🔗 Lo que une los niveles
+The game is **data-driven**: level requirements, clues, supplies, thresholds, and scenes live in `data/`. So the Content agent's job is simply to **emit a valid level-config object**, which the existing engine renders. The AI layer adds content; it does not touch the engine. This is the clean seam that makes the whole thing buildable before the deadline — and it is what makes Miya a reusable template ("AIAO" mother-mold) for other communities.
 
-- **Tres Bendiciones** — hogar · vecindario · escuela: tres niveles, un hub, una comunidad.
-- **La alcancía de bambú e hitos** — una moneda por cada lugar que cuidas; viértela en la comunidad para avanzar dos hitos reales.
-- **Tu brote** — ponle nombre; crece y florece según cuidas, y sigue ahí cuando vuelves.
-- **Memoria por nombre** — el mismo nombre continúa tu mundo; uno nuevo abre el suyo; nada se borra (guardado localmente en el mismo dispositivo).
-- **Sensación de juego** — partículas, rebote, sonido nítido y una vibración suave; los combos crecen (sensorial, sin puntaje); respeta `prefers-reduced-motion`.
-- **Para todos** — la dificultad es profundidad opcional, nunca una barrera ni un castigo.
-- **Los votos** — sin puntajes, clasificación, eliminación ni castigo; el fallo suave es solo un recordatorio amable. Mostramos el hogar y el cuidado, nunca a las personas ayudadas.
-- **Trilingüe** — EN / ZH / ES, cambia cuando quieras.
+---
 
-### 🧑‍🏫 Para educadores y desarrolladores
+## 5. Safety: the forbidden clauses (enforced by the Safety agent + human)
 
-Este repositorio también documenta una **capa de apoyo asistida por IA, entre bastidores** — un pequeño sistema multiagente para generación de misiones, cuidado de la historia, revisión de seguridad y apoyo a voluntarios. Se basa en un principio firme: **la salida de IA sin revisar nunca llega a la pantalla de un jugador.** Los jugadores solo ven contenido estático revisado por humanos. Véase [`docs/AI_ARCHITECTURE.md`](docs/AI_ARCHITECTURE.md).
+Any generated branch/content is rejected if it:
+1. Stigmatizes the vulnerable (e.g. "this person might resell the supplies / isn't worth helping"). For a long-stigmatized community this is categorically out.
+2. Sets a "correct answer" — no option is rewarded with points or labeled good/bad.
+3. Preaches — no "you should…", no "the right thing to do is…".
+4. Reduces a life or dignity to cold calculation — trade-offs must keep respect for every character.
+5. Leads the dilemma toward a harmful conclusion (discrimination, exclusion, judging by appearance).
 
-### 🛠️ Tecnología
+**Human-in-the-loop is mandatory and cannot be skipped:** the designer (明暺) gives the final review and sign-off, and carries final responsibility. All of this happens backstage; the teen only ever sees the finalized static result.
 
-Sitio estático puro, jugable sin conexión, sin compilación ni framework. **Basado en datos**: las necesidades, pistas, insumos, umbrales y música de cada nivel están en `data/`; el contenido nuevo cambia los datos, no el motor. El progreso se guarda con `localStorage` (por nombre). Desplegado en GitHub Pages.
+---
 
-### 🙏 Agradecimientos
+## 6. Meta-Harness — reserved future top layer (do NOT build now)
 
-Para la comunidad de Hunters Point — sus jóvenes, sus familias — y los voluntarios que no han faltado ni un solo año. Con profunda gratitud a la hermana Roxanne Buchwitz (慈昂), que dirige este trabajo en Hunters Point, donde un solo puñado de arroz creció hasta volverse veinte años de cuidado.
+Meta-Harness is the frontier idea of an agent that **improves its own harness** — watching whether prompts, memory, tools, and context are actually effective, and optimizing them over time. It is the right *eventual* top layer for Miya.
 
-> Este juego honra cada hogar: muestra el hogar y el cuidado, nunca a las personas ayudadas.
+**Why not now:** it needs real player data to learn from, and Miya has zero real players yet. With no data, it has nothing to learn. So it is **documented and reserved** here as Layer ∞, to be activated in v2/v3 after Miya has real teens playing and a body of session data. A lightweight first step toward it is a **Reflection Engine** (Miya writes a short, structured session diary), which can come before the full Meta-Harness.
 
-### 📄 Licencia
+> Sequence: ship the loop → real teens play → collect data → Reflection Engine → Meta-Harness. Framing it now keeps the architecture from "scattering"; building it now would be premature.
 
-Código: MIT. Las historias reales, los materiales comunitarios y las ilustraciones se usan solo para este proyecto sin fines de lucro; todos los derechos pertenecen a sus respectivos propietarios.
+---
+
+## 7. Worked example — "The Last Two" (the demo branch)
+
+A concrete demonstration that this pipeline produces real, safe, teen-appropriate content. *(Skeleton; final wording is produced through the backstage three-layer flow and finalized by the human designer.)*
+
+- **Player role:** a teen volunteer at a community mutual-aid station (agency, not bystander).
+- **Scene:** only **2** fresh food packages left. Two needs at once:
+  - **A — the young mother** with two kids, first in line, waited long. By "first-come-first-served," these two are hers.
+  - **B — Mr. Wang**, a homebound elder who usually comes this hour but hasn't arrived; the player knows (from an earlier level) he moves slowly. If they're given out now, he goes without today.
+- **Core tension:** predictable, rule-based fairness vs. flexible response to individual need. Both deserve help; resources fit only one.
+- **Two costed options** (no right/wrong, no score): give by the rule (mother is cared for; Mr. Wang may, with dignity, stop coming) **or** hold one back for Mr. Wang (he's cared for; the mother may feel it's unfair / that you need connections to get help).
+- **Optional third path (mutual aid — costly, can fail):** the player can speak up and coordinate on the spot (ask the mother if she'll share one; rally others). Success = more people each get something ("善經濟 = make the sharing cleverer, make the pie bigger"). Failure = politely refused; the player carries the awkwardness and still must choose option one or two. *Mutual good is not a free happy ending; it takes initiative and risk.*
+- **Ending:** no grade. One open question, e.g. *"In what you saw today, what is 'fair'?"* No standard answer collected; pure reflection.
+
+**Why this is the Capstone's core, demonstrated:** the branch is generated by the **Content agent**, screened by the **Safety agent** against §5, and finalized by the **human** — so the level is simultaneously a piece of content *and* a live demonstration of AI capability, AI's limits, child safety, and human-in-the-loop.
+
+---
+
+## 8. Capstone concept mapping
+
+| Concept | Where it lives in Miya | Status |
+|---|---|---|
+| Multi-agent (ADK) | Strategy Planner → Coordinator → Guide / Content / Safety | core |
+| MCP server | "Miya content server" tool boundaries (§2) | core |
+| Agent Skills (`SKILL.md`) | guide / content-branch / safety-review | core |
+| Safety mechanism | Safety agent as a real blocking function + HITL (§5) | core |
+| Memory | Tier 2 extension | extension |
+| Self-improvement | Meta-Harness, reserved (§6) | roadmap |
+
+A *right-sized* design — three agents done well plus a clear roadmap — is itself the demonstration of an "AIAO" (small-charity AI advisor) methodology: buildable, finishable, defensible. Six half-built agents would undermine the very thing we're selling.
+
+---
+
+## 9. Two entrances (ethics)
+
+- **Public game** = a gift to the Hunters Point community. No "Kaggle," no "competition," no AI-chat in front of minors. This stays the heart.
+- **Capstone demonstration** = the backstage stewardship layer, shown to reviewers using **de-identified / synthetic data** — not real children's data or the community's private specifics as a competition narrative.
+- One line to hold it all: *Miya is the heart; the stewardship layer is the backstage that protects and extends the heart. They share one soul but speak to different audiences.*
