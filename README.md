@@ -30,7 +30,7 @@ This game is a love letter to that work. You step into the community and stand b
 
 Three chapters, each with its own mood and play — one community, one story.
 
-**🌆 1 · Care at Dusk — A Home of Blessing.** At dusk in the RV Park, trailers roll in to shelter from the sea wind. You have only this sliver of sunset: read the glowing clues on each trailer, understand what that family needs, hand-build a care package, and deliver it before dark. The sky deepens and cools; windows light up one by one. No score, no ranking, no winning or losing — when night falls, only a gentle line: *"Before dark, you reached N / 5 trailer homes."*
+**🌆 1 · Care at Dusk — A Home of Blessing.** At dusk in the RV Park, trailers roll in to shelter from the sea wind. You have only this sliver of sunset: read the glowing clues on each trailer, understand what that family needs, hand-build a care package, and deliver it before dark. The sky deepens and cools; windows light up one by one. When night falls, only a gentle line: *"Before dark, you reached N / 5 trailer homes."*
 
 **♻️ 2 · Eco Rangers — A Neighborhood of Blessing.** The street starts gray at dawn. Rangers — young people partnering with the city works crew — sort five kinds of recycling. Match one and that patch of street *heals in place*: trash vanishes, flowers bloom, light flies toward your sprout. It is no static matching screen but a street that breathes — mist drifts apart, treetops sway, birds cross. The cleaner it gets, the more helpers walk out, with golden-vested supervisors guiding alongside, never picking trash themselves. One gentle line: *"Your street — this corner is bright because of you."*
 
@@ -82,7 +82,7 @@ Code: MIT. Real stories, community materials, and background artwork are used fo
 
 三個篇章,各有不同的氛圍與玩法,串成同一個社區的故事。
 
-**🌆 一 · 關懷之夜 — 幸福家園。** 黃昏的 RV Park,露營車一台台開進來避海風。你只有夕陽這段時間:讀懂每一台車上發光的線索、看出這一家需要什麼,親手配出關懷包,趕在天黑前送到。天一點一點變暗變冷,車窗一盞盞亮起。沒有分數、沒有排名、沒有輸贏——天黑時,只有一句溫柔的話:「你在入夜前,照顧到了 N／5 台車的家。」
+**🌆 一 · 關懷之夜 — 幸福家園。** 黃昏的 RV Park,露營車一台台開進來避海風。你只有夕陽這段時間:讀懂每一台車上發光的線索、看出這一家需要什麼,親手配出關懷包,趕在天黑前送到。天一點一點變暗變冷,車窗一盞盞亮起。天黑時,只有一句溫柔的話:「你在入夜前,照顧到了 N／5 台車的家。」
 
 **♻️ 二 · 環保小尖兵 — 幸福社區。** 清晨的街道灰濛濛的。和工務局合作的小尖兵走上街,五種回收一一分類;每分對一樣,那一塊街景就**就地由灰變亮**——垃圾消失、長出花、金光飛向你的小芽。這不是靜止的配對畫面,而是一條**會呼吸的街**:飄霧漸散、樹梢輕搖、飛鳥掠過;街越乾淨,走出來的人越多,旁邊金黃背心的督導志工靜靜帶領,不親自撿。一句話:「你的街,這一角因你亮起來。」
 
@@ -134,7 +134,7 @@ Este juego es una carta de amor a esa labor. Entras en la comunidad y te pones d
 
 Tres capítulos, cada uno con su propio ambiente y juego — una comunidad, una historia.
 
-**🌆 1 · Cuidado al Atardecer — Un Hogar de Bendición.** Al atardecer en el RV Park, los remolques llegan para resguardarse del viento del mar. Solo tienes este rato de sol: lee las pistas brillantes en cada remolque, comprende qué necesita esa familia, arma a mano un paquete de cuidado y entrégalo antes de que anochezca. El cielo se oscurece y enfría; las ventanas se encienden una a una. Sin puntaje, sin clasificación, sin ganar ni perder — al caer la noche, solo una frase amable: *"Antes de anochecer, llegaste a N / 5 hogares sobre ruedas."*
+**🌆 1 · Cuidado al Atardecer — Un Hogar de Bendición.** Al atardecer en el RV Park, los remolques llegan para resguardarse del viento del mar. Solo tienes este rato de sol: lee las pistas brillantes en cada remolque, comprende qué necesita esa familia, arma a mano un paquete de cuidado y entrégalo antes de que anochezca. El cielo se oscurece y enfría; las ventanas se encienden una a una. Al caer la noche, solo una frase amable: *"Antes de anochecer, llegaste a N / 5 hogares sobre ruedas."*
 
 **♻️ 2 · Eco-guardianes — Un Vecindario de Bendición.** La calle empieza gris al amanecer. Los eco-guardianes — jóvenes que colaboran con la cuadrilla municipal — clasifican cinco tipos de reciclaje. Aciertas uno y ese trozo de calle *sana en el sitio*: la basura desaparece, brotan flores, la luz vuela hacia tu brote. No es una pantalla estática, sino una calle que respira — la niebla se dispersa, las copas se mecen, cruzan pájaros. Cuanto más limpia, más ayudantes salen, con voluntarios supervisores de chaleco dorado guiando con calma. Una frase: *"Tu calle — este rincón brilla gracias a ti."*
 
