@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+title: "Miya · Seeds of Kindness"
+message: "Built for the commons. If you use, learn from, or build on this project, please cite it — and keep your adaptations open."
+type: software
+authors:
+  - name: "Miya · Seeds of Kindness (AAdl11)"
+    # You may replace this with your own name / 法號 if you'd like to be credited personally.
+url: "https://aadl11.github.io/kindness-seeds-/"
+repository-code: "https://github.com/AAdl11/kindness-seeds-"
+license: MIT
+date-released: "2026-06-23"
+keywords:
+  - kindness
+  - community
+  - multi-agent
+  - ai-agents
+  - education
+  - human-in-the-loop
+abstract: >
+  A trilingual (EN/ZH/ES) community kindness game for Hunters Point, with a
+  backstage AI-assisted stewardship layer — multi-agent content generation,
+  safety review, and human-in-the-loop — designed so that unreviewed AI output
+  never reaches a player's screen. Code is MIT; documentation and content are
+  CC BY-SA 4.0.
