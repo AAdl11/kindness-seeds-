@@ -25,7 +25,7 @@
 
 In 2006, in a Hunters Point elementary school, Sister Roxanne Buchwitz — who leads the charity group's work here — saw a child who didn't even have a handful of rice for breakfast. That handful of rice was the start of this path. From it came food shares, blankets, tutoring, free clinics, and outreach to the families in the RV Park — a companionship now approaching its twentieth year.
 
-This game is a love letter to that work. You step into the community and stand beside its young people, families, and volunteers — lighting a window at the RV Park, helping a gray street wake back to life at dawn, carrying gratitude across a graduation hall. Level by level, you care for the **Three Blessings — home, neighborhood, and school** — one corner at a time.
+This game is a love letter to that work. You step into the community and stand beside its young people, families, and volunteers — lighting up a home at the RV Park, helping a gray street wake back to life at dawn, carrying gratitude across a graduation hall. Level by level, you care for the **Three Blessings — home, neighborhood, and school** — one corner at a time.
 
 ### 🎮 The Three Levels
 
@@ -33,7 +33,7 @@ Three chapters, each with its own mood and play — one community, one story.
 
 **🌆 1 · Care at Dusk — A Home of Blessing.** At dusk in the RV Park, trailers roll in to shelter from the sea wind. You have only this sliver of sunset: read the glowing clues on each trailer, understand what that family needs, hand-build a care package, and deliver it before dark. The sky deepens and cools; windows light up one by one. When night falls, only a gentle line: *"Before dark, you reached N / 5 trailer homes."*
 
-**♻️ 2 · Eco Rangers — A Neighborhood of Blessing.** The street starts gray at dawn. Rangers — young people partnering with the city works crew — sort five kinds of recycling. Match one and that patch of street *heals in place*: trash vanishes, flowers bloom, light flies toward your sprout. It is no static matching screen but a street that breathes — mist drifts apart, treetops sway, birds cross. The cleaner it gets, the more helpers walk out, with golden-vested supervisors guiding alongside, never picking trash themselves. One gentle line: *"Your street — this corner is bright because of you."*
+**♻️ 2 · Eco Rangers — A Neighborhood of Blessing.** The street starts gray at dawn. Rangers — young people partnering with the city works crew — sort five kinds of recycling. Match one and that patch of street *heals in place*: trash vanishes, flowers bloom, light flies toward your sprout. This is a street that breathes — mist drifts apart, treetops sway, birds cross. The cleaner it gets, the more helpers walk out, with golden-vested supervisors guiding alongside, never picking trash themselves. One gentle line: *"Your street — this corner is bright because of you."*
 
 **🎓 3 · Graduation Gratitude — A School of Blessing.** In graduation season at Bret Harte Elementary, three acts weave one gesture of gratitude: send your heart to those who walked the road with you; fling a hand-written letter in an arc across the ocean to a sister school in Hualien; and, under cherry blossoms, celebrate these young people growing up. Two shared-good milestones run through it — the communal bamboo bank (*Love for South Sudan*) and *One Person, One Letter* (Hualien).
 
@@ -79,7 +79,7 @@ Built for the commons. Code is MIT; this project's own writing and documentation
 
 2006 年,慈昂師姐在獵人角帶領慈善組。她在一所小學裡,看見一個孩子連早餐的一把生米都沒有。那一把生米,成了這條路的起點。後來,食物發放、毛毯、課後輔導、義診,還有對 RV Park 家庭的關懷,一樣一樣做了起來;這份陪伴,如今邁向第二十年。
 
-這款遊戲,是寫給這份工作的一封情書。你走進這座社區,和這裡的青少年、家庭和志工站在一起——在 RV Park 為一戶人家點亮窗,在清晨的街角陪它一點一點乾淨、亮起來,在畢業典禮上把一份感恩送到。幸福家園、幸福社區、幸福校園,這片三福之地,你一處一處,好好照顧。
+這款遊戲,是寫給這份工作的一封情書。你走進這座社區,和這裡的青少年、家庭和志工站在一起——在 RV Park 點亮一個家,在清晨的街角陪它一點一點乾淨、亮起來,在畢業典禮上把一份感恩送到。幸福家園、幸福社區、幸福校園,這片三福之地,你一處一處,好好照顧。
 
 ### 🎮 三關
 
@@ -87,7 +87,7 @@ Built for the commons. Code is MIT; this project's own writing and documentation
 
 **🌆 一 · 關懷之夜 — 幸福家園。** 黃昏的 RV Park,露營車一台台開進來避海風。你只有夕陽這段時間:讀懂每一台車上發光的線索、看出這一家需要什麼,親手配出關懷包,趕在天黑前送到。天一點一點變暗變冷,車窗一盞盞亮起。天黑時,只有一句溫柔的話:「你在入夜前,照顧到了 N／5 台車的家。」
 
-**♻️ 二 · 環保小尖兵 — 幸福社區。** 清晨的街道灰濛濛的。和工務局合作的小尖兵走上街,五種回收一一分類;每分對一樣,那一塊街景就**就地由灰變亮**——垃圾消失、長出花、金光飛向你的小芽。這不是靜止的配對畫面,而是一條**會呼吸的街**:飄霧漸散、樹梢輕搖、飛鳥掠過;街越乾淨,走出來的人越多,旁邊金黃背心的督導志工靜靜帶領,不親自撿。一句話:「你的街,這一角因你亮起來。」
+**♻️ 二 · 環保小尖兵 — 幸福社區。** 清晨的街道灰濛濛的。和工務局合作的小尖兵走上街,五種回收一一分類;每分對一樣,那一塊街景就**就地由灰變亮**——垃圾消失、長出花、金光飛向你的小芽。這是一條**會呼吸的街**:飄霧漸散、樹梢輕搖、飛鳥掠過;街越乾淨,走出來的人越多,旁邊金黃背心的督導志工靜靜帶領,不親自撿。一句話:「你的街,這一角因你亮起來。」
 
 **🎓 三 · 畢業感恩 — 幸福校園。** 在 Bret Harte 小學的畢業季,三幕串成一場感恩:把心意送給一路相伴的人;親手把一封信沿著拋物線甩過大海,送到花蓮的姐妹校;在櫻花下,和社區一起慶祝這群青少年長大。兩條共善里程碑織在其中——**共善竹筒(募愛 → 南蘇丹)**與**一人一信(花蓮)**。
 
@@ -104,7 +104,7 @@ Built for the commons. Code is MIT; this project's own writing and documentation
 
 ### 🧑‍🏫 給教育者與開發者
 
-本專案也記錄了一個**後台、AI 協作的內容產線**——一個小型多代理系統,協助任務生成、故事守護、安全審查與志工支援。它建立在一條鐵律上:**未審的 AI 內容絕不直接進入使用者畫面**,使用者只接觸由人類審定的靜態成品。詳見 [`docs/AI_ARCHITECTURE.md`](docs/AI_ARCHITECTURE.md)。
+本專案也記錄了一個**後台、AI 協作的內容產線**——一個小型多代理系統,協助任務生成、故事守護、安全審查與志工支援。它建立在一條不退讓的原則上:**未審的 AI 內容絕不直接進入使用者畫面**,使用者只接觸由人類審定的靜態成品。詳見 [`docs/AI_ARCHITECTURE.md`](docs/AI_ARCHITECTURE.md)。
 
 ### 🛠️ 技術
 
@@ -133,7 +133,7 @@ Built for the commons. Code is MIT; this project's own writing and documentation
 
 En 2006, en una escuela primaria de Hunters Point, la hermana Roxanne Buchwitz — que dirige aquí el trabajo del grupo de caridad — vio a un niño que no tenía ni un puñado de arroz para el desayuno. Ese puñado de arroz fue el inicio de este camino. De ahí surgieron los repartos de alimentos, las cobijas, las tutorías, las clínicas gratuitas y el apoyo a las familias del RV Park — un acompañamiento que ya casi cumple veinte años.
 
-Este juego es una carta de amor a esa labor. Entras en la comunidad y te pones del lado de sus jóvenes, familias y voluntarios: enciendes una ventana en el RV Park, ayudas a que una calle gris vuelva a la vida al amanecer, llevas gratitud por un salón de graduación. Nivel a nivel, cuidas las **Tres Bendiciones — hogar, vecindario y escuela** — un rincón a la vez.
+Este juego es una carta de amor a esa labor. Entras en la comunidad y te pones del lado de sus jóvenes, familias y voluntarios: enciendes un hogar en el RV Park, ayudas a que una calle gris vuelva a la vida al amanecer, llevas gratitud por un salón de graduación. Nivel a nivel, cuidas las **Tres Bendiciones — hogar, vecindario y escuela** — un rincón a la vez.
 
 ### 🎮 Los Tres Niveles
 
@@ -141,7 +141,7 @@ Tres capítulos, cada uno con su propio ambiente y juego — una comunidad, una 
 
 **🌆 1 · Cuidado al Atardecer — Un Hogar de Bendición.** Al atardecer en el RV Park, los remolques llegan para resguardarse del viento del mar. Solo tienes este rato de sol: lee las pistas brillantes en cada remolque, comprende qué necesita esa familia, arma a mano un paquete de cuidado y entrégalo antes de que anochezca. El cielo se oscurece y enfría; las ventanas se encienden una a una. Al caer la noche, solo una frase amable: *"Antes de anochecer, llegaste a N / 5 hogares sobre ruedas."*
 
-**♻️ 2 · Eco-guardianes — Un Vecindario de Bendición.** La calle empieza gris al amanecer. Los eco-guardianes — jóvenes que colaboran con la cuadrilla municipal — clasifican cinco tipos de reciclaje. Aciertas uno y ese trozo de calle *sana en el sitio*: la basura desaparece, brotan flores, la luz vuela hacia tu brote. No es una pantalla estática, sino una calle que respira — la niebla se dispersa, las copas se mecen, cruzan pájaros. Cuanto más limpia, más ayudantes salen, con voluntarios supervisores de chaleco dorado guiando con calma. Una frase: *"Tu calle — este rincón brilla gracias a ti."*
+**♻️ 2 · Eco-guardianes — Un Vecindario de Bendición.** La calle empieza gris al amanecer. Los eco-guardianes — jóvenes que colaboran con la cuadrilla municipal — clasifican cinco tipos de reciclaje. Aciertas uno y ese trozo de calle *sana en el sitio*: la basura desaparece, brotan flores, la luz vuela hacia tu brote. Es una calle que respira — la niebla se dispersa, las copas se mecen, cruzan pájaros. Cuanto más limpia, más ayudantes salen, con voluntarios supervisores de chaleco dorado guiando con calma. Una frase: *"Tu calle — este rincón brilla gracias a ti."*
 
 **🎓 3 · Gratitud de Graduación — Una Escuela de Bendición.** En la graduación de la primaria Bret Harte, tres actos tejen un gesto de gratitud: entrega tu corazón a quienes recorrieron el camino contigo; lanza una carta escrita a mano en un arco sobre el océano a una escuela hermana en Hualien; y, bajo cerezos, celebra a estos jóvenes que crecen. Dos hitos del bien común lo recorren — la alcancía de bambú comunitaria (*Amor para Sudán del Sur*) y *Una Persona, Una Carta* (Hualien).
 
