@@ -1,0 +1,6 @@
+# Miya backstage pipeline — development-time tooling only.
+# The game runtime (index.html + src/ + data/) stays pure static and never imports these.
+google-adk>=0.3.0
+mcp>=1.2.0
+google-genai>=0.3.0
+python-dotenv>=1.0.0

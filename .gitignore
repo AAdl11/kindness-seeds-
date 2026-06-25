@@ -1,0 +1,11 @@
+# --- Miya pipeline (backstage AI tooling) ---
+pipeline/.env
+pipeline/out/*
+!pipeline/out/.gitkeep
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
