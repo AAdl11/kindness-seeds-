@@ -63,7 +63,10 @@ This pipeline is being assembled step by step, with a human review after each st
 - [x] **Step 1 — MCP server** (`mcp_server/server.py`): `list_levels`,
       `read_level_data`, `get_community_context`, `get_safety_rules`,
       `save_candidate` (writes only to `out/`).
-- [ ] Step 2 — Content agent (MCP + Gemini → candidate JSON)
+- [x] **Step 2 — Content agent** (`agents/content_agent.py`): reads `data/`
+      through MCP, drafts the `the_last_two` level with Gemini (key from
+      `.env`), validates the trilingual shape, and writes via `save_candidate`.
+      Candidate stays `reviewed_by: "pending"` until the human gate.
 - [ ] Step 3 — Safety agent (`safety_review` skill → report)
 - [ ] Step 4 — Orchestrator + human review gate
 - [ ] Step 5 — Agent Skills (`SKILL.md`) wired in
