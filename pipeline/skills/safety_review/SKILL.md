@@ -46,7 +46,10 @@ the human *could* apply — phrased as a suggestion, never an edit you made.
 - **no_stigma** — implies someone is "not worth helping", might resell or
   misuse aid, is lazy, or is to blame for their need.
 - **no_correct_answer** — language that scores, ranks, declares a winner, or
-  frames one choice as the right/good/correct one.
+  frames one choice as the right/good/correct one. An **open reflection question
+  is fine** — only flag it if it collects an answer or points to one correct
+  answer. Do NOT flag a question like "what is fair?": that is an invitation to
+  think, not a hint that there is a standard answer.
 - **no_preaching** — "you should…", "the right thing to do is…", a moral lesson
   stated at the player.
 - **no_cold_calculus** — reduces a person's worth or dignity to a number or a
@@ -55,10 +58,13 @@ the human *could* apply — phrased as a suggestion, never an edit you made.
   appearance, or status.
 - **age_appropriate** — anything frightening, graphic, or otherwise unsuitable
   with children present.
-- **home_not_people** — describes or depicts the helped person's body, face, or
-  condition rather than the home and the care. (The scenario names roles like
-  "a young mother" or "Mr. Wang" to set up the choice; flag wording that
-  *renders their suffering as spectacle*, not the mere mention of who is there.)
+- **home_not_people** — *dignity, not spectacle.* **Allowed** (do not flag):
+  tender, dignified portrayals of people — a child's bright eyes, a gentle smile,
+  quiet gratitude; naming roles like "a young mother" or "Mr. Wang" to set up the
+  choice. **Block only**: writing that turns someone's poverty, need, or
+  suffering into a pitying display; reduces a person to their hardship; or eyes
+  their body/condition with pity. The test: *does this cherish the person, or
+  consume their suffering?* Cherishing passes; consuming is blocked.
 
 ## Output — return ONLY this JSON object
 

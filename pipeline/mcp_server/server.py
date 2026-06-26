@@ -112,7 +112,8 @@ def get_community_context() -> dict:
             "gentle, like water; never preaching",
             "agency and grey-zone reflection for teens (14-16)",
         ],
-        "framing_rule": "Show the home and the care, never the people being helped.",
+        "framing_rule": "Portray people with dignity; never turn suffering into spectacle. "
+                        "Tender, dignified glimpses of people are welcome; pitying display is not.",
         "languages": ["en", "zh", "es"],
     }
 
@@ -125,8 +126,11 @@ def get_safety_rules() -> list[dict]:
          "en": "Do not stigmatize the vulnerable (never imply someone is 'not worth helping' or 'might misuse aid').",
          "zh": "不污名化弱勢（不寫成「不值得幫」「可能拿去亂用」）。"},
         {"id": "no_correct_answer",
-         "en": "No single correct answer, no score, no winning or losing.",
-         "zh": "不設標準答案、不計分、無輸贏。"},
+         "en": "No scoring, ranking, winner, or choice labeled right/best. Open reflection "
+               "questions are welcome as long as they collect no answer and point to no single "
+               "correct one (e.g. 'what is fair?' is good — an invitation, not a right answer).",
+         "zh": "不計分、不排名、不宣告贏家、不把某選項貼成「對的／最好的」。開放式反思問句是好的，"
+               "只要不收答案、不指向單一正解（例如「什麼是公平？」是邀請思考，不是暗示有標準答案）。"},
         {"id": "no_preaching",
          "en": "No preaching ('you should...', 'the right thing to do is...').",
          "zh": "不說教（禁「你應該…」「正確做法是…」）。"},
@@ -140,8 +144,14 @@ def get_safety_rules() -> list[dict]:
          "en": "Age-appropriate: children are present; nothing distressing.",
          "zh": "合齡（孩子在場，無任何不適內容）。"},
         {"id": "home_not_people",
-         "en": "Show the home and the care, never the people being helped.",
-         "zh": "只呈現「家」與關懷，不描繪受助的人。"},
+         "en": "Dignity, not spectacle. Tender, dignified portrayals of people are welcome "
+               "(a child's bright eyes, a gentle smile, quiet gratitude). Block only writing that "
+               "turns someone's poverty/need/suffering into a pitying display, reduces a person to "
+               "their hardship, or eyes their condition with pity. Test: does this cherish the "
+               "person, or consume their suffering? Cherishing passes; consuming is blocked.",
+         "zh": "尊嚴，不獵奇。溫柔、有尊嚴地描寫人是允許的（孩子明亮的眼睛、溫和的笑、安靜的感激）。"
+               "只擋把貧窮／需要／苦難寫成可憐的展示、把人簡化成其困境、以憐憫眼光打量其身體狀況的寫法。"
+               "判準：這是疼人，還是消費苦難？疼人放行，消費才擋。"},
     ]
 
 
