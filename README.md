@@ -12,6 +12,8 @@
 
 **▶ Play / 立即遊玩 / Jugar:** https://aadl11.github.io/kindness-seeds-/
 
+**Links:** [▶ Live game](https://aadl11.github.io/kindness-seeds-/) · [GitHub repo](https://github.com/AAdl11/kindness-seeds-) · [DOI 10.5281/zenodo.20818912](https://doi.org/10.5281/zenodo.20818912) · 🎬 Video (coming) · [Backstage AI architecture](docs/AI_ARCHITECTURE.md)
+
 **🌐 Read in:  [English](#english) · [中文](#中文) · [Español](#español)**
 
 ---
@@ -50,7 +52,42 @@ Three chapters, each with its own mood and play — one community, one story.
 
 ### 🧑‍🏫 For Educators & Developers
 
-This repository also documents a **backstage, AI-assisted stewardship layer** — a small multi-agent system for quest generation, story stewardship, safety review, and volunteer support. It is built on one firm principle: **unreviewed AI output never reaches a player's screen.** Players only ever see human-reviewed, static content. See [`docs/AI_ARCHITECTURE.md`](docs/AI_ARCHITECTURE.md).
+This repository also documents a **backstage, AI-assisted stewardship layer** — a small multi-agent system for quest generation, story stewardship, safety review, and volunteer support. It is built on one firm principle: **unreviewed AI output never reaches a player's screen.** Players only ever see human-reviewed, static content. See [`docs/AI_ARCHITECTURE.md`](docs/AI_ARCHITECTURE.md), and the runnable pipeline in [`pipeline/`](pipeline/README.md).
+
+**The problem.** Small charities want fresh, age-appropriate, trilingual content for the people they serve — but generative AI is unpredictable, and the players here are minors. Unreviewed output reaching a child's screen is not acceptable.
+
+**The solution.** AI works *backstage* as a development-time tool. It drafts and reviews content; a human approves the final wording; only then does it become a static, offline level. Players call no AI at runtime.
+
+**The backstage pipeline:**
+
+```mermaid
+flowchart LR
+    need([Community need<br/>one line]) --> planner[Strategy Planner<br/>goal + firm boundaries]
+    planner --> content[Content agent<br/>MCP + Gemini → candidate JSON]
+    content --> safety[Safety agent<br/>skill: line-by-line review]
+    safety --> gate{Human review gate<br/>approve / edit / reject}
+    gate -- approve only --> level[(Static level in data/<br/>offline-playable)]
+    gate -- edit / reject --> out[/stays in out/, never data//]
+    level --> game([Game runtime<br/>pure static · GitHub Pages])
+
+    content -. reads data/ via .-> mcp[[Miya content MCP server]]
+    safety -. get_safety_rules .-> mcp
+
+    classDef human fill:#ffe9b0,stroke:#d8a93a,color:#4a3007;
+    class gate human;
+```
+
+**Capstone concepts → where they live:**
+
+| Concept | In Miya | Status |
+|---|---|---|
+| Multi-agent orchestration (ADK) | `pipeline/agents/` — Strategy Planner → Coordinator → Content / Safety | core |
+| MCP server | `pipeline/mcp_server/server.py` — "Miya content server" tool boundaries onto `data/` | core |
+| Agent Skills (`SKILL.md`) | `content_branch_design` (Content) + `safety_review` (Safety), loaded as system instructions | core |
+| Safety mechanism (HITL) | Safety agent blocks; the human review gate is the only writer into `data/` | core |
+| Deployability | Game runtime is a pure static site on GitHub Pages — offline, no build, no framework | live |
+
+The pipeline never reaches the game at runtime; it only produces reviewed, static `data/`. Run it yourself: [`pipeline/README.md`](pipeline/README.md).
 
 ### 🛠️ Tech
 

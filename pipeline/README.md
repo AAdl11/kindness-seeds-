@@ -25,20 +25,20 @@ Community need
   → Static level       lives in data/, the game plays it offline
 ```
 
-## Setup
+## Reproduce it (clone → install → run)
+
+Requires Python 3.10+ and a free Gemini API key from Google AI Studio
+(<https://aistudio.google.com/apikey>). The key lives only in your local `.env`,
+which is git-ignored — no key is ever committed.
 
 ```
-cd pipeline
-pip install -r requirements.txt
-cp .env.example .env        # then put your own GEMINI_API_KEY in .env
-```
+git clone https://github.com/AAdl11/kindness-seeds-.git
+cd kindness-seeds-/pipeline
+python -m pip install -r requirements.txt
 
-## Run the whole loop (one command)
+cp .env.example .env          # macOS/Linux   (Windows: copy .env.example .env)
+# then open .env and paste your key:  GEMINI_API_KEY=...
 
-```
-cd pipeline
-pip install -r requirements.txt
-cp .env.example .env        # put your GEMINI_API_KEY in .env
 python agents/orchestrator.py --need "Two food packages left, two people need them"
 ```
 
@@ -99,7 +99,9 @@ This pipeline is being assembled step by step, with a human review after each st
       `skills/safety_review/` (Safety). The design rules/voice/schema now live in
       the skill, not hard-coded in `content_agent.py`.
 - [ ] Step 6 — approved level plays in the game (engine unchanged)
-- [ ] Step 7 — finalize this README (install + one-line demo + diagram)
+- [x] **Step 7 — documentation**: main `README.md` has the judges' link row,
+      the problem→solution→architecture story, a Mermaid pipeline diagram, and the
+      capstone-concept mapping; this file has the clone→install→one-command run.
 
 ## The MCP server (step 1)
 
