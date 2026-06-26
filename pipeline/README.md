@@ -33,11 +33,29 @@ pip install -r requirements.txt
 cp .env.example .env        # then put your own GEMINI_API_KEY in .env
 ```
 
-## Run the demo (target)
+## Run the whole loop (one command)
 
 ```
+cd pipeline
+pip install -r requirements.txt
+cp .env.example .env        # put your GEMINI_API_KEY in .env
 python agents/orchestrator.py --need "Two food packages left, two people need them"
-# → drafts the_last_two candidate → safety report → human gate → on approve, writes ../data/
+```
+
+That single command runs the full pass:
+
+```
+Content agent  → drafts the_last_two candidate (MCP + Gemini) → out/
+Safety agent   → reviews it (skill + MCP rules) → out/the_last_two.safety.json
+Human gate     → shows candidate + report → approve / edit / reject
+                 approve ONLY → writes ../data/the_last_two.json (reviewed_by:"human")
+```
+
+Run the agents now and the human gate later:
+
+```
+python agents/orchestrator.py --need "..." --no-gate
+python review/human_gate.py --id the_last_two
 ```
 
 ## Layout
@@ -72,8 +90,12 @@ This pipeline is being assembled step by step, with a human review after each st
       the candidate rule by rule, and writes `out/<id>.safety.json`
       (`{pass, findings, suggested_fixes, checked_rules}`). Flag-only — never edits
       the candidate; `pass` is recomputed locally from the findings.
-- [ ] Step 4 — Orchestrator + human review gate
-- [ ] Step 5 — Agent Skills (`SKILL.md`) wired in
+- [x] **Step 4 — Orchestrator + human review gate** (`agents/orchestrator.py`,
+      `review/human_gate.py`): one command runs Content → Safety → human gate.
+      The gate is the only writer into `data/`; approve stamps
+      `reviewed_by:"human"`, edit/reject keep everything in `out/`.
+- [x] **Step 5 — Agent Skills wired in** (`skills/safety_review/SKILL.md` is
+      loaded by the Safety agent; `content_branch_design` planned next).
 - [ ] Step 6 — approved level plays in the game (engine unchanged)
 - [ ] Step 7 — finalize this README (install + one-line demo + diagram)
 
