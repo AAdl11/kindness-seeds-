@@ -94,8 +94,10 @@ This pipeline is being assembled step by step, with a human review after each st
       `review/human_gate.py`): one command runs Content → Safety → human gate.
       The gate is the only writer into `data/`; approve stamps
       `reviewed_by:"human"`, edit/reject keep everything in `out/`.
-- [x] **Step 5 — Agent Skills wired in** (`skills/safety_review/SKILL.md` is
-      loaded by the Safety agent; `content_branch_design` planned next).
+- [x] **Step 5 — Agent Skills wired in**: both agents load a `SKILL.md` as their
+      system instruction — `skills/content_branch_design/` (Content) and
+      `skills/safety_review/` (Safety). The design rules/voice/schema now live in
+      the skill, not hard-coded in `content_agent.py`.
 - [ ] Step 6 — approved level plays in the game (engine unchanged)
 - [ ] Step 7 — finalize this README (install + one-line demo + diagram)
 

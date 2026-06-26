@@ -34,27 +34,10 @@ import sys
 # --- paths -----------------------------------------------------------------
 PIPELINE = pathlib.Path(__file__).resolve().parents[1]
 SERVER = PIPELINE / "mcp_server" / "server.py"
+SKILL_PATH = PIPELINE / "skills" / "content_branch_design" / "SKILL.md"
 
 DEFAULT_NEED = "Two food packages left, two people need them"
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
-
-# The §3.5 target shape, shown to the model and checked locally.
-SCHEMA_HINT = {
-    "id": "the_last_two",
-    "type": "moral_dilemma",
-    "title": {"en": "", "zh": "", "es": ""},
-    "scene": {"en": "", "zh": "", "es": ""},
-    "choices": [
-        {"label": {"en": "", "zh": "", "es": ""},
-         "consequence": {"en": "", "zh": "", "es": ""}}
-    ],
-    "third_path": {
-        "success": {"en": "", "zh": "", "es": ""},
-        "fail": {"en": "", "zh": "", "es": ""},
-    },
-    "ending_question": {"en": "", "zh": "", "es": ""},
-    "safety_meta": {"reviewed_by": "pending", "no_score": True},
-}
 
 # The scenario brief — the §7 "The Last Two" worked example is the structural
 # and quality bar. The human reviewer's hand-written trilingual version is the
@@ -145,11 +128,13 @@ def _safe_id(v) -> bool:
 
 
 # --- prompt ----------------------------------------------------------------
+# The design rules, voice, and output schema live in the content_branch_design
+# skill (loaded as the system instruction). This prompt supplies only the
+# materials for this particular level.
 def build_prompt(need: str, community: dict, rules: list, style_ref: str) -> str:
-    return f"""You are the Content agent for "Miya · Seeds of Kindness", a gentle,
-trilingual community game. Draft ONE level as strict JSON.
+    return f"""Draft one Miya level, following your skill exactly.
 
-COMMUNITY CONTEXT (hold this tone exactly):
+COMMUNITY CONTEXT (hold this tone):
 {json.dumps(community, ensure_ascii=False, indent=2)}
 
 FIRM CONTENT BOUNDARIES (every one must hold):
@@ -167,19 +152,7 @@ THE NEED:
 SCENARIO TO REALIZE:
 {SCENARIO_BRIEF}
 
-OUTPUT RULES:
-- Return ONLY a single JSON object, no markdown, no commentary.
-- Match exactly this schema (same keys); every text field present in en, zh, es:
-{json.dumps(SCHEMA_HINT, ensure_ascii=False, indent=2)}
-- id = "the_last_two", type = "moral_dilemma".
-- Exactly two entries in choices; each an honest, humane consequence; never
-  label a choice right/wrong; no score, no winner.
-- third_path has both success and fail.
-- ending_question is open; collect no answer; offer no correct answer.
-- Voice: gratitude, respect, gentleness; like water; never preaching.
-- Keep safety_meta = {{"reviewed_by": "pending", "no_score": true}}.
-- Write for teens 14-16: weight over decoration, agency over cuteness.
-"""
+Return ONLY the level JSON object described in your skill."""
 
 
 # --- main flow -------------------------------------------------------------
@@ -195,6 +168,10 @@ async def generate_candidate(need: str) -> dict:
             "GEMINI_API_KEY is not set. Copy pipeline/.env.example to pipeline/.env "
             "and add your key."
         )
+
+    # load the skill (really) — it carries the design rules, voice, and schema
+    skill_md = SKILL_PATH.read_text(encoding="utf-8")
+    print(f"[skill] loaded content_branch_design ({len(skill_md)} chars)")
 
     params = StdioServerParameters(command=sys.executable, args=[str(SERVER)])
     async with stdio_client(params) as (read, write):
@@ -219,7 +196,11 @@ async def generate_candidate(need: str) -> dict:
             resp = client.models.generate_content(
                 model=GEMINI_MODEL,
                 contents=prompt,
-                config={"response_mime_type": "application/json", "temperature": 0.7},
+                config={
+                    "system_instruction": skill_md,
+                    "response_mime_type": "application/json",
+                    "temperature": 0.7,
+                },
             )
             raw = (resp.text or "").strip()
             try:
