@@ -1,25 +1,26 @@
 """
-Content agent — drafts a candidate level with Gemini, reading data/ through MCP.
+Content agent — drafts a candidate level with Gemini from a planner strategy,
+reading data/ through MCP.
 
-Flow (one complete pass):
-  1. Connect to the Miya content MCP server (stdio) and call its tools:
-       get_community_context() · get_safety_rules() · read_level_data("level1")
-     So data/ is read *through MCP*, never by reaching into files directly.
-  2. Build a prompt (community tone + safety boundaries + an existing level as a
-     style reference + the scenario brief) and ask Gemini for a level JSON that
-     matches the §3.5 schema, fully trilingual (EN/ZH/ES).
-  3. Validate the shape locally.
-  4. Write it via the MCP tool save_candidate() — which can only write to
-     pipeline/out/, never data/.
+It no longer hard-codes a scenario. The Strategy Planner (Layer 0) turns a
+scenario id into a strategy (goal + non-negotiable constraints + scenario brief
++ community + safety rules); this agent realizes that strategy as a level JSON,
+using the content_branch_design skill as its system instruction.
 
-Iron rules honored:
-  * The key is read from .env (python-dotenv). No key appears in this file.
-  * The candidate is NOT marked human-reviewed. safety_meta.reviewed_by stays
-    "pending"; only the human review gate (a later step) sets it to "human" on
-    approve. Nothing here writes to data/.
+Flow:
+  1. Strategy Planner builds the strategy for the chosen scenario.
+  2. Load the content_branch_design skill (system instruction).
+  3. Through MCP, read an existing level as a style reference.
+  4. Ask Gemini for a level JSON that matches the schema, fully trilingual.
+  5. Validate the shape; force id = scenario id.
+  6. Write it via the MCP tool save_candidate() — out/ only, never data/.
+
+Iron rules: key from .env (no key in this file); candidate stays
+reviewed_by:"pending" until the human gate; nothing here writes to data/.
 
 Run:
-    python agents/content_agent.py --need "Two food packages left, two people need them"
+    python agents/content_agent.py --scenario the_last_two
+    python agents/content_agent.py --scenario summer_seed_camp
 """
 
 from __future__ import annotations
@@ -31,37 +32,13 @@ import os
 import pathlib
 import sys
 
-# --- paths -----------------------------------------------------------------
 PIPELINE = pathlib.Path(__file__).resolve().parents[1]
 SERVER = PIPELINE / "mcp_server" / "server.py"
 SKILL_PATH = PIPELINE / "skills" / "content_branch_design" / "SKILL.md"
+# put pipeline/ on the path so we can import the planner as a namespace package
+sys.path.insert(0, str(PIPELINE))
 
-DEFAULT_NEED = "Two food packages left, two people need them"
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
-
-# The scenario brief — the §7 "The Last Two" worked example is the structural
-# and quality bar. The human reviewer's hand-written trilingual version is the
-# gold standard the draft aims toward.
-SCENARIO_BRIEF = """\
-Scene: a teen volunteer at a community mutual-aid station. Two fresh food
-packages are left, and two needs arrive at once:
-  A — a young mother with two children, first in line, who has waited a long
-      time. By "first come, first served," the two packages are hers.
-  B — Mr. Wang, a homebound elder who usually comes at this hour but hasn't
-      arrived; the player knows from before that he moves slowly. If the
-      packages go now, he goes without today.
-The tension: predictable, rule-based fairness vs. a flexible response to
-individual need. Both deserve help; the resources fit only one.
-- Exactly two costed options, neither scored nor labeled good/bad:
-    (1) give by the rule, (2) hold one back for Mr. Wang. Each has an honest,
-    humane consequence — no villain, no shaming.
-- A third path: mutual aid, with a cost and a real chance of failure — the
-  player speaks up and coordinates on the spot (ask the mother to share, or
-  rally others). success = more people each receive something; fail = a polite
-  refusal, and life goes on without blame.
-- An open ending question with no correct answer collected, e.g.
-  "In what you saw today, what is fair?"
-"""
 
 
 # --- MCP plumbing ----------------------------------------------------------
@@ -69,7 +46,6 @@ def _tool_value(result):
     """Extract a plain Python value from an MCP CallToolResult."""
     sc = getattr(result, "structuredContent", None)
     if sc is not None:
-        # FastMCP wraps a non-dict return under {"result": ...}
         if isinstance(sc, dict) and set(sc.keys()) == {"result"}:
             return sc["result"]
         return sc
@@ -91,6 +67,10 @@ LANGS = ("en", "zh", "es")
 
 def _is_trilingual(obj) -> bool:
     return isinstance(obj, dict) and all(obj.get(l, "").strip() for l in LANGS)
+
+
+def _safe_id(v) -> bool:
+    return isinstance(v, str) and bool(v.strip()) and all(ch.isalnum() or ch in "_-" for ch in v)
 
 
 def validate_candidate(obj: dict) -> list[str]:
@@ -123,22 +103,27 @@ def validate_candidate(obj: dict) -> list[str]:
     return problems
 
 
-def _safe_id(v) -> bool:
-    return isinstance(v, str) and bool(v.strip()) and all(ch.isalnum() or ch in "_-" for ch in v)
-
-
 # --- prompt ----------------------------------------------------------------
 # The design rules, voice, and output schema live in the content_branch_design
 # skill (loaded as the system instruction). This prompt supplies only the
-# materials for this particular level.
-def build_prompt(need: str, community: dict, rules: list, style_ref: str) -> str:
+# strategy and materials for this particular level.
+def build_prompt(strategy: dict, style_ref: str) -> str:
     return f"""Draft one Miya level, following your skill exactly.
 
+LEVEL ID: {strategy['scenario_id']}
+AGE BAND: {strategy['age_band']}
+
+GLOBAL GOAL (the strategy for this level):
+{strategy['global_goal']}
+
+NON-NEGOTIABLE CONSTRAINTS:
+{json.dumps(strategy['constraints'], ensure_ascii=False, indent=2)}
+
 COMMUNITY CONTEXT (hold this tone):
-{json.dumps(community, ensure_ascii=False, indent=2)}
+{json.dumps(strategy['community'], ensure_ascii=False, indent=2)}
 
 FIRM CONTENT BOUNDARIES (every one must hold):
-{json.dumps(rules, ensure_ascii=False, indent=2)}
+{json.dumps(strategy['safety_rules'], ensure_ascii=False, indent=2)}
 
 STYLE REFERENCE — an existing level module (match its trilingual shape and its
 "show the home, not the people being helped" framing; do NOT copy its content):
@@ -146,17 +131,15 @@ STYLE REFERENCE — an existing level module (match its trilingual shape and its
 {style_ref[:6000]}
 ---
 
-THE NEED:
-{need}
-
 SCENARIO TO REALIZE:
-{SCENARIO_BRIEF}
+{strategy['scenario_brief']}
 
+Use id = "{strategy['scenario_id']}" and write for the age band above.
 Return ONLY the level JSON object described in your skill."""
 
 
 # --- main flow -------------------------------------------------------------
-async def generate_candidate(need: str) -> dict:
+async def generate_candidate(strategy: dict) -> dict:
     from dotenv import load_dotenv
     from mcp import ClientSession, StdioServerParameters
     from mcp.client.stdio import stdio_client
@@ -169,7 +152,7 @@ async def generate_candidate(need: str) -> dict:
             "and add your key."
         )
 
-    # load the skill (really) — it carries the design rules, voice, and schema
+    scenario_id = strategy["scenario_id"]
     skill_md = SKILL_PATH.read_text(encoding="utf-8")
     print(f"[skill] loaded content_branch_design ({len(skill_md)} chars)")
 
@@ -180,19 +163,17 @@ async def generate_candidate(need: str) -> dict:
             tool_names = [t.name for t in (await session.list_tools()).tools]
             print(f"[mcp] connected — tools: {', '.join(tool_names)}")
 
-            community = _tool_value(await session.call_tool("get_community_context", {}))
-            rules = _tool_value(await session.call_tool("get_safety_rules", {}))
             levels = _tool_value(await session.call_tool("list_levels", {}))
             ref_id = "level1" if "level1" in (levels or []) else (levels or ["level1"])[0]
             style = _tool_value(await session.call_tool("read_level_data", {"level_id": ref_id}))
             style_ref = style.get("source", "") if isinstance(style, dict) else str(style)
-            print(f"[mcp] read context + style reference from '{ref_id}'")
+            print(f"[mcp] read style reference from '{ref_id}'")
 
-            # --- Gemini generation ---
+            # --- Gemini generation (skill as system instruction) ---
             from google import genai
             client = genai.Client(api_key=api_key)
-            prompt = build_prompt(need, community, rules, style_ref)
-            print(f"[gemini] generating with {GEMINI_MODEL} ...")
+            prompt = build_prompt(strategy, style_ref)
+            print(f"[gemini] generating '{scenario_id}' with {GEMINI_MODEL} ...")
             resp = client.models.generate_content(
                 model=GEMINI_MODEL,
                 contents=prompt,
@@ -208,6 +189,10 @@ async def generate_candidate(need: str) -> dict:
             except ValueError as e:
                 raise SystemExit(f"Gemini did not return valid JSON: {e}\n--- raw ---\n{raw[:2000]}")
 
+            # force id from the scenario; never trust the model for the filename
+            candidate["id"] = scenario_id
+            candidate.setdefault("safety_meta", {"reviewed_by": "pending", "no_score": True})
+
             problems = validate_candidate(candidate)
             if problems:
                 print("[validate] candidate has issues:")
@@ -218,17 +203,23 @@ async def generate_candidate(need: str) -> dict:
             else:
                 print("[validate] shape OK (trilingual, two choices, third path, open ending)")
 
-            # --- write via MCP (out/ only) ---
             saved = _tool_value(await session.call_tool("save_candidate", {"level_json": candidate}))
             print(f"[mcp] save_candidate -> {saved}")
             return {"path": saved, "candidate": candidate, "problems": problems}
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Draft a candidate level via MCP + Gemini.")
-    ap.add_argument("--need", default=DEFAULT_NEED, help="one-line community need")
+    ap = argparse.ArgumentParser(description="Draft a candidate level via planner + MCP + Gemini.")
+    ap.add_argument("--scenario", default="the_last_two", help="scenario id in pipeline/scenarios/")
     args = ap.parse_args()
-    result = asyncio.run(generate_candidate(args.need))
+
+    from agents.strategy_planner import build_strategy
+
+    async def _run():
+        strategy = await build_strategy(args.scenario)
+        return await generate_candidate(strategy)
+
+    result = asyncio.run(_run())
     title = (result["candidate"].get("title") or {}).get("en", "(untitled)")
     print(f"\nDrafted: {title}")
     print(f"Saved candidate at: {result['path']}")

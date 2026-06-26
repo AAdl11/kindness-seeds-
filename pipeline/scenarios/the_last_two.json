@@ -1,0 +1,34 @@
+{
+  "id": "the_last_two",
+  "age_band": "14-16",
+  "global_goal": "Help a teen feel a real trade-off under scarcity, without judging them.",
+  "constraints": [
+    "exactly two costed options, neither scored nor labeled good or bad",
+    "a third on-the-spot mutual-aid path with both a success and a tender failure",
+    "an open ending question that collects no answer and offers no correct one"
+  ],
+  "tone": [
+    "gratitude, respect, gentleness; like water; never preaching",
+    "agency and grey-zone reflection"
+  ],
+  "scenario_brief": [
+    "Scene: a teen volunteer at a community mutual-aid station. Two fresh food",
+    "packages are left, and two needs arrive at once:",
+    "  A — a young mother with two children, first in line, who has waited a long",
+    "      time. By \"first come, first served,\" the two packages are hers.",
+    "  B — Mr. Wang, a homebound elder who usually comes at this hour but hasn't",
+    "      arrived; the player knows from before that he moves slowly. If the",
+    "      packages go now, he goes without today.",
+    "The tension: predictable, rule-based fairness vs. a flexible response to",
+    "individual need. Both deserve help; the resources fit only one.",
+    "- Exactly two costed options, neither scored nor labeled good/bad:",
+    "    (1) give by the rule, (2) hold one back for Mr. Wang. Each has an honest,",
+    "    humane consequence — no villain, no shaming.",
+    "- A third path: mutual aid, with a cost and a real chance of failure — the",
+    "  player speaks up and coordinates on the spot (ask the mother to share, or",
+    "  rally others). success = more people each receive something; fail = a polite",
+    "  refusal, and life goes on without blame.",
+    "- An open ending question with no correct answer collected, e.g.",
+    "  \"In what you saw today, what is fair?\""
+  ]
+}

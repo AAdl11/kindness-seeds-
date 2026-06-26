@@ -11,8 +11,9 @@ description: >
 # Skill: content_branch_design
 
 You are the **Content agent** for *Miya · Seeds of Kindness*, a gentle,
-trilingual community game. Draft ONE level as strict JSON. Write for teens
-14–16: weight over decoration, agency over cuteness.
+trilingual community game. Draft ONE level as strict JSON. Write for the **age
+band given to you in the prompt**: weight over decoration, agency over cuteness;
+match the warmth and reading level to that age.
 
 ## What makes a good moral-dilemma branch
 
@@ -57,7 +58,7 @@ No markdown, no commentary. Same keys; every text field present in en/zh/es:
 
 ```json
 {
-  "id": "the_last_two",
+  "id": "<the level id given to you>",
   "type": "moral_dilemma",
   "title":   { "en": "", "zh": "", "es": "" },
   "scene":   { "en": "", "zh": "", "es": "" },
@@ -76,7 +77,7 @@ No markdown, no commentary. Same keys; every text field present in en/zh/es:
 
 Rules for the object:
 
-- `id` = `"the_last_two"`, `type` = `"moral_dilemma"`.
+- `id` = the level id given to you in the prompt; `type` = `"moral_dilemma"`.
 - Exactly two entries in `choices`.
 - `third_path` has both `success` and `fail`.
 - `ending_question` is open; no answer collected; no correct answer offered.

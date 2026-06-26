@@ -1,0 +1,40 @@
+{
+  "id": "summer_seed_camp",
+  "age_band": "12-14",
+  "_source": "DRAFT SCAFFOLD — replace brief/goal with the real content from 夏令營情境牙胚-關卡五.md. The shape is final; the wording is a placeholder so the two-scenario demo runs.",
+  "global_goal": "Help a younger teen feel that kindness sometimes means quietly making room for someone else, without being told it is the right thing.",
+  "constraints": [
+    "exactly two costed options, neither scored nor labeled good or bad",
+    "a third path of speaking up / sharing, with both a success and a tender failure",
+    "an open ending question that collects no answer and offers no correct one",
+    "lighter and warmer than the teen tier; still honest, no cuteness papering over the choice"
+  ],
+  "tone": [
+    "warm, playful but sincere; gratitude and friendship",
+    "gentle, like water; never preaching"
+  ],
+  "scenario_brief": [
+    "Setting: the last afternoon of a community summer seed camp, where every camper",
+    "plants a seedling to carry home. One seedling kit is left on the table, and two",
+    "campers reach it at the same moment:",
+    "  A — your close friend, who has talked all week about growing one at home and",
+    "      is right there beside you.",
+    "  B — a quiet new camper who joined late, has said almost nothing, and is also",
+    "      looking at the last kit. If it goes now, they leave with empty hands.",
+    "",
+    "The tension: the easy warmth of giving it to a friend vs. noticing the one who is",
+    "barely seen. Both would treasure it; only one kit is left.",
+    "",
+    "- Two costed options, neither scored nor labeled good/bad: give it to your friend",
+    "  (a shared joy you both feel; the quiet camper slips away unseen), or offer it to",
+    "  the new camper (they light up; your friend feels a small sting, or that you chose",
+    "  a stranger over them). Each consequence is honest and kind — no villain.",
+    "- A third path with a cost and a real chance of failure: speak up and find a way to",
+    "  share — ask a counselor for one more, or propose the two co-tend a seedling in the",
+    "  camp garden. success = both leave with something, and a new friendship starts;",
+    "  fail = no spare and a shy 'it's okay, next time', and you still choose option one",
+    "  or two. Making room for everyone is not free; it takes a little courage.",
+    "- An open ending question, no answer collected, e.g.",
+    "  \"When everyone wants the same good thing, what does sharing look like?\""
+  ]
+}

@@ -39,24 +39,42 @@ python -m pip install -r requirements.txt
 cp .env.example .env          # macOS/Linux   (Windows: copy .env.example .env)
 # then open .env and paste your key:  GEMINI_API_KEY=...
 
-python agents/orchestrator.py --need "Two food packages left, two people need them"
+python agents/orchestrator.py --scenario the_last_two
+```
+
+The pipeline is **scenario-driven** — pick any scenario in `scenarios/`:
+
+```
+python agents/orchestrator.py --scenario the_last_two      # teens 14-16
+python agents/orchestrator.py --scenario summer_seed_camp  # younger teens 12-14
 ```
 
 That single command runs the full pass:
 
 ```
-Content agent  → drafts the_last_two candidate (MCP + Gemini) → out/
-Safety agent   → reviews it (skill + MCP rules) → out/the_last_two.safety.json
-Human gate     → shows candidate + report → approve / edit / reject
-                 approve ONLY → writes ../data/the_last_two.json (reviewed_by:"human")
+Strategy Planner → draws the map: goal + non-negotiable constraints + brief
+Content agent    → drafts the <id> candidate (skill + MCP + Gemini) → out/
+Safety agent     → reviews it (skill + MCP rules) → out/<id>.safety.json
+Human gate       → shows candidate + report → approve / edit / reject
+                   approve ONLY → writes ../data/<id>.json (reviewed_by:"human")
 ```
 
-Run the agents now and the human gate later:
+Run planner + agents now and the human gate later:
 
 ```
-python agents/orchestrator.py --need "..." --no-gate
-python review/human_gate.py --id the_last_two
+python agents/orchestrator.py --scenario summer_seed_camp --no-gate
+python review/human_gate.py --id summer_seed_camp
 ```
+
+## Scenarios — the template
+
+Each file in `scenarios/<id>.json` *is* the template for making a level — the
+fields another community fills in for their own situation: `id`, `age_band`,
+`global_goal`, `constraints`, `scenario_brief`, `tone`. The **Strategy Planner**
+(`agents/strategy_planner.py`, Layer 0) loads a scenario plus the live community
+context and safety rules (via MCP) and composes the strategy — goal + the
+non-negotiable constraints + brief — that every step below it must hold. One
+pipeline, many communities and age bands.
 
 ## Layout
 
@@ -67,6 +85,7 @@ pipeline/
 ├── requirements.txt       google-adk, mcp, google-genai, python-dotenv
 ├── mcp_server/
 │   └── server.py          "Miya content server" — tool boundaries onto data/
+├── scenarios/             one file per community situation (the level template)
 ├── skills/                Agent Skills (SKILL.md), loaded when needed
 ├── agents/                Strategy Planner · Content · Safety · Orchestrator
 ├── review/
@@ -98,6 +117,12 @@ This pipeline is being assembled step by step, with a human review after each st
       system instruction — `skills/content_branch_design/` (Content) and
       `skills/safety_review/` (Safety). The design rules/voice/schema now live in
       the skill, not hard-coded in `content_agent.py`.
+- [x] **Step 8 — scenario-driven + explicit Strategy Planner**
+      (`scenarios/*.json`, `agents/strategy_planner.py`): the pipeline is no longer
+      hard-wired to one scenario. Each scenario file is a fill-in template; the
+      planner (Layer 0) composes goal + non-negotiable constraints + brief and
+      hands it down. Ships with `the_last_two` (14-16) and `summer_seed_camp`
+      (12-14). `--scenario` selects; default stays `the_last_two`.
 - [ ] Step 6 — approved level plays in the game (engine unchanged)
 - [x] **Step 7 — documentation**: main `README.md` has the judges' link row,
       the problem→solution→architecture story, a Mermaid pipeline diagram, and the
