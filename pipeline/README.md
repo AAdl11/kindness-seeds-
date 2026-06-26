@@ -67,7 +67,11 @@ This pipeline is being assembled step by step, with a human review after each st
       through MCP, drafts the `the_last_two` level with Gemini (key from
       `.env`), validates the trilingual shape, and writes via `save_candidate`.
       Candidate stays `reviewed_by: "pending"` until the human gate.
-- [ ] Step 3 — Safety agent (`safety_review` skill → report)
+- [x] **Step 3 — Safety agent** (`agents/safety_agent.py` + `skills/safety_review/SKILL.md`):
+      loads the skill, fetches the boundaries via MCP `get_safety_rules`, reviews
+      the candidate rule by rule, and writes `out/<id>.safety.json`
+      (`{pass, findings, suggested_fixes, checked_rules}`). Flag-only — never edits
+      the candidate; `pass` is recomputed locally from the findings.
 - [ ] Step 4 — Orchestrator + human review gate
 - [ ] Step 5 — Agent Skills (`SKILL.md`) wired in
 - [ ] Step 6 — approved level plays in the game (engine unchanged)
