@@ -1526,10 +1526,10 @@
   }
 
   /* ===================================================================
-     關卡 · 道德兩難「最後兩份」（type:"moral_dilemma"）
-     豐富分支內容讀自 data/the_last_two.json（pipeline 人審 gate 的產出）；
-     重跑 pipeline、approve → 覆寫該 JSON → 這一關自動換成新內容。
-     鐵則：無計分・無好壞・兩選項等價・第三條路有成功/溫柔婉拒・反思只呈現不收答案。
+     關卡 · 互助站「最後兩份」（type:"resourceful_helper"）
+     情境內容（客人池/對白/斡旋/結尾）讀自 data/the_last_two.json（pipeline 人審 gate 的產出）；
+     圖片＋規則（pantry/stock/獎勵）住在 config.level4（pipeline 不碰）。
+     玩法：問→湊→稀缺斡旋。無計分・無好壞・回饋一致・婉拒不懲罰。
      =================================================================== */
   var L4DATA = null;          // 載入後快取（fetch 成功 = pipeline 最新；失敗 = 內建離線鏡像）
 
@@ -1537,24 +1537,35 @@
      正式部署（http/https、GitHub Pages）一律讀 data/the_last_two.json；
      pipeline 重跑 approve 覆寫的是那份 JSON，這份鏡像不是真相來源、可能落後。 */
   var L4_FALLBACK = {
-    id: 'the_last_two', type: 'moral_dilemma',
+    id: 'the_last_two', type: 'resourceful_helper',
     title: { en: 'The Last Two', zh: '最後兩份', es: 'Los últimos dos' },
-    scene: {
-      en: 'Inside the San Francisco community mutual-aid station, the afternoon air carries the faint scent of cinnamon bread. Only the last two fresh food packs remain on the counter. At the front of the line stands a young mother holding her two children by the hand. At the same time, the corner bench where Mr. Wang, a senior living alone, usually sits remains empty; you know his limited mobility makes his journey slow, and if these packs are given away now, he will likely go home empty-handed when he arrives later.',
-      zh: '午後的舊金山社區互助站裡，空氣中飄著淡淡的肉桂麵包香。櫃檯上只剩下最後兩份新鮮食物包，排在隊伍最前方的年輕媽媽正牽著兩個孩子。與此同時，街角那張平常屬於獨居長者王伯伯的長椅依然空著，你知道他因為腿腳不便總是走得慢，如果現在把食物發完，晚點抵達的他今天可能就要空手而歸了。',
-      es: 'En el centro de ayuda comunitaria de San Francisco, el aire de la tarde huele ligeramente a pan de canela. Sobre el mostrador solo quedan los últimos dos paquetes de alimentos frescos. Al frente de la fila, una madre joven sostiene a sus dos hijos de la mano. Al mismo tiempo, la banca donde suele sentarse don Wang, un adulto mayor que vive solo, sigue vacía. Sabes que camina despacio; si entregas estos paquetes ahora, cuando llegue se irá con las manos vacías.'
-    },
-    choices: [
-      { label: { en: 'Give both packs to the mother at the front of the line.', zh: '把最後兩份都發給排在最前面的媽媽。', es: 'Entregar ambos paquetes a la mamá que está al frente de la fila.' },
-        consequence: { en: 'The mother thanks you repeatedly and leaves with her children, full of relief. Half an hour later, Mr. Wang walks in, leaning on his cane. Seeing the empty shelves, he smiles gently: "That\'s quite alright. I got a late start today. I\'ll just come a bit earlier tomorrow," and walks slowly back toward the corner.', zh: '媽媽鬆了一口氣，連聲道謝，帶著孩子安心離開。半小時後，王伯伯拄著拐杖走進來，看到空了的貨架，他溫和地笑笑：「沒關係，我今天出門耽擱了，明天早點來。」隨後慢慢走回街角。', es: 'La madre te da las gracias una y otra vez y se va con sus hijos, aliviada. Media hora después, don Wang entra apoyándose en su bastón. Al ver los estantes vacíos, sonríe: "No te preocupes. Hoy se me hizo tarde; mañana vengo más temprano", y regresa despacio a la esquina.' } },
-      { label: { en: 'Reserve one pack for Mr. Wang and give one to the mother.', zh: '保留一份給王伯伯，另一份發給媽媽。', es: 'Guardar un paquete para don Wang y entregarle el otro a la mamá.' },
-        consequence: { en: 'The mother accepts the single pack, glancing at her two growing children with a hint of helplessness, but nods politely and leaves—she will stretch the portions tonight. Before evening, Mr. Wang arrives and accepts the reserved pack, his eyes grateful: "Thank you for remembering these slow legs of mine."', zh: '媽媽接過一份，有些無奈地看著兩個發育中的孩子，仍禮貌地點頭道謝離去，今晚得再想辦法分配。傍晚前，王伯伯準時出現，接過保留的食物包，眼裡滿是感激：「謝謝你還記得我這雙走不快的腿。」', es: 'La madre recibe el único paquete, mira a sus dos hijos con resignación, pero asiente con educación y se marcha; esta noche hará rendir las porciones. Antes del anochecer llega don Wang y recibe el paquete guardado, agradecido: "Gracias por acordarte de estas piernas que ya no corren."' } }
+    intro: { en: "Closing time at the mutual-aid station. A few neighbors are still on their way, and not much is left. Let's make sure no one goes home forgotten.", zh: '互助站快打烊了。還有幾位鄰居在路上，櫃上也剩得不多。我們來想辦法，讓今天沒有人被忘記。', es: 'Hora de cerrar en el centro de ayuda. Aún vienen algunos vecinos y queda poco. Vamos a procurar que nadie se vaya olvidado.' },
+    guests: [
+      { id: 'mother', art: 'last2_mother', needs_fresh: true, satisfied_by: ['fresh', 'fruit'],
+        arrive: { en: 'A young mother reaches the counter, holding her two children by the hand.', zh: '一位年輕媽媽牽著兩個孩子走到櫃台前。', es: 'Una madre joven llega al mostrador, tomando de la mano a sus dos hijos.' },
+        need_surface: { en: '"Is there anything fresh left for dinner tonight?"', zh: '「今晚還有沒有新鮮的可以當晚餐？」', es: '"¿Queda algo fresco para la cena de hoy?"' },
+        need_deep: { en: '"The kids haven\'t had fresh fruit in days — they\'d be so happy."', zh: '「孩子們好幾天沒吃到新鮮水果了，有的話他們會很開心。」', es: '"Los niños llevan días sin fruta fresca — se pondrían muy felices."' },
+        thanks: { en: 'She breathes a sigh of relief; the children chatter happily about dinner.', zh: '她鬆了一口氣，孩子們高興地討論今晚的晚餐。', es: 'Suspira aliviada; los niños hablan felices de la cena.' } },
+      { id: 'elder', art: 'last2_elder', needs_fresh: true, satisfied_by: ['soft', 'staple'],
+        name: { en: 'Mr. Wang', zh: '王伯伯', es: 'don Wang' },
+        arrive: { en: 'Mr. Wang arrives late, leaning on his cane, wiping his brow.', zh: '王伯伯晚到了，拄著拐杖、擦著汗。', es: 'Don Wang llega tarde, apoyado en su bastón, secándose la frente.' },
+        need_surface: { en: '"Anything left for these slow legs of mine?"', zh: '「我這雙走不快的腿，還趕得上有東西嗎？」', es: '"¿Queda algo para estas piernas que ya no corren?"' },
+        need_deep: { en: '"Something soft I can chew would be a real kindness."', zh: '「有軟一點、好咀嚼的就太好了。」', es: '"Algo blando que pueda masticar sería una gran bondad."' },
+        thanks: { en: 'His eyes fill with gratitude: "Tonight I won\'t just get by on crackers."', zh: '他眼裡滿是感激：「今晚不用只吃餅乾了。」', es: 'Sus ojos se llenan de gratitud: "Hoy no cenaré solo galletas."' } },
+      { id: 'night_worker', art: 'last2_volunteer', needs_fresh: false, satisfied_by: ['ready_to_eat', 'portable'],
+        arrive: { en: 'A tired night-shift worker stops by on the way to a long shift.', zh: '一位疲憊的夜班工作者，趕著上整夜的班，路過進來。', es: 'Un trabajador del turno noche se detiene camino a una larga jornada.' },
+        need_surface: { en: '"Something quick I can take with me?"', zh: '「有沒有能帶著走、馬上吃的？」', es: '"¿Algo rápido que me pueda llevar?"' },
+        need_deep: { en: '"Something to get me through till morning, no time to cook."', zh: '「能撐到天亮就好，沒時間煮。」', es: '"Algo que me aguante hasta la mañana, sin tiempo de cocinar."' },
+        thanks: { en: 'A grateful nod: "This\'ll keep me going. Thank you."', zh: '他感激地點頭：「這夠我撐過去了，謝謝。」', es: 'Asiente agradecido: "Esto me mantendrá. Gracias."' } }
     ],
-    third_path: {
-      success: { en: 'You gently explain Mr. Wang\'s situation to the mother and ask if she would share one fresh pack, offering extra pantry staples and oatmeal in return. She looks at her children, smiles, and agrees. A neighbor nearby steps forward and places fresh eggs from her own cart into the mother\'s bag. This afternoon, everyone shares a little, and everyone takes home a piece of comfort.', zh: '你溫柔地向媽媽說明王伯伯的情況，問是否能分一份出來，互助站會多打包補給乾糧和孩子喜歡的燕麥片給她。媽媽看了看孩子，微笑著答應了。一位鄰居大姐見狀，從自己的推車拿出一盒雞蛋放進媽媽的袋子。這個午後，每個人都分享了一點點，也各自帶回一點溫暖。', es: 'Le explicas con delicadeza la situación de don Wang a la mamá y le preguntas si compartiría un paquete, ofreciéndole a cambio despensa y avena. Ella mira a sus hijos, sonríe y acepta. Una vecina se acerca y pone huevos frescos de su carrito en la bolsa de la mamá. Esta tarde, todos comparten un poco y todos se llevan algo de calidez.' },
-      fail: { en: 'You softly ask the mother if she could share one pack with an elderly neighbor who moves slower. She tightens her grip on her children\'s hands and whispers, "I\'m so sorry, but my two kids are hungry... we really need both tonight." You smile with understanding, reassure her it is okay, and hand both packs over. Then you turn to the shelves to gather non-perishables for Mr. Wang when he arrives.', zh: '你輕聲問媽媽能否勻出一份給行動不便的長輩。媽媽為難地拉緊孩子的手，低聲說：「對不起，家裡兩個孩子正餓著，這兩份真的很需要……」你理解地微笑，安撫她別放在心上，把兩份交給她。隨後你轉身整理站內物資，為晚點會到的王伯伯多備一些可存放的乾糧。', es: 'Le preguntas con suavidad si compartiría un paquete con un abuelito que camina más despacio. Ella aprieta las manos de sus hijos y susurra: "Lo siento mucho, pero mis dos hijos tienen hambre... hoy necesitamos los dos." Le sonríes con comprensión, le dices que está bien y le entregas ambos. Luego vas a los estantes a reunir algo no perecedero para don Wang.' }
+    broker: {
+      prompt: { en: "Quietly ask the mother if she'd be willing to share one fresh pack.", zh: '輕聲問媽媽，願不願意分一份新鮮的出來。', es: 'Pregúntale en voz baja a la madre si querría compartir un paquete fresco.' },
+      agree: { en: 'She looks at her children, smiles, and nods. Now top up her bag with staples and the oats the kids love.', zh: '她看了看孩子，微笑點頭。現在用乾糧和孩子愛的燕麥幫她把袋子補滿。', es: 'Mira a sus hijos, sonríe y asiente. Ahora completa su bolsa con básicos y la avena que les gusta.' },
+      decline: { en: 'She gently tightens her grip on the children\'s hands: "I\'m sorry — we really need both tonight." That\'s completely okay.', zh: '她輕輕握緊孩子的手：「對不起，今晚我們真的兩份都需要。」這完全沒關係。', es: 'Aprieta con ternura las manos de sus hijos: "Lo siento — hoy de verdad necesitamos los dos." Está totalmente bien.' },
+      setaside: { en: 'Turn to the shelves and put together a good pantry pack to set aside for Mr. Wang when he arrives.', zh: '轉身翻櫃子，為晚到的王伯伯先湊一份好的乾糧關懷包留著。', es: 'Ve a los estantes y arma una buena despensa para apartarla para don Wang cuando llegue.' }
     },
-    ending_question: { en: 'After seeing everyone\'s different paces and needs today, what does "fairness" look like to you — everyone receiving the same amount, or everyone getting the support they need in that moment?', zh: '看著今天不同的步伐與需求，你覺得「公平」是每個人得到一樣的分量，還是每個人都得到他當下最需要的支持？', es: 'Después de ver hoy los distintos ritmos y necesidades, ¿qué es la "justicia" para ti — que todos reciban lo mismo, o que cada quien reciba el apoyo que necesita en ese momento?' },
+    ending_question: { en: 'After this afternoon of different paces and needs, what does "fairness" mean to you — everyone getting the same, or everyone getting what they need most right then?', zh: '這個下午，看著不同的步伐與需求，你覺得「公平」是每個人都得到一樣的分量，還是每個人都得到他當下最需要的支持？', es: 'Tras esta tarde de ritmos y necesidades distintas, ¿qué es para ti la "justicia" — que todos reciban lo mismo, o que cada quien reciba lo que más necesita en ese momento?' },
+    to_level5_hook: { en: 'Tomorrow, at the summer camp, a new kid will need someone to make room for them — but that\'s another day.', zh: '明天的夏令營，會有個新來的孩子需要人替他留個位子——不過那是另一天的事了。', es: 'Mañana, en el campamento de verano, un niño nuevo necesitará que alguien le haga espacio — pero eso es otro día.' },
     safety_meta: { reviewed_by: 'human', no_score: true, no_correct_answer: true }
   };
 
@@ -1570,140 +1581,248 @@
     try {
       fetch(url, { cache: 'no-store' })
         .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-        .then(function (j) { L4DATA = (j && j.choices) ? j : L4_FALLBACK; cb(L4DATA); })
+        .then(function (j) { L4DATA = (j && j.guests) ? j : L4_FALLBACK; cb(L4DATA); })
         .catch(function () { L4DATA = L4_FALLBACK; cb(L4DATA); });
     } catch (e) { L4DATA = L4_FALLBACK; cb(L4DATA); }
+  }
+
+  /* ---- 物資/關懷包小工具 ---- */
+  function l4Meta() { return C.level4 || {}; }
+  function l4ItemById(id) { return (l4Meta().pantry || []).filter(function (p) { return p.id === id; })[0]; }
+  function l4IsFresh(id) { var p = l4ItemById(id); return !!(p && p.fresh); }
+  function l4BagFresh() { return l4.bag.filter(l4IsFresh).length; }
+  function l4FreshRemain() {
+    var cap = (l4Meta().stock && l4Meta().stock.fresh) || 0;
+    return Math.max(0, cap - l4.freshUsed - l4BagFresh());
+  }
+  function l4BagTags() {
+    var set = {};
+    l4.bag.forEach(function (id) { var p = l4ItemById(id); (p && p.tags || []).forEach(function (t) { set[t] = true; }); });
+    return set;
+  }
+  function l4Satisfied(g) {
+    var tags = l4BagTags();
+    return (g.satisfied_by || []).some(function (t) { return !!tags[t]; });
+  }
+  function l4UnservedFreshNeeders() {  // 含當前這位（idx 起算未照顧者）
+    return l4.queue.slice(l4.idx).filter(function (g) { return g.needs_fresh; }).length;
+  }
+  function l4BrokerOn() {               // 稀缺斡旋是否可用（媽媽在前、fresh 剩 1、≥2 位需要新鮮）
+    return l4.guest && l4.guest.needs_fresh && !l4.brokerChoice &&
+      l4FreshRemain() === 1 && l4UnservedFreshNeeders() >= 2 && (l4.data.broker);
   }
 
   var l4 = null;
   function startLevel4() {
     if (window.Sound) Sound.playScene('last2');     // 祥和配樂（register 在 wire）
     show('level4');
+    document.getElementById('level4').classList.remove('warm');
     document.getElementById('l4end').classList.add('hidden');
     document.getElementById('l4title').textContent = '';
     l4Get(function (D) {
-      l4 = { data: D };
+      var meta = l4Meta();
+      var pool = (D.guests || []).slice();
+      if (meta.shuffle) shuffle(pool);                 // Phase A: shuffle=false → 固定 [媽媽, 王伯伯]
+      var n = meta.guestCount || pool.length;
+      l4 = {
+        data: D, queue: pool.slice(0, n), idx: 0, guest: null,
+        bag: [], asked: false, sys: '', pendingGuide: '',
+        freshUsed: 0, served: 0, brokerChoice: null, ended: false
+      };
       document.getElementById('l4leave').textContent = T('toHub');
       document.getElementById('l4title').textContent = L(D.title);
-      l4LoadScene();
-      l4Show({ s: 'scene' });
+      l4LoadBg();
+      flash('🧺 ' + L(D.intro));                        // 開場小字（怎麼玩在 how；這裡給情境）
+      l4NextGuest();
     });
   }
 
-  /* 背景圖＋角色立繪（基底檔名 → resolveImg 自動找副檔名；載不到就不顯示，純氛圍） */
-  function l4LoadScene() {
-    var meta = C.level4 || {};
-    var bg = document.getElementById('l4bg');
+  /* 背景圖（基底檔名 → resolveImg；載不到用 CSS 漸層 fallback） */
+  function l4LoadBg() {
+    var meta = l4Meta(), bg = document.getElementById('l4bg');
     if (meta.img) resolveImg(meta.img, function (u) { if (u) bg.style.backgroundImage = "url('" + u + "')"; });
-    var cast = document.getElementById('l4cast'); cast.innerHTML = '';
-    var order = ['mother', 'packages', 'elder'];
-    order.forEach(function (role, i) {
-      var base = meta.cast && meta.cast[role];
-      if (!base) return;
-      var f = document.createElement('div'); f.className = 'l4fig ' + role; f.id = 'l4fig_' + role;
-      cast.appendChild(f);
-      resolveImg(base, function (u) {
-        if (!u) return;
-        f.style.backgroundImage = "url('" + u + "')";
-        setTimeout(function () { f.classList.add('show'); }, 140 + i * 240);
-      });
+  }
+
+  function l4NextGuest() {
+    if (l4.idx >= l4.queue.length) { l4Finish(); return; }
+    l4.guest = l4.queue[l4.idx];
+    l4.bag = []; l4.asked = false;
+    l4.sys = l4.pendingGuide || ''; l4.pendingGuide = '';   // 婉拒後→替晚到者留一份的引導
+    l4RenderAll();
+  }
+
+  /* 一次重繪四區（切語言時也走這裡，文字用 L()/T() 重取） */
+  function l4RenderAll() {
+    document.getElementById('l4title').textContent = L(l4.data.title);
+    document.getElementById('l4leave').textContent = T('toHub');
+    l4RenderGuest();
+    l4RenderPantry();
+    l4RenderBag();
+    l4RenderActions();
+  }
+
+  /* 客人：圖＋對白（arrive＋need_surface＋(deep)＋(sys)）＋「多問一句」 */
+  function l4RenderGuest() {
+    var g = l4.guest; if (!g) return;
+    var art = document.getElementById('l4guestArt');
+    art.classList.remove('show'); art.style.backgroundImage = '';
+    if (g.art) resolveImg(g.art, function (u) { if (u) { art.style.backgroundImage = "url('" + u + "')"; setTimeout(function () { art.classList.add('show'); }, 80); } });
+    document.getElementById('l4guestName').textContent = g.name ? L(g.name) : '';
+    var html = '<span>' + l4Esc(L(g.arrive)) + '</span>' +
+      '<span class="deep">' + l4Esc(L(g.need_surface)) + '</span>';
+    if (l4.asked && g.need_deep) html += '<span class="deep">' + l4Esc(L(g.need_deep)) + '</span>';
+    if (l4.sys) html += '<span class="sys">' + l4Esc(l4.sys) + '</span>';
+    document.getElementById('l4dialogue').innerHTML = html;
+    var ask = document.getElementById('l4askMore');
+    ask.textContent = T('l4AskMore');
+    var canAsk = !l4.asked && g.need_deep;
+    ask.classList.toggle('hidden', !canAsk);
+    ask.onclick = function () { l4.asked = true; if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {} l4RenderGuest(); };
+  }
+
+  /* 物資列：fresh 共用額度會見底；點 → 放進關懷包 */
+  function l4RenderPantry() {
+    var meta = l4Meta();
+    document.getElementById('l4pantryLabel').textContent = T('l4Pantry');
+    var remain = l4FreshRemain();
+    var tag = document.getElementById('l4freshTag');
+    tag.textContent = '🧺 ' + T('l4FreshLeft') + ' ' + remain;
+    tag.classList.toggle('low', remain === 1);
+    tag.classList.toggle('out', remain === 0);
+    var row = document.getElementById('l4pantry'); row.innerHTML = '';
+    (meta.pantry || []).forEach(function (p) {
+      var fresh = !!p.fresh, gone = fresh && remain <= 0;
+      var el = document.createElement('div');
+      el.className = 'l4item' + (fresh ? ' fresh' : '') + (gone ? ' gone' : '');
+      el.innerHTML = '<span class="l4ico">' + (p.icon || '🧺') + '</span>' +
+        '<span class="l4nm">' + l4Esc(L(p.name)) + '</span>' +
+        (fresh ? '<span class="l4cnt">' + remain + '</span>' : '');
+      el.addEventListener('click', function () { l4Add(p.id); });
+      row.appendChild(el);
     });
   }
 
-  function l4Card(html) {
-    var c = document.getElementById('l4card');
-    c.classList.remove('fade'); void c.offsetWidth;
-    c.innerHTML = html;
-    c.classList.add('fade'); c.scrollTop = 0;
-    return c;
+  function l4Add(id) {
+    if (l4.bag.indexOf(id) !== -1) return;            // 同一樣只放一次
+    if (l4IsFresh(id) && l4FreshRemain() <= 0) { if (window.Sound && Sound.soft) try { Sound.soft(); } catch (e) {} flash('🤍 ' + T('l4FreshOut')); return; }
+    l4.bag.push(id);
+    if (window.Sound && Sound.pick) try { Sound.pick(); } catch (e) {}
+    l4RenderPantry(); l4RenderBag(); l4RenderActions();
+  }
+  function l4Remove(id) {
+    l4.bag = l4.bag.filter(function (x) { return x !== id; });
+    if (window.Sound && Sound.unpick) try { Sound.unpick(); } catch (e) {}
+    l4RenderPantry(); l4RenderBag(); l4RenderActions();
   }
 
-  /* 單一視圖派發：view 記在 l4.view，切語言時 l4Relabel 可原地重繪當前卡片。
-     view: {s:'scene'} | {s:'outcome', i} | {s:'third', ok} | {s:'reflect'} */
-  function l4Show(view) {
-    l4.view = view;
-    if (view.s === 'scene') return l4RenderScene();
-    if (view.s === 'reflect') return l4RenderReflection();
-    // outcome（來自某個選項）或 third（第三條路成功/婉拒）
-    var D = l4.data, text, lead;
-    if (view.s === 'third') {
-      var tp = D.third_path || {};
-      text = L(view.ok ? tp.success : tp.fail); lead = T('l4ThirdTry');
-    } else {
-      text = L((D.choices || [])[view.i] && (D.choices || [])[view.i].consequence); lead = T('l4Outcome');
+  function l4RenderBag() {
+    document.getElementById('l4bagHead').textContent = '🎁 ' + T('l4Bag');
+    var bag = document.getElementById('l4bag'); bag.innerHTML = '';
+    if (!l4.bag.length) {
+      var e = document.createElement('div'); e.className = 'l4bagEmpty'; e.textContent = T('l4BagEmpty'); bag.appendChild(e); return;
     }
-    l4Card('<div class="l4lead">' + l4Esc(lead) + '</div>' +
-      '<div class="l4text">' + l4Esc(text) + '</div>' +
-      '<div class="l4cont"><button class="btn" id="l4next">' + l4Esc(T('l4Continue')) + '</button></div>');
-    document.getElementById('l4next').addEventListener('click', function () { l4Show({ s: 'reflect' }); });
-  }
-
-  /* 場景文字 ＋ 兩個等價選項 ＋ 第三條路入口（無好壞色、無分數、無排名） */
-  function l4RenderScene() {
-    var D = l4.data;
-    var c = l4Card('<div class="l4text">' + l4Esc(L(D.scene)) + '</div><div class="l4btns" id="l4btns"></div>');
-    var box = c.querySelector('#l4btns');
-    var lead = document.createElement('div'); lead.className = 'l4lead'; lead.textContent = T('l4Choose');
-    box.appendChild(lead);
-    (D.choices || []).forEach(function (ch, idx) {
-      var b = document.createElement('button'); b.className = 'l4btn';
-      b.textContent = L(ch.label);
-      b.addEventListener('click', function () {
-        if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {}
-        l4Show({ s: 'outcome', i: idx });
-      });
-      box.appendChild(b);
+    l4.bag.forEach(function (id) {
+      var p = l4ItemById(id); if (!p) return;
+      var pin = document.createElement('div'); pin.className = 'l4pin';
+      pin.innerHTML = '<span>' + (p.icon || '🧺') + '</span><span>' + l4Esc(L(p.name)) + '</span><span class="x">×</span>';
+      pin.querySelector('.x').addEventListener('click', function () { l4Remove(id); });
+      bag.appendChild(pin);
     });
-    var tp = document.createElement('button'); tp.className = 'l4btn third';
-    tp.textContent = T('l4ThirdPath');
-    tp.addEventListener('click', l4ThirdPath);
-    box.appendChild(tp);
   }
 
-  /* 第三條路：成功 / 溫柔婉拒（隨機決定一次；兩者都沒有對錯，fail 不是懲罰） */
-  function l4ThirdPath() {
-    var ok = Math.random() < 0.5;
-    if (ok) {                                        // 成功版 → 鄰居大姐入畫（純氛圍）
-      var base = C.level4 && C.level4.cast && C.level4.cast.neighbor;
-      if (base && !document.getElementById('l4fig_neighbor')) {
-        var nf = document.createElement('div'); nf.className = 'l4fig neighbor'; nf.id = 'l4fig_neighbor';
-        document.getElementById('l4cast').appendChild(nf);
-        resolveImg(base, function (u) { if (u) { nf.style.backgroundImage = "url('" + u + "')"; setTimeout(function () { nf.classList.add('show'); }, 120); } });
-      }
+  /* 行動鈕：給他 ／（稀缺時）聊聊分一份。回饋一致，不分高下。 */
+  function l4RenderActions() {
+    var box = document.getElementById('l4actions'); box.innerHTML = '';
+    if (l4BrokerOn()) {
+      var bk = document.createElement('button'); bk.className = 'l4act broker';
+      bk.textContent = T('l4Broker');
+      bk.addEventListener('click', l4Broker);
+      box.appendChild(bk);
+    }
+    var give = document.createElement('button'); give.className = 'l4act give';
+    give.textContent = T('l4Give');
+    give.disabled = !l4.bag.length;
+    give.addEventListener('click', l4Give);
+    box.appendChild(give);
+  }
+
+  /* 稀缺斡旋：問媽媽要不要分一份 → 隨機 同意/婉拒；兩條都有路、回饋一致 */
+  function l4Broker() {
+    var b = l4.data.broker || {};
+    var agree = Math.random() < 0.5;
+    l4.brokerChoice = agree ? 'agree' : 'decline';
+    if (agree) {
+      // 她留一份新鮮 → 用乾糧補滿（保留袋中既有乾糧，新鮮固定 1 份）
+      var staples = l4.bag.filter(function (id) { return !l4IsFresh(id); });
+      var freshes = l4.bag.filter(l4IsFresh);
+      l4.bag = (freshes.length ? [freshes[0]] : ['bread']).concat(staples);
+      l4.sys = L(b.agree);
+    } else {
+      // 她今晚兩份新鮮都需要 → 幫她裝滿兩份；晚到的王伯伯改用乾糧留一份
+      l4.bag = ['bread', 'fruit'];
+      l4.sys = L(b.decline);
+      l4.pendingGuide = L(b.setaside);
     }
     if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {}
-    l4Show({ s: 'third', ok: ok });
+    l4RenderGuest(); l4RenderPantry(); l4RenderBag(); l4RenderActions();
   }
 
-  /* 反思問句：只呈現、不收答案、無正確解 */
-  function l4RenderReflection() {
-    var D = l4.data;
-    l4Card('<div class="l4reflect">' +
-      '<div class="l4lead">' + l4Esc(T('l4Reflect')) + '</div>' +
-      '<div class="l4text">' + l4Esc(L(D.ending_question)) + '</div>' +
-      '<div class="l4note">' + l4Esc(T('l4ReflectNote')) + '</div></div>' +
-      '<div class="l4cont"><button class="btn" id="l4done">' + l4Esc(T('l4Continue')) + '</button></div>');
-    document.getElementById('l4done').addEventListener('click', l4End);
+  /* 給出關懷包：合適 → 道謝＋回饋＋存檔＋下一位；不合 → 溫柔提示（不是答錯、不懲罰） */
+  function l4Give() {
+    var g = l4.guest; if (!g || !l4.bag.length) return;
+    if (!l4Satisfied(g)) {
+      if (window.Sound && Sound.soft) try { Sound.soft(); } catch (e) {}
+      flash('🤍 ' + T('l4Hint'));
+      return;
+    }
+    // 提交：新鮮被這位帶走的份額落地
+    l4.freshUsed += l4BagFresh();
+    // 道謝
+    l4.sys = L(g.thanks);
+    l4RenderGuest();
+    if (window.Sound) { try { (Sound.success ? Sound.success(0) : Sound.coin && Sound.coin()); } catch (e) {} }
+    // 回饋：沿用既有世界數值（每照顧一人 = perHome），存得住
+    var R = l4Meta().perGuestReward || C.perHome;
+    SAVE.kindnessMin += (R.minutes || C.perHome.minutes);
+    SAVE.coins += (R.coins || C.perHome.coins);
+    SAVE.bamboo += (R.coins || C.perHome.coins);
+    SAVE.sprout.growth += (R.growth || C.perHome.growth);
+    persist(); refreshGlobals();
+    var art = document.getElementById('l4guestArt').getBoundingClientRect();
+    var cx = art.left + art.width / 2, cy = art.top + art.height / 2;
+    flyTo('sproutRing', cx, cy, 'flydot', function () { refreshGlobals(); pulseRing(0); });
+    flyTo('bamboo', cx, cy, 'flycoin', function () { if (window.Sound && Sound.coin) try { Sound.coin(); } catch (e) {} bambooBump(); });
+    if (window.Sound && Sound.grow) try { Sound.grow(); } catch (e) {}
+    // 下一位
+    l4.served += 1; l4.idx += 1;
+    setTimeout(l4NextGuest, 1100);
   }
 
-  /* 切語言時原地重繪（標題、離開鈕、當前卡片、結算卡） */
-  function l4Relabel() {
-    if (!l4) return;
-    document.getElementById('l4leave').textContent = T('toHub');
-    document.getElementById('l4title').textContent = L(l4.data.title);
-    if (!document.getElementById('l4end').classList.contains('hidden')) { l4End(); return; }
-    if (l4.view) l4Show(l4.view);
-  }
-
-  function l4End() {
+  /* 全員被照顧 → 互助站暖起來 → 反思問句（只呈現）→ 第五關勾子 */
+  function l4Finish() {
+    l4.ended = true;
+    document.getElementById('level4').classList.add('warm');
     SAVE.lit[C.level4.id] = true; persist();          // 那一區在地圖上開花（完成標記，非分數）
-    document.getElementById('l4endTitle').textContent = L(l4.data.title);
+    l4ShowEnd();
+  }
+  function l4ShowEnd() {
+    var D = l4.data;
+    document.getElementById('l4endTitle').textContent = L(D.title);
     document.getElementById('l4plant').innerHTML = plantSVG(SAVE.sprout.growth, 130);
-    document.getElementById('l4endLine').textContent = T('l4ReflectNote');
+    document.getElementById('l4endLine').textContent = T('l4Warm');
+    document.getElementById('l4endQ').textContent = L(D.ending_question);
+    document.getElementById('l4endHook').textContent = D.to_level5_hook ? L(D.to_level5_hook) : '';
     document.getElementById('l4again').textContent = T('l4Again');
     document.getElementById('l4hub').textContent = T('toHub');
     applyFeedback();
     document.getElementById('l4end').classList.remove('hidden');
+  }
+
+  /* 切語言時原地重繪（進行中→重繪四區；結算中→重繪結算卡） */
+  function l4Relabel() {
+    if (!l4) return;
+    if (!document.getElementById('l4end').classList.contains('hidden')) { l4ShowEnd(); return; }
+    l4RenderAll();
   }
 
   /* ===================================================================

@@ -761,60 +761,86 @@ body.screen-level #milestones{display:none;}
 }
 
 /* ===================================================================
-   關4 · 道德兩難「最後兩份」（場景→兩選項＋第三條路→後果→反思）
-   無計分／無好壞色／兩選項等價；反思只呈現不收答案。
+   關4 · 互助站「最後兩份」（resourceful_helper：問→湊→稀缺斡旋）
+   無計分／無好壞／回饋一致；稀缺看得見；婉拒不懲罰。
    =================================================================== */
 #level4{position:fixed;inset:0;z-index:10;display:none;overflow:hidden;background:#2c2433;}
 #l4scene{position:absolute;inset:0;z-index:0;overflow:hidden;}
 #l4bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;background-repeat:no-repeat;
   background-image:linear-gradient(180deg,#5b4a63 0%,#7a6a72 52%,#caa98e 100%);filter:brightness(.96) saturate(.98);transition:filter 1.2s ease;}
 #l4soft{position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(70% 60% at 50% 42%, rgba(255,248,236,.16), rgba(255,248,236,0) 72%);
+  background:radial-gradient(70% 58% at 50% 40%, rgba(255,248,236,.16), rgba(255,248,236,0) 72%);
   box-shadow:inset 0 0 170px 60px rgba(28,18,34,.42);}
-/* 角色立繪：底部一排，去背圖；載不到就不顯示（純氛圍，無互動） */
-#l4cast{position:absolute;left:0;right:0;bottom:0;height:62%;z-index:2;pointer-events:none;}
-.l4fig{position:absolute;bottom:0;background-size:contain;background-position:center bottom;background-repeat:no-repeat;
-  filter:drop-shadow(0 6px 10px rgba(0,0,0,.34));opacity:0;transform:translateY(10px);
-  transition:opacity .9s ease,transform .9s ease;}
-.l4fig.show{opacity:1;transform:translateY(0);}
-.l4fig.mother{left:6%;width:clamp(150px,34vw,300px);height:84%;}
-.l4fig.packages{left:50%;transform:translateX(-50%) translateY(10px);width:clamp(96px,22vw,180px);height:34%;z-index:3;}
-.l4fig.packages.show{transform:translateX(-50%) translateY(0);}
-.l4fig.elder{right:6%;left:auto;width:clamp(140px,32vw,280px);height:80%;}
-.l4fig.neighbor{right:24%;left:auto;width:clamp(120px,26vw,220px);height:70%;opacity:0;}
+#level4.warm #l4bg{filter:brightness(1.08) saturate(1.12);}
 /* 頂列 / 標題 / 離開 */
 #l4top{position:absolute;top:0;left:0;right:0;z-index:30;display:flex;justify-content:center;align-items:center;padding:10px 12px;pointer-events:none;}
 #l4title{pointer-events:auto;background:rgba(36,22,44,.58);color:#fff;font-weight:800;font-size:14px;padding:7px 14px;border-radius:999px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
 #l4leave{position:fixed;left:calc(12px + env(safe-area-inset-left));top:calc(54px + env(safe-area-inset-top));z-index:95;pointer-events:auto;background:rgba(255,255,255,.2);color:#fff;border-radius:999px;padding:7px 13px;font-weight:800;font-size:13px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
-/* 流程舞台：一張可捲動的敘事卡片，置中偏下，不擋角色臉 */
-#l4stage{position:absolute;left:0;right:0;bottom:0;top:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;
-  padding:64px 12px calc(16px + env(safe-area-inset-bottom));pointer-events:none;}
-.l4card{pointer-events:auto;width:min(94vw,620px);max-height:78vh;overflow-y:auto;
-  background:rgba(28,18,34,.82);color:#fff;border-radius:18px;padding:16px 16px 14px;
-  box-shadow:0 14px 40px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.12);
-  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
-.l4card.fade{animation:l4fade .5s ease;}
-@keyframes l4fade{0%{opacity:0;transform:translateY(10px);}100%{opacity:1;transform:translateY(0);}}
-.l4text{font-size:clamp(13px,3.4vw,15px);line-height:1.62;color:#f3eef7;white-space:pre-line;}
-.l4lead{font-size:12px;font-weight:800;letter-spacing:.04em;color:#ffd98a;margin-bottom:8px;text-transform:none;}
-.l4btns{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
-/* 兩選項＋第三條路：等價樣式，無好壞色、無排名、無分數 */
-.l4btn{width:100%;text-align:left;background:rgba(255,255,255,.10);color:#fff;border:1px solid rgba(255,255,255,.22);
-  border-radius:14px;padding:13px 15px;font-weight:700;font-size:clamp(13px,3.3vw,15px);line-height:1.45;
-  transition:background .18s,transform .12s;cursor:pointer;}
-.l4btn:hover{background:rgba(255,255,255,.17);}
-.l4btn:active{transform:scale(.99);}
-.l4btn.third{background:rgba(255,236,180,.12);border-color:rgba(255,224,150,.4);color:#ffe9bd;font-style:italic;}
-.l4cont{margin-top:14px;display:flex;justify-content:flex-end;}
-.l4cont .btn{background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:#4a3007;border-radius:999px;padding:10px 20px;font-weight:800;font-size:14px;}
-.l4reflect{margin-top:6px;padding:14px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);}
-.l4reflect .l4text{color:#fdf6ff;font-weight:700;}
-.l4note{margin-top:8px;font-size:12px;color:#cdbcd6;line-height:1.5;}
+/* 上方：今天還剩的物資（fresh 會見底） */
+#l4pantryWrap{position:absolute;left:8px;right:8px;top:calc(96px + env(safe-area-inset-top));z-index:22;}
+#l4pantryHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 4px 6px;}
+#l4pantryLabel{color:#fff;font-weight:800;font-size:12.5px;text-shadow:0 1px 3px rgba(0,0,0,.4);}
+#l4freshTag{font-weight:800;font-size:12px;padding:3px 10px;border-radius:999px;background:rgba(120,180,110,.85);color:#10240c;white-space:nowrap;}
+#l4freshTag.low{background:rgba(240,190,90,.92);color:#3a2706;}
+#l4freshTag.out{background:rgba(210,120,120,.9);color:#fff;}
+#l4pantry{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 6px;-webkit-overflow-scrolling:touch;}
+.l4item{flex:0 0 auto;min-width:64px;background:rgba(255,255,255,.92);border-radius:14px;padding:8px 10px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border:2px solid transparent;
+  box-shadow:0 4px 10px rgba(0,0,0,.26);transition:transform .12s,box-shadow .18s;}
+.l4item:active{transform:scale(.96);}
+.l4item .l4ico{font-size:1.5rem;line-height:1;}
+.l4item .l4nm{font-size:10.5px;font-weight:800;color:#43373f;text-align:center;line-height:1.15;white-space:nowrap;}
+.l4item.fresh{border-color:#bfe3a8;}
+.l4item.gone{opacity:.34;pointer-events:none;filter:grayscale(.7);}
+.l4item .l4cnt{font-size:10px;font-weight:800;color:#2f6b1f;}
+/* 中段：當前客人（圖＋對白＋多問一句） */
+#l4guest{position:absolute;left:10px;right:10px;top:198px;bottom:190px;z-index:18;
+  display:flex;align-items:center;gap:14px;}
+#l4guestArt{flex:0 0 auto;width:clamp(110px,30vw,210px);align-self:flex-end;height:96%;
+  background-size:contain;background-position:center bottom;background-repeat:no-repeat;
+  filter:drop-shadow(0 6px 12px rgba(0,0,0,.36));opacity:0;transform:translateY(12px);transition:opacity .7s ease,transform .7s ease;}
+#l4guestArt.show{opacity:1;transform:translateY(0);}
+#l4guestPanel{flex:1 1 auto;max-width:min(72vw,520px);background:rgba(28,18,34,.8);color:#fff;border-radius:16px;
+  padding:13px 15px;box-shadow:0 12px 30px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.12);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);max-height:100%;overflow-y:auto;}
+#l4guestName{font-size:12px;font-weight:800;color:#ffd98a;margin-bottom:4px;}
+#l4dialogue{font-size:clamp(13px,3.3vw,15px);line-height:1.55;color:#f3eef7;white-space:pre-line;}
+#l4dialogue .deep{display:block;margin-top:7px;color:#ffe9bd;}
+#l4dialogue .sys{display:block;margin-top:8px;color:#bfe3a8;font-weight:700;}
+.l4mini{margin-top:10px;background:rgba(255,236,180,.14);color:#ffe9bd;border:1px solid rgba(255,224,150,.4);
+  border-radius:999px;padding:7px 14px;font-weight:800;font-size:12.5px;cursor:pointer;}
+.l4mini:active{transform:scale(.97);}
+/* 下方：關懷包（湊）＋行動鈕 */
+#l4bagWrap{position:absolute;left:0;right:0;bottom:0;z-index:24;
+  padding:10px 12px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(24,15,30,0),rgba(24,15,30,.5) 30%,rgba(24,15,30,.72));}
+#l4bagHead{color:#fff;font-weight:800;font-size:12px;margin:0 2px 6px;text-shadow:0 1px 3px rgba(0,0,0,.4);}
+#l4bag{display:flex;flex-wrap:wrap;gap:7px;min-height:42px;align-content:flex-start;
+  background:rgba(255,255,255,.07);border:1px dashed rgba(255,255,255,.22);border-radius:14px;padding:8px;}
+.l4pin{display:flex;align-items:center;gap:5px;background:#fff;border-radius:999px;padding:5px 8px 5px 10px;
+  font-size:12px;font-weight:800;color:#43373f;box-shadow:0 3px 8px rgba(0,0,0,.26);}
+.l4pin .x{cursor:pointer;color:#b06a6a;font-weight:900;padding:0 2px;}
+.l4bagEmpty{color:#d7cadf;font-size:12px;font-weight:600;padding:4px 2px;}
+#l4actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;justify-content:flex-end;}
+.l4act{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.24);border-radius:999px;
+  padding:11px 18px;font-weight:800;font-size:14px;cursor:pointer;transition:background .18s,transform .12s;}
+.l4act:active{transform:scale(.98);}
+.l4act[disabled]{opacity:.4;pointer-events:none;}
+.l4act.give{background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:#4a3007;border-color:transparent;}
+.l4act.broker{background:rgba(255,236,180,.18);color:#ffe9bd;border-color:rgba(255,224,150,.5);}
 /* 結算（沿用其他關的暗底卡片） */
 #l4end{position:absolute;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(180deg,rgba(40,20,44,.46),rgba(18,10,26,.66));}
 #l4end .card{background:var(--panel-dark);color:#fff;max-height:92vh;overflow-y:auto;}
 #l4end .card h1{color:#fff;}
+#l4endQ{color:#fdf6ff;font-weight:700;margin-top:10px;}
+.l4hook{margin-top:10px;font-size:12.5px;color:#cdbcd6;font-style:italic;line-height:1.5;}
+/* 直式窄畫面：客人改上下排，留更多對白空間 */
+@media (max-aspect-ratio:3/4){
+  #l4guest{flex-direction:column;align-items:stretch;top:190px;bottom:198px;gap:8px;}
+  #l4guestArt{align-self:center;width:clamp(96px,26vw,150px);height:42%;}
+  #l4guestPanel{max-width:100%;}
+}
 
 /* ===================================================================
    各關「怎麼玩＋獎勵」小字 + hub「？」說明面板

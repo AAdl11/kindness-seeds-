@@ -1,58 +1,54 @@
 {
   "id": "the_last_two",
-  "type": "moral_dilemma",
-  "title": {
-    "en": "The Last Two",
-    "zh": "最後兩份",
-    "es": "Los últimos dos"
+  "type": "resourceful_helper",
+  "title": { "en": "The Last Two", "zh": "最後兩份", "es": "Los últimos dos" },
+  "intro": {
+    "en": "Closing time at the mutual-aid station. A few neighbors are still on their way, and not much is left on the shelves. Let's make sure no one goes home forgotten.",
+    "zh": "互助站快打烊了。還有幾位鄰居在路上，櫃上也剩得不多。我們來想辦法，讓今天沒有人被忘記。",
+    "es": "Hora de cerrar en el centro de ayuda. Aún vienen algunos vecinos y queda poco en los estantes. Vamos a procurar que nadie se vaya olvidado."
   },
-  "scene": {
-    "en": "Inside the San Francisco community mutual-aid station, the afternoon air carries the faint, comforting scent of cinnamon bread. Only the last two fresh food packs remain on the counter. At the front of the line stands a young mother holding her two children by the hand, her eyes reflecting both the fatigue of a long day and a glimmer of hope. At the same time, the corner bench where Mr. Wang, a local senior living alone, usually sits remains empty; you know his limited mobility always makes his journey slow, and if these packs are given away now, he will likely go home empty-handed when he arrives later.",
-    "zh": "午後的舊金山社區互助站裡，空氣中飄著淡淡的肉桂麵包香。櫃檯上只剩下最後兩份新鮮食物包，排在隊伍最前方的年輕媽媽正牽著兩個孩子，眼神裡有著一整天奔波後的疲憊與期待；與此同時，街角那張平常屬於獨居長者王伯伯的長椅依然空著，你知道他因為腿腳不便總是走得慢，如果現在把食物發完，晚點抵達的他今天可能就要空手而歸了。",
-    "es": "En el centro de ayuda comunitaria de San Francisco, el aire de la tarde huele ligeramente a pan de canela. Sobre el mostrador solo quedan los últimos dos paquetes de alimentos frescos. Al frente de la fila, una madre joven sostiene a sus dos hijos de la mano; en sus ojos se nota el cansancio de un largo día, pero también una mirada de esperanza. Al mismo tiempo, la banca de la esquina donde suele sentarse don Wang, un adulto mayor que vive solo, sigue vacía. Sabes que debido a sus problemas de movilidad siempre camina despacio; si entregas estos paquetes ahora, lo más probable es que cuando llegue se vaya con las manos vacías."
-  },
-  "choices": [
+  "guests": [
     {
-      "label": {
-        "en": "Give both packs to the mother at the front of the line.",
-        "zh": "把最後兩份都發給排在最前面的媽媽。",
-        "es": "Entregar ambos paquetes a la mamá que está al frente de la fila."
-      },
-      "consequence": {
-        "en": "The mother breathes a sigh of relief and thanks you repeatedly. The children hold her hands tightly, happily chatting about the fresh fruit they will have for dinner. They leave with peace of mind and full hearts. Half an hour later, Mr. Wang walks in, leaning on his cane and wiping sweat from his brow. Seeing the empty shelves, he smiles gently and says, \"That's quite alright. I got a late start today. I'll just come a bit earlier tomorrow,\" before turning to walk slowly back toward the street corner.",
-        "zh": "媽媽鬆了一口氣，連聲說著謝謝，孩子們牽著她的手，高興地討論今晚桌上的新鮮水果。他們帶著飽足與安心離開了。半小時後，王伯伯拄著拐杖、擦著汗走進互助站，看到空了的貨架，他溫和地笑了笑說：「沒關係，我今天出門稍微耽擱了，明天再早點來。」隨後轉身慢慢走回街角。",
-        "es": "La madre suspira aliviada y te da las gracias una y otra vez. Los niños la toman de la mano, emocionados, hablando de la fruta fresca que cenarán hoy. Se van con el corazón tranquilo. Media hora después, don Wang entra apoyándose en su bastón y limpiándose el sudor de la frente. Al ver los estantes vacíos, sonríe con amabilidad y dice: \"No te preocupes. Hoy se me hizo un poco tarde; mañana vengo más tempranito\". Luego, se da la vuelta para regresar despacio hacia la esquina."
-      }
+      "id": "mother", "art": "last2_mother", "needs_fresh": true,
+      "satisfied_by": ["fresh", "fruit"],
+      "arrive": { "en": "A young mother reaches the counter, holding her two children by the hand.", "zh": "一位年輕媽媽牽著兩個孩子走到櫃台前。", "es": "Una madre joven llega al mostrador, tomando de la mano a sus dos hijos." },
+      "need_surface": { "en": "\"Is there anything fresh left for dinner tonight?\"", "zh": "「今晚還有沒有新鮮的可以當晚餐？」", "es": "\"¿Queda algo fresco para la cena de hoy?\"" },
+      "need_deep": { "en": "\"The kids haven't had fresh fruit in days — they'd be so happy.\"", "zh": "「孩子們好幾天沒吃到新鮮水果了，有的話他們會很開心。」", "es": "\"Los niños llevan días sin fruta fresca — se pondrían muy felices.\"" },
+      "thanks": { "en": "She breathes a sigh of relief; the children chatter happily about dinner.", "zh": "她鬆了一口氣，孩子們高興地討論今晚的晚餐。", "es": "Suspira aliviada; los niños hablan felices de la cena." }
     },
     {
-      "label": {
-        "en": "Reserve one pack for Mr. Wang and give one to the mother.",
-        "zh": "保留一份給王伯伯，另一份發給媽媽。",
-        "es": "Guardar un paquete para don Wang y entregarle el otro a la mamá."
-      },
-      "consequence": {
-        "en": "The mother accepts the single food pack. She looks down at her two growing children with a hint of helplessness, but she still nods politely, thanks you, and leaves with them—she will have to figure out how to stretch the portions tonight. Right before evening, Mr. Wang arrives. He accepts the reserved pack, his eyes filled with gratitude: \"Thank you for remembering these slow legs of mine. I won't have to just get by on crackers tonight.\"",
-        "zh": "媽媽接過一份食物包，有些無奈地看著身邊兩個正在發育的孩子，但她依然禮貌地向你點頭致謝，牽著孩子離去，今晚她可能需要再想想辦法分配分量。傍晚前，王伯伯準時出現了，他接過保留的食物包，眼裡滿是感激：「謝謝你還記得我這雙走不快的腿，今晚不用只吃餅乾了。」",
-        "es": "La madre recibe el único paquete de alimentos. Mira a sus dos hijos en pleno crecimiento con un gesto de resignación, pero de todos modos asiente con educación, te da las gracias y se marcha con ellos; esta noche tendrá que ver cómo hacer rendir las porciones. Poco antes de que caiga la noche, don Wang llega. Recibe el paquete que le guardaste y sus ojos se llenan de gratitud: \"Muchas gracias por acordarte de estas piernas que ya no corren. Hoy ya no tendré que cenar puras galletas\"."
-      }
+      "id": "elder", "art": "last2_elder", "needs_fresh": true,
+      "satisfied_by": ["soft", "staple"],
+      "name": { "en": "Mr. Wang", "zh": "王伯伯", "es": "don Wang" },
+      "arrive": { "en": "Mr. Wang arrives late, leaning on his cane, wiping his brow.", "zh": "王伯伯晚到了，拄著拐杖、擦著汗。", "es": "Don Wang llega tarde, apoyado en su bastón, secándose la frente." },
+      "need_surface": { "en": "\"Anything left for these slow legs of mine?\"", "zh": "「我這雙走不快的腿，還趕得上有東西嗎？」", "es": "\"¿Queda algo para estas piernas que ya no corren?\"" },
+      "need_deep": { "en": "\"Something soft I can chew would be a real kindness.\"", "zh": "「有軟一點、好咀嚼的就太好了。」", "es": "\"Algo blando que pueda masticar sería una gran bondad.\"" },
+      "thanks": { "en": "His eyes fill with gratitude: \"Tonight I won't just get by on crackers.\"", "zh": "他眼裡滿是感激：「今晚不用只吃餅乾了。」", "es": "Sus ojos se llenan de gratitud: \"Hoy no cenaré solo galletas.\"" }
+    },
+    {
+      "id": "night_worker", "art": "last2_volunteer", "needs_fresh": false,
+      "satisfied_by": ["ready_to_eat", "portable"],
+      "arrive": { "en": "A tired night-shift worker stops by on the way to a long shift.", "zh": "一位疲憊的夜班工作者，趕著上整夜的班，路過進來。", "es": "Un trabajador del turno noche se detiene camino a una larga jornada." },
+      "need_surface": { "en": "\"Something quick I can take with me?\"", "zh": "「有沒有能帶著走、馬上吃的？」", "es": "\"¿Algo rápido que me pueda llevar?\"" },
+      "need_deep": { "en": "\"Something to get me through till morning, no time to cook.\"", "zh": "「能撐到天亮就好，沒時間煮。」", "es": "\"Algo que me aguante hasta la mañana, sin tiempo de cocinar.\"" },
+      "thanks": { "en": "A grateful nod: \"This'll keep me going. Thank you.\"", "zh": "他感激地點頭：「這夠我撐過去了，謝謝。」", "es": "Asiente agradecido: \"Esto me mantendrá. Gracias.\"" }
     }
   ],
-  "third_path": {
-    "success": {
-      "en": "You kneel down to the children's eye level and gently explain Mr. Wang's situation to the mother, asking if she would be willing to share one fresh pack, offering to supplement her bag with extra pantry staples and oatmeal that the kids love. The mother looks at her children, smiles, and nods in agreement. Seeing this, a neighbor waiting nearby steps forward and kindly places a carton of fresh eggs from her own cart into the mother's bag. On this particular afternoon, everyone shares a little, and everyone takes home a piece of comfort.",
-      "zh": "你蹲下來，誠實且溫柔地向媽媽說明了王伯伯的情況，並詢問是否能先分一份給王伯伯，互助站會額外多打包一些補給乾糧和孩子喜歡的燕麥片給她。媽媽轉頭看了看孩子，微笑著點頭答應了。這時，排在後方的一位鄰居大姐看見了，主動從自己的推車裡拿出一盒剛買的雞蛋放進媽媽的袋子裡。在這個午後，每個人都分享了一點點，也各自帶回了一點點溫暖。",
-      "es": "Te agachas a la altura de los niños y le explicas con delicadeza la situación de don Wang a la mamá. Le preguntas si estaría dispuesta a ceder un paquete fresco, ofreciéndole a cambio completar su bolsa con productos básicos de la despensa y algo de avena que les gusta a los niños. La madre mira a sus hijos, sonríe y acepta amablemente. Al ver esto, una vecina que estaba cerca da un paso al frente y, con mucha generosidad, saca una cartera de huevos frescos de su propio carrito y la mete en la bolsa de la mamá. En esta tarde, todos compartieron un poco y todos se llevaron un pedacito de calidez a casa."
-    },
-    "fail": {
-      "en": "You softly ask the mother if it might be possible to share one of the packs with an elderly neighbor who moves a bit slower. The mother looks down, gently tightening her grip on her children's hands, and whispers tiredly, \"I'm so sorry, but my two kids are starving... we really need both tonight.\" You give her an understanding smile, reassure her that it is completely okay, and hand both packs to her. As she leaves, you turn to the pantry shelves to see what non-perishable goods you can set aside to make a care package for Mr. Wang when he arrives.",
-      "zh": "你輕聲向媽媽詢問是否能勻出一份留給行動不便的長輩。媽媽有些為難地拉緊了孩子的手，疲憊地低聲說：「對不起，家裡兩個孩子正餓著，這兩份真的很需要……」你理解地對她微笑，安撫她不要放在心上，並順理成章地將兩份食物包交到她手中。隨後，你開始轉身整理站內的剩餘物資，為晚點可能會到的王伯伯多準備一些可以存放的乾糧。",
-      "es": "Le preguntas con suavidad a la madre si sería posible compartir uno de los paquetes con un abuelito de la comunidad que camina más despacio. La madre baja la mirada, apretando con ternura las manos de sus hijos, y susurra con timidez: \"De verdad lo siento mucho, pero mis dos hijos tienen mucha hambre... hoy sí nos hacen falta los dos\". Le sonríes con total comprensión, le pides que no se preocupe y le entregas ambos paquetes. Mientras ella se retira, te diriges a los estantes para ver qué productos no perecederos puedes reunir para armarle una despensa a don Wang en cuanto llegue."
-    }
+  "broker": {
+    "prompt": { "en": "Quietly ask the mother if she'd be willing to share one fresh pack.", "zh": "輕聲問媽媽，願不願意分一份新鮮的出來。", "es": "Pregúntale en voz baja a la madre si querría compartir un paquete fresco." },
+    "agree": { "en": "She looks at her children, smiles, and nods. Now top up her bag with staples and the oats the kids love.", "zh": "她看了看孩子，微笑點頭。現在用乾糧和孩子愛的燕麥幫她把袋子補滿。", "es": "Mira a sus hijos, sonríe y asiente. Ahora completa su bolsa con básicos y la avena que les gusta." },
+    "decline": { "en": "She gently tightens her grip on the children's hands: \"I'm sorry — we really need both tonight.\" That's completely okay.", "zh": "她輕輕握緊孩子的手：「對不起，今晚我們真的兩份都需要。」這完全沒關係。", "es": "Aprieta con ternura las manos de sus hijos: \"Lo siento — hoy de verdad necesitamos los dos.\" Está totalmente bien." },
+    "setaside": { "en": "Turn to the shelves and put together a good pantry pack to set aside for Mr. Wang when he arrives.", "zh": "轉身翻櫃子，為晚到的王伯伯先湊一份好的乾糧關懷包留著。", "es": "Ve a los estantes y arma una buena despensa para apartarla para don Wang cuando llegue." }
   },
   "ending_question": {
-    "en": "After spending this afternoon at the mutual-aid station and witnessing everyone's differing paces and needs, what does \"fairness\" look like to you? Is it about everyone receiving the exact same amount, or is it about everyone getting the specific support they need in that moment?",
-    "zh": "在互助站的這個下午，看著不同的步伐與各自的需求，你覺得「公平」是每個人都得到一樣的分量，還是每個人都得到他當下最需要的支持？",
-    "es": "Después de pasar la tarde en el centro de ayuda y ver los diferentes ritmos y necesidades de cada quien, ¿qué significa para ti la \"justicia\"? ¿Se trata de que todos reciban exactamente la misma cantidad, o de que cada uno reciba el apoyo específico que necesita en ese momento?"
+    "en": "After this afternoon of different paces and needs, what does \"fairness\" mean to you — everyone getting the same, or everyone getting what they need most right then?",
+    "zh": "這個下午，看著不同的步伐與需求，你覺得「公平」是每個人都得到一樣的分量，還是每個人都得到他當下最需要的支持？",
+    "es": "Tras esta tarde de ritmos y necesidades distintas, ¿qué es para ti la \"justicia\" — que todos reciban lo mismo, o que cada quien reciba lo que más necesita en ese momento?"
+  },
+  "to_level5_hook": {
+    "en": "Tomorrow, at the summer camp, a new kid will need someone to make room for them — but that's another day.",
+    "zh": "明天的夏令營，會有個新來的孩子需要人替他留個位子——不過那是另一天的事了。",
+    "es": "Mañana, en el campamento de verano, un niño nuevo necesitará que alguien le haga espacio — pero eso es otro día."
   },
   "safety_meta": { "reviewed_by": "human", "no_score": true, "no_correct_answer": true }
 }

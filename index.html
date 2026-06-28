@@ -203,25 +203,43 @@
   </div>
 </div>
 
-<!-- ============ 關4 · 道德兩難「最後兩份」 ============ -->
+<!-- ============ 關4 · 互助站「最後兩份」（resourceful_helper：問→湊→斡旋） ============ -->
 <div id="level4">
   <div id="l4scene">
     <div id="l4bg"></div>        <!-- 互助站室內背景（載到才覆蓋漸層 fallback） -->
     <div id="l4soft"></div>      <!-- 柔光底＋暗角，主體清楚 -->
-    <div id="l4cast"></div>      <!-- 角色立繪（JS 注入：媽媽 / 長者 / 食物包 / 鄰居） -->
   </div>
   <div id="l4top">
     <div id="l4title"></div>
     <button id="l4leave"></button>
   </div>
-  <div id="l4stage">
-    <div id="l4card" class="l4card"></div>  <!-- 流程逐步注入：場景→兩選項＋第三條路→後果→反思 -->
+  <!-- 上方：今天還剩的物資（fresh 會見底） -->
+  <div id="l4pantryWrap">
+    <div id="l4pantryHead"><span id="l4pantryLabel"></span><span id="l4freshTag"></span></div>
+    <div id="l4pantry"></div>
+  </div>
+  <!-- 中段：當前客人（圖＋對白＋多問一句） -->
+  <div id="l4guest">
+    <div id="l4guestArt"></div>
+    <div id="l4guestPanel">
+      <div id="l4guestName"></div>
+      <div id="l4dialogue"></div>
+      <button id="l4askMore" class="l4mini hidden"></button>
+    </div>
+  </div>
+  <!-- 下方：關懷包（湊）＋行動鈕 -->
+  <div id="l4bagWrap">
+    <div id="l4bagHead"></div>
+    <div id="l4bag"></div>
+    <div id="l4actions"></div>   <!-- 給他 / 聊聊分一份 / 留一份 等，JS 注入 -->
   </div>
   <div id="l4end" class="hidden">
     <div class="card">
       <h1 id="l4endTitle"></h1>
       <div id="l4plant" class="endplant"></div>
       <p id="l4endLine" class="endwarm"></p>
+      <p id="l4endQ" class="endwarm"></p>
+      <p id="l4endHook" class="l4hook"></p>
       <div class="row">
         <button class="btn" id="l4again"></button>
         <button class="btn blue" id="l4hub"></button>

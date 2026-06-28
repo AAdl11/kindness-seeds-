@@ -111,27 +111,42 @@ window.CONFIG = {
     ]
   },
 
-  /* 關4・道德兩難「最後兩份」（呈現 meta；豐富分支內容讀自 data/the_last_two.json）。
-     只放圖片基底檔名／音樂／開場小字——pipeline 不會覆寫這裡；narrative 由人審 gate 寫進 JSON。 */
+  /* 關4・互助站「最後兩份」（resourceful_helper：問→湊→稀缺斡旋）。
+     presentation＋遊戲規則住這（pipeline 不碰）；會變動的情境內容讀自 data/the_last_two.json。 */
   level4: {
     id: 'the_last_two',
-    type: 'moral_dilemma',
-    data: 'data/the_last_two.json',           // runtime 讀這份（pipeline 人審後的產出）；fetch 失敗時用內建 fallback
-    music: 'assets/audio/ending_warm.mp3',    // placeholder（祥和）；日後可換
-    img: 'last2_scene',                        // 互助站室內背景（基底檔名；副檔名自動偵測）
-    street: 'last2_street',                    // 街角背景（備用）
-    // 角色立繪基底檔名（離線：assets/images/ 自動找副檔名）。pipeline 的 JSON 不帶圖，圖一律住在這。
-    cast: {
-      volunteer: 'last2_volunteer',
-      mother:    'last2_mother',
-      elder:     'last2_elder',
-      packages:  'last2_packages',
-      neighbor:  'last2_neighbor'
-    },
+    type: 'resourceful_helper',
+    data: 'data/the_last_two.json',            // runtime 讀這份（pipeline 人審後的產出）；fetch 失敗時用內建 fallback
+    music: 'assets/audio/ending_warm.mp3',     // placeholder（祥和）；日後可換
+    img: 'last2_scene',                         // 互助站室內背景（基底檔名；副檔名自動偵測）
+    // 美術基底檔名（離線：assets/images/ 自動找副檔名）。pipeline 的 JSON 不帶圖，圖一律住在這。
+    cast: { scene: 'last2_scene', street: 'last2_street', packages: 'last2_packages', neighbor: 'last2_neighbor' },
+    guestCount: 2,            // Phase A：媽媽＋王伯伯（固定，確保稀缺斡旋必觸發）；Phase B 提到 3
+    shuffle: false,           // Phase A：固定順序；Phase B 開隨機抽選/排列
+    stock: { fresh: 2 },      // 稀缺：只有 2 份新鮮（共用額度，畫得出見底）
+    // 每照顧一位客人的回饋；沿用 perHome（同一套世界數值），這裡可覆寫
+    perGuestReward: { growth: 1, coins: 3, minutes: 10 },
+    // 物資清單（icon 先用 emoji；日後可換 last2_* 圖）。fresh:true 者吃 stock.fresh 共用額度。
+    pantry: [
+      { id: 'bread', icon: '🍞', tags: ['fresh'], fresh: true,
+        name: { zh: '新鮮麵包', en: 'Fresh bread', es: 'Pan fresco' } },
+      { id: 'fruit', icon: '🍎', tags: ['fresh', 'fruit'], fresh: true,
+        name: { zh: '新鮮水果', en: 'Fresh fruit', es: 'Fruta fresca' } },
+      { id: 'eggs', icon: '🥚', tags: ['fresh', 'soft'], fresh: true,
+        name: { zh: '雞蛋', en: 'Eggs', es: 'Huevos' } },
+      { id: 'oats', icon: '🥣', tags: ['staple', 'soft', 'kids'],
+        name: { zh: '燕麥', en: 'Oats', es: 'Avena' } },
+      { id: 'soup', icon: '🥫', tags: ['staple', 'ready_to_eat', 'soft', 'portable'],
+        name: { zh: '罐頭湯', en: 'Canned soup', es: 'Sopa enlatada' } },
+      { id: 'rice', icon: '🍚', tags: ['staple'],
+        name: { zh: '米／乾糧', en: 'Rice / staples', es: 'Arroz / básicos' } },
+      { id: 'bar', icon: '🍫', tags: ['staple', 'ready_to_eat', 'portable'],
+        name: { zh: '能量棒', en: 'Energy bar', es: 'Barra energética' } }
+    ],
     how: {
-      zh: '互助站只剩最後兩份。沒有標準答案——讀懂每個人的處境，做出你的選擇，再看看會發生什麼。',
-      en: 'Only the last two packs are left at the station. There is no right answer — read each person’s situation, make your choice, and see what unfolds.',
-      es: 'Solo quedan los últimos dos paquetes. No hay respuesta correcta — entiende la situación de cada quien, decide y observa lo que pasa.'
+      zh: '互助站快打烊、東西不多。問出每個人的需要，翻物資配一份合適的關懷包；不夠時想辦法分享，讓沒有人空手回家。',
+      en: 'The station is closing and supplies are low. Ask what each person needs, build a fitting care pack from the shelves, and when it runs short, find a way to share so no one leaves empty-handed.',
+      es: 'El centro va a cerrar y queda poco. Pregunta qué necesita cada quien, arma un paquete adecuado y, cuando falte, busca cómo compartir para que nadie se vaya con las manos vacías.'
     }
   },
 
