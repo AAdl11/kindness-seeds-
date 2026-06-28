@@ -136,8 +136,10 @@ window.CONFIG = {
     // 物資清單：每樣有自己的庫存（A）。fresh:true＝新鮮（少且每日浮動）；baby＝只有年輕父母在場才上架。
     pantry: [
       // —— 新鮮類：想要、但庫存少且每日隨機 ——
-      { id: 'fruit', icon: '🍎', tags: ['fresh', 'fruit', 'soft'], fresh: true, name: { zh: '新鮮水果', en: 'Fresh fruit', es: 'Fruta fresca' } },
-      { id: 'veg', icon: '🥬', tags: ['fresh', 'veg', 'soft'], fresh: true, name: { zh: '新鮮蔬菜', en: 'Fresh vegetables', es: 'Verduras frescas' } },
+      // 生水果/生菜＝新鮮但「不算長者軟好咀嚼」→ 不標 soft（牙口不好咬不動）
+      { id: 'fruit', icon: '🍎', tags: ['fresh', 'fruit'], fresh: true, name: { zh: '新鮮水果', en: 'Fresh fruit', es: 'Fruta fresca' } },
+      { id: 'veg', icon: '🥬', tags: ['fresh', 'veg'], fresh: true, name: { zh: '新鮮蔬菜', en: 'Fresh vegetables', es: 'Verduras frescas' } },
+      // 雞蛋、麵包＝唯二「新鮮且真的軟」→ 同時滿足媽媽（新鮮）與王伯伯（軟）；爭點只會是這兩樣之一
       { id: 'eggs', icon: '🥚', tags: ['fresh', 'soft', 'protein'], fresh: true, name: { zh: '雞蛋', en: 'Eggs', es: 'Huevos' } },
       { id: 'bread', icon: '🍞', tags: ['fresh', 'soft'], fresh: true, name: { zh: '新鮮麵包', en: 'Fresh bread', es: 'Pan fresco' } },
       { id: 'milk', icon: '🥛', tags: ['fresh', 'kids', 'drink'], fresh: true, name: { zh: '牛奶', en: 'Milk', es: 'Leche' } },

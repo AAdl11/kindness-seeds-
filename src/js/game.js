@@ -1631,8 +1631,10 @@
         : (p.fresh ? l4Rand(plan.freshEach || [0, 2]) : l4Rand(plan.stapleEach || [3, 5]));
     });
     if (plan.guaranteeContested) {
+      // 爭點只能是「新鮮且真的軟」（麵包／雞蛋）：媽媽要新鮮、王伯伯要軟好咀嚼，兩人都用得上。
+      // 隨機選其一固定剩 1 份 → 斡旋每局成立，且被分享的那份王伯伯吃得動。
       var soft = shelved.filter(function (p) { return p.fresh && (p.tags || []).indexOf('soft') !== -1; });
-      if (soft.length) stock[soft[0].id] = 1;
+      if (soft.length) stock[soft[l4Rand([0, soft.length - 1])].id] = 1;
     }
     return stock;
   }
