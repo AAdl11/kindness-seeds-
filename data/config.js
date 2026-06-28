@@ -121,8 +121,8 @@ window.CONFIG = {
     img: 'last2_scene',                         // 互助站室內背景（基底檔名；副檔名自動偵測）
     // 美術基底檔名（離線：assets/images/ 自動找副檔名）。pipeline 的 JSON 不帶圖，圖一律住在這。
     cast: { scene: 'last2_scene', street: 'last2_street', packages: 'last2_packages', neighbor: 'last2_neighbor' },
-    guestCount: 2,            // Phase A：媽媽＋王伯伯（固定，確保稀缺斡旋必觸發）；Phase B 提到 3
-    shuffle: false,           // Phase A：固定順序；Phase B 開隨機抽選/排列
+    guestCount: 3,            // Phase B：媽媽＋王伯伯＋夜班工作者，從 guests 池抽
+    shuffle: true,            // Phase B：隨機抽選/排列（媽媽仍排在晚到的王伯伯之前，斡旋敘事才成立）
     stock: { fresh: 2 },      // 稀缺：只有 2 份新鮮（共用額度，畫得出見底）
     // 每照顧一位客人的回饋；沿用 perHome（同一套世界數值），這裡可覆寫
     perGuestReward: { growth: 1, coins: 3, minutes: 10 },

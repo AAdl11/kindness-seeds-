@@ -231,7 +231,14 @@
   <div id="l4bagWrap">
     <div id="l4bagHead"></div>
     <div id="l4bag"></div>
-    <div id="l4actions"></div>   <!-- 給他 / 聊聊分一份 / 留一份 等，JS 注入 -->
+    <div id="l4actions"></div>   <!-- 送出關懷包，JS 注入 -->
+  </div>
+  <!-- 稀缺時刻：送出含新鮮、會讓晚到者拿不到新鮮時，必經此關（跳不過） -->
+  <div id="l4scarcity" class="hidden">
+    <div class="l4sc-card">
+      <div id="l4scLine" class="l4sc-line"></div>
+      <button id="l4scBroker" class="l4act broker"></button>
+    </div>
   </div>
   <div id="l4end" class="hidden">
     <div class="card">

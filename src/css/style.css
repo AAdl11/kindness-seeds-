@@ -835,6 +835,13 @@ body.screen-level #milestones{display:none;}
 #l4end .card h1{color:#fff;}
 #l4endQ{color:#fdf6ff;font-weight:700;margin-top:10px;}
 .l4hook{margin-top:10px;font-size:12.5px;color:#cdbcd6;font-style:italic;line-height:1.5;}
+/* 稀缺時刻：必經的小覆蓋層（跳不過；唯一出路是第三條路＝跟媽媽聊聊） */
+#l4scarcity{position:absolute;inset:0;z-index:38;display:flex;align-items:center;justify-content:center;padding:20px;
+  background:linear-gradient(180deg,rgba(30,16,34,.5),rgba(16,9,22,.72));-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
+.l4sc-card{max-width:min(92vw,460px);background:rgba(30,20,38,.96);color:#fff;border-radius:18px;padding:20px 18px 16px;
+  text-align:center;box-shadow:0 16px 44px rgba(0,0,0,.5);border:1px solid rgba(255,224,150,.28);}
+.l4sc-line{font-size:clamp(14px,3.6vw,16px);font-weight:700;line-height:1.6;color:#fdf2dd;margin-bottom:16px;}
+.l4sc-card .l4act.broker{width:100%;}
 /* 直式窄畫面：客人改上下排，留更多對白空間 */
 @media (max-aspect-ratio:3/4){
   #l4guest{flex-direction:column;align-items:stretch;top:190px;bottom:198px;gap:8px;}
