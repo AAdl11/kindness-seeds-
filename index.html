@@ -203,6 +203,34 @@
   </div>
 </div>
 
+<!-- ============ 關4 · 道德兩難「最後兩份」 ============ -->
+<div id="level4">
+  <div id="l4scene">
+    <div id="l4bg"></div>        <!-- 互助站室內背景（載到才覆蓋漸層 fallback） -->
+    <div id="l4soft"></div>      <!-- 柔光底＋暗角，主體清楚 -->
+    <div id="l4cast"></div>      <!-- 角色立繪（JS 注入：媽媽 / 長者 / 食物包 / 鄰居） -->
+  </div>
+  <div id="l4top">
+    <div id="l4title"></div>
+    <button id="l4leave"></button>
+  </div>
+  <div id="l4stage">
+    <div id="l4card" class="l4card"></div>  <!-- 流程逐步注入：場景→兩選項＋第三條路→後果→反思 -->
+  </div>
+  <div id="l4end" class="hidden">
+    <div class="card">
+      <h1 id="l4endTitle"></h1>
+      <div id="l4plant" class="endplant"></div>
+      <p id="l4endLine" class="endwarm"></p>
+      <div class="row">
+        <button class="btn" id="l4again"></button>
+        <button class="btn blue" id="l4hub"></button>
+        <a class="btn fbBtn" id="l4fb"></a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ============ 結尾 · 天黑了 ============ -->
 <section id="ending" class="screen hidden">
   <div class="bg" style="background-image:url('assets/images/rv_park_night.png')"></div>

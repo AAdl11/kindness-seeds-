@@ -111,6 +111,30 @@ window.CONFIG = {
     ]
   },
 
+  /* 關4・道德兩難「最後兩份」（呈現 meta；豐富分支內容讀自 data/the_last_two.json）。
+     只放圖片基底檔名／音樂／開場小字——pipeline 不會覆寫這裡；narrative 由人審 gate 寫進 JSON。 */
+  level4: {
+    id: 'the_last_two',
+    type: 'moral_dilemma',
+    data: 'data/the_last_two.json',           // runtime 讀這份（pipeline 人審後的產出）；fetch 失敗時用內建 fallback
+    music: 'assets/audio/ending_warm.mp3',    // placeholder（祥和）；日後可換
+    img: 'last2_scene',                        // 互助站室內背景（基底檔名；副檔名自動偵測）
+    street: 'last2_street',                    // 街角背景（備用）
+    // 角色立繪基底檔名（離線：assets/images/ 自動找副檔名）。pipeline 的 JSON 不帶圖，圖一律住在這。
+    cast: {
+      volunteer: 'last2_volunteer',
+      mother:    'last2_mother',
+      elder:     'last2_elder',
+      packages:  'last2_packages',
+      neighbor:  'last2_neighbor'
+    },
+    how: {
+      zh: '互助站只剩最後兩份。沒有標準答案——讀懂每個人的處境，做出你的選擇，再看看會發生什麼。',
+      en: 'Only the last two packs are left at the station. There is no right answer — read each person’s situation, make your choice, and see what unfolds.',
+      es: 'Solo quedan los últimos dos paquetes. No hay respuesta correcta — entiende la situación de cada quien, decide y observa lo que pasa.'
+    }
+  },
+
   /* 關2・環保小尖兵（分類整理；資料驅動，整關可換內容＝AIAO 母模） */
   level2: {
     id: 'eco',

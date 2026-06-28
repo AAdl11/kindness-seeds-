@@ -80,7 +80,16 @@ window.I18N = {
       '🎍 南蘇丹里程碑：靠倒竹筒推進',
       '✉️ 花蓮里程碑：靠關3 送信推進'
     ],
-    tapClue: '（點背景上發亮的點）'
+    tapClue: '（點背景上發亮的點）',
+    // 關4・道德兩難（最後兩份）
+    l4Choose: '你會怎麼做？',
+    l4ThirdPath: '主動開口溝通，尋找常規之外、能一起分享的辦法。',
+    l4Outcome: '後來……',
+    l4Continue: '繼續',
+    l4Reflect: '靜靜想一想',
+    l4ReflectNote: '沒有標準答案，也不用回答——把它放在心裡就好。',
+    l4Again: '再走一次',
+    l4ThirdTry: '你試著開口…'
   },
   en: {
     title: 'Seeds of Kindness · Hunters Point',
@@ -155,7 +164,16 @@ window.I18N = {
       '🎍 South Sudan milestone: advances by pouring bamboo',
       '✉️ Hualien milestone: advances by sending letters in Level 3'
     ],
-    tapClue: '(tap the glowing dots)'
+    tapClue: '(tap the glowing dots)',
+    // Level 4 · moral dilemma (The Last Two)
+    l4Choose: 'What will you do?',
+    l4ThirdPath: 'Talk with them and find a way to share — a possibility beyond the standard rules.',
+    l4Outcome: 'What happened…',
+    l4Continue: 'Continue',
+    l4Reflect: 'A quiet question',
+    l4ReflectNote: 'There is no right answer, and none is collected — just hold it for a moment.',
+    l4Again: 'Walk it again',
+    l4ThirdTry: 'You try to speak up…'
   },
   es: {
     title: 'Semillas de Bondad · Hunters Point',
@@ -230,7 +248,16 @@ window.I18N = {
       '🎍 Hito Sudán del Sur: avanza al verter el bambú',
       '✉️ Hito Hualien: avanza al enviar cartas en el Nivel 3'
     ],
-    tapClue: '(toca los puntos brillantes)'
+    tapClue: '(toca los puntos brillantes)',
+    // Nivel 4 · dilema moral (Los últimos dos)
+    l4Choose: '¿Qué harás?',
+    l4ThirdPath: 'Hablar con ellos y buscar la forma de compartir — una posibilidad más allá de las reglas.',
+    l4Outcome: 'Lo que pasó…',
+    l4Continue: 'Continuar',
+    l4Reflect: 'Una pregunta serena',
+    l4ReflectNote: 'No hay respuesta correcta, y no se recoge ninguna — solo guárdala un momento.',
+    l4Again: 'Recorrerlo otra vez',
+    l4ThirdTry: 'Intentas hablar…'
   }
 };
 

@@ -170,7 +170,10 @@
       ds: { zh: '街角整理回乾淨', en: 'A corner made bright', es: 'Una esquina iluminada' } },
     { id: 'hotmeal', fu: 'community', state: 'soon', stars: 2, pos: { x: 0.73, y: 0.37 },
       nm: { zh: '遊民熱食', en: 'Hot meals', es: 'Comidas calientes' },
-      ds: { zh: '社區活動中心', en: 'Community center', es: 'Centro comunitario' } }
+      ds: { zh: '社區活動中心', en: 'Community center', es: 'Centro comunitario' } },
+    { id: 'the_last_two', fu: 'community', state: 'play', stars: 2, pos: { x: 0.64, y: 0.66 },
+      nm: { zh: '最後兩份', en: 'The Last Two', es: 'Los últimos dos' },
+      ds: { zh: '互助站 · 道德兩難', en: 'Mutual-aid station · a dilemma', es: 'Centro de ayuda · un dilema' } }
   ];
   var TREE_POS = { x: 0.55, y: 0.82 };   // 中央總成長樹（base 落點，往上長）
 
@@ -178,13 +181,13 @@
   function returnToHub() { Sound.playScene('hub'); show('hub'); renderHub(); }
 
   function show(id) {
-    ['opening', 'hub', 'level', 'level2', 'level3', 'ending', 'stillness'].forEach(function (s) {
+    ['opening', 'hub', 'level', 'level2', 'level3', 'level4', 'ending', 'stillness'].forEach(function (s) {
       var el = document.getElementById(s); if (!el) return;
-      if (s === 'level' || s === 'level2' || s === 'level3') el.style.display = (s === id) ? 'block' : 'none';
+      if (s === 'level' || s === 'level2' || s === 'level3' || s === 'level4') el.style.display = (s === id) ? 'block' : 'none';
       else el.classList.toggle('hidden', s !== id);
     });
     document.body.className = 'screen-' + id;
-    var g = (id === 'hub' || id === 'level' || id === 'level2' || id === 'level3');  // 永久 HUD / 竹筒 / 金圈米芽
+    var g = (id === 'hub' || id === 'level' || id === 'level2' || id === 'level3' || id === 'level4');  // 永久 HUD / 竹筒 / 金圈米芽
     ['hudTime', 'hudCoins', 'bamboo', 'sproutRing'].forEach(function (eid) {
       document.getElementById(eid).classList.toggle('hidden', !g);
     });
@@ -240,7 +243,7 @@
     var label = T('feedback'), url = fbUrl();
     var circle = document.getElementById('hubFeedback');
     if (circle) { circle.href = url; circle.title = label; circle.setAttribute('aria-label', label); }
-    ['endFb', 'l2fb', 'l3fb'].forEach(function (id) {
+    ['endFb', 'l2fb', 'l3fb', 'l4fb'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) { el.href = url; el.textContent = '💬 ' + label; }
     });
@@ -853,6 +856,7 @@
   function startActivity(id) {
     if (id === C.level2.id) startLevel2();
     else if (id === C.level3.id) startLevel3();
+    else if (C.level4 && id === C.level4.id) startLevel4();
     else startLevel();
   }
 
@@ -1493,6 +1497,7 @@
       l3Relabel();
       if (!document.getElementById('l3end').classList.contains('hidden')) l3ShowEnd();
     }
+    if (document.getElementById('level4').style.display === 'block' && l4) l4Relabel();
     if (!document.getElementById('ending').classList.contains('hidden')) {
       document.getElementById('endTitle').textContent = T('endTitle');
       document.getElementById('endLine').textContent = T('endLine');
@@ -1518,6 +1523,187 @@
     Sound.unlock();                                // 第一次點擊解鎖
     Sound.playScene('hub');
     show('hub'); renderHub();
+  }
+
+  /* ===================================================================
+     關卡 · 道德兩難「最後兩份」（type:"moral_dilemma"）
+     豐富分支內容讀自 data/the_last_two.json（pipeline 人審 gate 的產出）；
+     重跑 pipeline、approve → 覆寫該 JSON → 這一關自動換成新內容。
+     鐵則：無計分・無好壞・兩選項等價・第三條路有成功/溫柔婉拒・反思只呈現不收答案。
+     =================================================================== */
+  var L4DATA = null;          // 載入後快取（fetch 成功 = pipeline 最新；失敗 = 內建離線鏡像）
+
+  /* 內建離線鏡像：只在 file:// 直接開啟、fetch 取不到本地 JSON 時當後備。
+     正式部署（http/https、GitHub Pages）一律讀 data/the_last_two.json；
+     pipeline 重跑 approve 覆寫的是那份 JSON，這份鏡像不是真相來源、可能落後。 */
+  var L4_FALLBACK = {
+    id: 'the_last_two', type: 'moral_dilemma',
+    title: { en: 'The Last Two', zh: '最後兩份', es: 'Los últimos dos' },
+    scene: {
+      en: 'Inside the San Francisco community mutual-aid station, the afternoon air carries the faint scent of cinnamon bread. Only the last two fresh food packs remain on the counter. At the front of the line stands a young mother holding her two children by the hand. At the same time, the corner bench where Mr. Wang, a senior living alone, usually sits remains empty; you know his limited mobility makes his journey slow, and if these packs are given away now, he will likely go home empty-handed when he arrives later.',
+      zh: '午後的舊金山社區互助站裡，空氣中飄著淡淡的肉桂麵包香。櫃檯上只剩下最後兩份新鮮食物包，排在隊伍最前方的年輕媽媽正牽著兩個孩子。與此同時，街角那張平常屬於獨居長者王伯伯的長椅依然空著，你知道他因為腿腳不便總是走得慢，如果現在把食物發完，晚點抵達的他今天可能就要空手而歸了。',
+      es: 'En el centro de ayuda comunitaria de San Francisco, el aire de la tarde huele ligeramente a pan de canela. Sobre el mostrador solo quedan los últimos dos paquetes de alimentos frescos. Al frente de la fila, una madre joven sostiene a sus dos hijos de la mano. Al mismo tiempo, la banca donde suele sentarse don Wang, un adulto mayor que vive solo, sigue vacía. Sabes que camina despacio; si entregas estos paquetes ahora, cuando llegue se irá con las manos vacías.'
+    },
+    choices: [
+      { label: { en: 'Give both packs to the mother at the front of the line.', zh: '把最後兩份都發給排在最前面的媽媽。', es: 'Entregar ambos paquetes a la mamá que está al frente de la fila.' },
+        consequence: { en: 'The mother thanks you repeatedly and leaves with her children, full of relief. Half an hour later, Mr. Wang walks in, leaning on his cane. Seeing the empty shelves, he smiles gently: "That\'s quite alright. I got a late start today. I\'ll just come a bit earlier tomorrow," and walks slowly back toward the corner.', zh: '媽媽鬆了一口氣，連聲道謝，帶著孩子安心離開。半小時後，王伯伯拄著拐杖走進來，看到空了的貨架，他溫和地笑笑：「沒關係，我今天出門耽擱了，明天早點來。」隨後慢慢走回街角。', es: 'La madre te da las gracias una y otra vez y se va con sus hijos, aliviada. Media hora después, don Wang entra apoyándose en su bastón. Al ver los estantes vacíos, sonríe: "No te preocupes. Hoy se me hizo tarde; mañana vengo más temprano", y regresa despacio a la esquina.' } },
+      { label: { en: 'Reserve one pack for Mr. Wang and give one to the mother.', zh: '保留一份給王伯伯，另一份發給媽媽。', es: 'Guardar un paquete para don Wang y entregarle el otro a la mamá.' },
+        consequence: { en: 'The mother accepts the single pack, glancing at her two growing children with a hint of helplessness, but nods politely and leaves—she will stretch the portions tonight. Before evening, Mr. Wang arrives and accepts the reserved pack, his eyes grateful: "Thank you for remembering these slow legs of mine."', zh: '媽媽接過一份，有些無奈地看著兩個發育中的孩子，仍禮貌地點頭道謝離去，今晚得再想辦法分配。傍晚前，王伯伯準時出現，接過保留的食物包，眼裡滿是感激：「謝謝你還記得我這雙走不快的腿。」', es: 'La madre recibe el único paquete, mira a sus dos hijos con resignación, pero asiente con educación y se marcha; esta noche hará rendir las porciones. Antes del anochecer llega don Wang y recibe el paquete guardado, agradecido: "Gracias por acordarte de estas piernas que ya no corren."' } }
+    ],
+    third_path: {
+      success: { en: 'You gently explain Mr. Wang\'s situation to the mother and ask if she would share one fresh pack, offering extra pantry staples and oatmeal in return. She looks at her children, smiles, and agrees. A neighbor nearby steps forward and places fresh eggs from her own cart into the mother\'s bag. This afternoon, everyone shares a little, and everyone takes home a piece of comfort.', zh: '你溫柔地向媽媽說明王伯伯的情況，問是否能分一份出來，互助站會多打包補給乾糧和孩子喜歡的燕麥片給她。媽媽看了看孩子，微笑著答應了。一位鄰居大姐見狀，從自己的推車拿出一盒雞蛋放進媽媽的袋子。這個午後，每個人都分享了一點點，也各自帶回一點溫暖。', es: 'Le explicas con delicadeza la situación de don Wang a la mamá y le preguntas si compartiría un paquete, ofreciéndole a cambio despensa y avena. Ella mira a sus hijos, sonríe y acepta. Una vecina se acerca y pone huevos frescos de su carrito en la bolsa de la mamá. Esta tarde, todos comparten un poco y todos se llevan algo de calidez.' },
+      fail: { en: 'You softly ask the mother if she could share one pack with an elderly neighbor who moves slower. She tightens her grip on her children\'s hands and whispers, "I\'m so sorry, but my two kids are hungry... we really need both tonight." You smile with understanding, reassure her it is okay, and hand both packs over. Then you turn to the shelves to gather non-perishables for Mr. Wang when he arrives.', zh: '你輕聲問媽媽能否勻出一份給行動不便的長輩。媽媽為難地拉緊孩子的手，低聲說：「對不起，家裡兩個孩子正餓著，這兩份真的很需要……」你理解地微笑，安撫她別放在心上，把兩份交給她。隨後你轉身整理站內物資，為晚點會到的王伯伯多備一些可存放的乾糧。', es: 'Le preguntas con suavidad si compartiría un paquete con un abuelito que camina más despacio. Ella aprieta las manos de sus hijos y susurra: "Lo siento mucho, pero mis dos hijos tienen hambre... hoy necesitamos los dos." Le sonríes con comprensión, le dices que está bien y le entregas ambos. Luego vas a los estantes a reunir algo no perecedero para don Wang.' }
+    },
+    ending_question: { en: 'After seeing everyone\'s different paces and needs today, what does "fairness" look like to you — everyone receiving the same amount, or everyone getting the support they need in that moment?', zh: '看著今天不同的步伐與需求，你覺得「公平」是每個人得到一樣的分量，還是每個人都得到他當下最需要的支持？', es: 'Después de ver hoy los distintos ritmos y necesidades, ¿qué es la "justicia" para ti — que todos reciban lo mismo, o que cada quien reciba el apoyo que necesita en ese momento?' },
+    safety_meta: { reviewed_by: 'human', no_score: true, no_correct_answer: true }
+  };
+
+  function l4Esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  /* 讀 data/the_last_two.json（pipeline 產出）；file:// 取不到時用內建鏡像，離線照樣可玩 */
+  function l4Get(cb) {
+    if (L4DATA) { cb(L4DATA); return; }
+    var url = (C.level4 && C.level4.data) || 'data/the_last_two.json';
+    try {
+      fetch(url, { cache: 'no-store' })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (j) { L4DATA = (j && j.choices) ? j : L4_FALLBACK; cb(L4DATA); })
+        .catch(function () { L4DATA = L4_FALLBACK; cb(L4DATA); });
+    } catch (e) { L4DATA = L4_FALLBACK; cb(L4DATA); }
+  }
+
+  var l4 = null;
+  function startLevel4() {
+    if (window.Sound) Sound.playScene('last2');     // 祥和配樂（register 在 wire）
+    show('level4');
+    document.getElementById('l4end').classList.add('hidden');
+    document.getElementById('l4title').textContent = '';
+    l4Get(function (D) {
+      l4 = { data: D };
+      document.getElementById('l4leave').textContent = T('toHub');
+      document.getElementById('l4title').textContent = L(D.title);
+      l4LoadScene();
+      l4Show({ s: 'scene' });
+    });
+  }
+
+  /* 背景圖＋角色立繪（基底檔名 → resolveImg 自動找副檔名；載不到就不顯示，純氛圍） */
+  function l4LoadScene() {
+    var meta = C.level4 || {};
+    var bg = document.getElementById('l4bg');
+    if (meta.img) resolveImg(meta.img, function (u) { if (u) bg.style.backgroundImage = "url('" + u + "')"; });
+    var cast = document.getElementById('l4cast'); cast.innerHTML = '';
+    var order = ['mother', 'packages', 'elder'];
+    order.forEach(function (role, i) {
+      var base = meta.cast && meta.cast[role];
+      if (!base) return;
+      var f = document.createElement('div'); f.className = 'l4fig ' + role; f.id = 'l4fig_' + role;
+      cast.appendChild(f);
+      resolveImg(base, function (u) {
+        if (!u) return;
+        f.style.backgroundImage = "url('" + u + "')";
+        setTimeout(function () { f.classList.add('show'); }, 140 + i * 240);
+      });
+    });
+  }
+
+  function l4Card(html) {
+    var c = document.getElementById('l4card');
+    c.classList.remove('fade'); void c.offsetWidth;
+    c.innerHTML = html;
+    c.classList.add('fade'); c.scrollTop = 0;
+    return c;
+  }
+
+  /* 單一視圖派發：view 記在 l4.view，切語言時 l4Relabel 可原地重繪當前卡片。
+     view: {s:'scene'} | {s:'outcome', i} | {s:'third', ok} | {s:'reflect'} */
+  function l4Show(view) {
+    l4.view = view;
+    if (view.s === 'scene') return l4RenderScene();
+    if (view.s === 'reflect') return l4RenderReflection();
+    // outcome（來自某個選項）或 third（第三條路成功/婉拒）
+    var D = l4.data, text, lead;
+    if (view.s === 'third') {
+      var tp = D.third_path || {};
+      text = L(view.ok ? tp.success : tp.fail); lead = T('l4ThirdTry');
+    } else {
+      text = L((D.choices || [])[view.i] && (D.choices || [])[view.i].consequence); lead = T('l4Outcome');
+    }
+    l4Card('<div class="l4lead">' + l4Esc(lead) + '</div>' +
+      '<div class="l4text">' + l4Esc(text) + '</div>' +
+      '<div class="l4cont"><button class="btn" id="l4next">' + l4Esc(T('l4Continue')) + '</button></div>');
+    document.getElementById('l4next').addEventListener('click', function () { l4Show({ s: 'reflect' }); });
+  }
+
+  /* 場景文字 ＋ 兩個等價選項 ＋ 第三條路入口（無好壞色、無分數、無排名） */
+  function l4RenderScene() {
+    var D = l4.data;
+    var c = l4Card('<div class="l4text">' + l4Esc(L(D.scene)) + '</div><div class="l4btns" id="l4btns"></div>');
+    var box = c.querySelector('#l4btns');
+    var lead = document.createElement('div'); lead.className = 'l4lead'; lead.textContent = T('l4Choose');
+    box.appendChild(lead);
+    (D.choices || []).forEach(function (ch, idx) {
+      var b = document.createElement('button'); b.className = 'l4btn';
+      b.textContent = L(ch.label);
+      b.addEventListener('click', function () {
+        if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {}
+        l4Show({ s: 'outcome', i: idx });
+      });
+      box.appendChild(b);
+    });
+    var tp = document.createElement('button'); tp.className = 'l4btn third';
+    tp.textContent = T('l4ThirdPath');
+    tp.addEventListener('click', l4ThirdPath);
+    box.appendChild(tp);
+  }
+
+  /* 第三條路：成功 / 溫柔婉拒（隨機決定一次；兩者都沒有對錯，fail 不是懲罰） */
+  function l4ThirdPath() {
+    var ok = Math.random() < 0.5;
+    if (ok) {                                        // 成功版 → 鄰居大姐入畫（純氛圍）
+      var base = C.level4 && C.level4.cast && C.level4.cast.neighbor;
+      if (base && !document.getElementById('l4fig_neighbor')) {
+        var nf = document.createElement('div'); nf.className = 'l4fig neighbor'; nf.id = 'l4fig_neighbor';
+        document.getElementById('l4cast').appendChild(nf);
+        resolveImg(base, function (u) { if (u) { nf.style.backgroundImage = "url('" + u + "')"; setTimeout(function () { nf.classList.add('show'); }, 120); } });
+      }
+    }
+    if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {}
+    l4Show({ s: 'third', ok: ok });
+  }
+
+  /* 反思問句：只呈現、不收答案、無正確解 */
+  function l4RenderReflection() {
+    var D = l4.data;
+    l4Card('<div class="l4reflect">' +
+      '<div class="l4lead">' + l4Esc(T('l4Reflect')) + '</div>' +
+      '<div class="l4text">' + l4Esc(L(D.ending_question)) + '</div>' +
+      '<div class="l4note">' + l4Esc(T('l4ReflectNote')) + '</div></div>' +
+      '<div class="l4cont"><button class="btn" id="l4done">' + l4Esc(T('l4Continue')) + '</button></div>');
+    document.getElementById('l4done').addEventListener('click', l4End);
+  }
+
+  /* 切語言時原地重繪（標題、離開鈕、當前卡片、結算卡） */
+  function l4Relabel() {
+    if (!l4) return;
+    document.getElementById('l4leave').textContent = T('toHub');
+    document.getElementById('l4title').textContent = L(l4.data.title);
+    if (!document.getElementById('l4end').classList.contains('hidden')) { l4End(); return; }
+    if (l4.view) l4Show(l4.view);
+  }
+
+  function l4End() {
+    SAVE.lit[C.level4.id] = true; persist();          // 那一區在地圖上開花（完成標記，非分數）
+    document.getElementById('l4endTitle').textContent = L(l4.data.title);
+    document.getElementById('l4plant').innerHTML = plantSVG(SAVE.sprout.growth, 130);
+    document.getElementById('l4endLine').textContent = T('l4ReflectNote');
+    document.getElementById('l4again').textContent = T('l4Again');
+    document.getElementById('l4hub').textContent = T('toHub');
+    applyFeedback();
+    document.getElementById('l4end').classList.remove('hidden');
   }
 
   /* ===================================================================
@@ -1748,6 +1934,13 @@
     document.getElementById('l3leave').addEventListener('click', function () { returnToHub(); });
     document.getElementById('l3again').addEventListener('click', startLevel3);
     document.getElementById('l3hub').addEventListener('click', function () { Stillness.open(returnToHub); });
+    // 關4 · 道德兩難「最後兩份」
+    if (C.level4) {
+      Sound.register('last2', C.level4.music, 0.22, false);
+      document.getElementById('l4leave').addEventListener('click', function () { returnToHub(); });
+      document.getElementById('l4again').addEventListener('click', startLevel4);
+      document.getElementById('l4hub').addEventListener('click', function () { Stillness.open(returnToHub); });
+    }
 
     // 底部面板收合
     document.getElementById('panelTab').addEventListener('click', function () {
