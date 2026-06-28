@@ -213,31 +213,34 @@
     <div id="l4title"></div>
     <button id="l4leave"></button>
   </div>
-  <!-- 上方：今天還剩的物資（fresh 會見底） -->
-  <div id="l4pantryWrap">
-    <div id="l4pantryHead"><span id="l4pantryLabel"></span><span id="l4freshTag"></span></div>
-    <div id="l4pantry"></div>
-  </div>
-  <!-- 中段：當前客人（圖＋對白＋多問一句） -->
-  <div id="l4guest">
-    <div id="l4guestArt"></div>
-    <div id="l4guestPanel">
-      <div id="l4guestName"></div>
-      <div id="l4dialogue"></div>
-      <button id="l4askMore" class="l4mini hidden"></button>
+  <!-- flex 直欄：物資（可換行）→ 客人 → 關懷包；不擋頂列/HUD，矮畫面也排得下 -->
+  <div id="l4main">
+    <!-- 上方：今天的物資（每樣自己一份；會變多 → 自動換行） -->
+    <div id="l4pantryWrap">
+      <div id="l4pantryHead"><span id="l4pantryLabel"></span></div>
+      <div id="l4pantry"></div>
+    </div>
+    <!-- 中段：當前客人（圖＋對白＋多問一句） -->
+    <div id="l4guest">
+      <div id="l4guestArt"></div>
+      <div id="l4guestPanel">
+        <div id="l4guestName"></div>
+        <div id="l4dialogue"></div>
+        <button id="l4askMore" class="l4mini hidden"></button>
+      </div>
+    </div>
+    <!-- 下方：關懷包（湊）＋送出 -->
+    <div id="l4bagWrap">
+      <div id="l4bagHead"></div>
+      <div id="l4bag"></div>
+      <div id="l4actions"></div>   <!-- 送出關懷包，JS 注入 -->
     </div>
   </div>
-  <!-- 下方：關懷包（湊）＋行動鈕 -->
-  <div id="l4bagWrap">
-    <div id="l4bagHead"></div>
-    <div id="l4bag"></div>
-    <div id="l4actions"></div>   <!-- 送出關懷包，JS 注入 -->
-  </div>
-  <!-- 稀缺時刻：送出含新鮮、會讓晚到者拿不到新鮮時，必經此關（跳不過） -->
+  <!-- 稀缺時刻：送出含「最後一份新鮮、且別人也想要」時，必經此關（跳不過）。三個等價選項。 -->
   <div id="l4scarcity" class="hidden">
     <div class="l4sc-card">
       <div id="l4scLine" class="l4sc-line"></div>
-      <button id="l4scBroker" class="l4act broker"></button>
+      <div id="l4scOpts"></div>   <!-- 三個選項，JS 注入 -->
     </div>
   </div>
   <div id="l4end" class="hidden">

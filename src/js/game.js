@@ -1556,7 +1556,12 @@
         arrive: { en: 'A tired night-shift worker stops by on the way to a long shift.', zh: '一位疲憊的夜班工作者，趕著上整夜的班，路過進來。', es: 'Un trabajador del turno noche se detiene camino a una larga jornada.' },
         need_surface: { en: '"Something quick I can take with me?"', zh: '「有沒有能帶著走、馬上吃的？」', es: '"¿Algo rápido que me pueda llevar?"' },
         need_deep: { en: '"Something to get me through till morning, no time to cook."', zh: '「能撐到天亮就好，沒時間煮。」', es: '"Algo que me aguante hasta la mañana, sin tiempo de cocinar."' },
-        thanks: { en: 'A grateful nod: "This\'ll keep me going. Thank you."', zh: '他感激地點頭：「這夠我撐過去了，謝謝。」', es: 'Asiente agradecido: "Esto me mantendrá. Gracias."' } }
+        thanks: { en: 'A grateful nod: "This\'ll keep me going. Thank you."', zh: '他感激地點頭：「這夠我撐過去了，謝謝。」', es: 'Asiente agradecido: "Esto me mantendrá. Gracias."' } },
+      { id: 'young_parent', art: 'last2_neighbor', needs_fresh: false, satisfied_by: ['baby'],
+        arrive: { en: 'A young parent comes in, a baby asleep in their arms.', zh: '一位年輕的爸爸／媽媽走進來，懷裡的寶寶睡著了。', es: 'Llega un joven con su bebé dormido en brazos.' },
+        need_surface: { en: '"Anything for the little one?"', zh: '「有沒有適合小寶寶的？」', es: '"¿Hay algo para el bebé?"' },
+        need_deep: { en: '"Formula or baby rice — that\'s what we\'re short on."', zh: '「奶粉或米粉，就缺這個。」', es: '"Fórmula o cereal de arroz — es lo que nos falta."' },
+        thanks: { en: 'They cradle the baby, relieved: "Exactly what we needed. Thank you."', zh: '他輕輕搖著寶寶，鬆了一口氣：「這正是我們需要的，謝謝。」', es: 'Mece al bebé, aliviado: "Justo lo que necesitábamos. Gracias."' } }
     ],
     broker: {
       prompt: { en: "Quietly ask the mother if she'd be willing to share one fresh pack.", zh: '輕聲問媽媽，願不願意分一份新鮮的出來。', es: 'Pregúntale en voz baja a la madre si querría compartir un paquete fresco.' },
@@ -1590,35 +1595,59 @@
   function l4Meta() { return C.level4 || {}; }
   function l4ItemById(id) { return (l4Meta().pantry || []).filter(function (p) { return p.id === id; })[0]; }
   function l4IsFresh(id) { var p = l4ItemById(id); return !!(p && p.fresh); }
-  function l4BagFresh() { return l4.bag.filter(l4IsFresh).length; }
-  function l4FreshRemain() {
-    var cap = (l4Meta().stock && l4Meta().stock.fresh) || 0;
-    return Math.max(0, cap - l4.freshUsed - l4BagFresh());
+  function l4IdxOf(arr, id) { for (var i = 0; i < arr.length; i++) if (arr[i].id === id) return i; return -1; }
+  function l4Rand(rng) { var a = (rng && rng[0]) || 0, b = (rng && rng[1] != null) ? rng[1] : a; return a + Math.floor(Math.random() * (b - a + 1)); }
+  function l4HasYoungParent() { return !!(l4 && l4.queue && l4.queue.some(function (g) { return g.id === 'young_parent'; })); }
+  /* 上架的物資：嬰幼兒款（baby）只有年輕父母在場才上架，避免無謂格子 */
+  function l4Pantry() {
+    var yp = l4HasYoungParent();
+    return (l4Meta().pantry || []).filter(function (p) { return yp || !p.baby; });
   }
+  /* 每樣自己的剩餘＝庫存 − 是否已放進袋（袋裡同一樣只放一次） */
+  function l4Remain(id) { return (l4.stock[id] || 0) - (l4.bag.indexOf(id) !== -1 ? 1 : 0); }
   function l4BagTags() {
     var set = {};
     l4.bag.forEach(function (id) { var p = l4ItemById(id); (p && p.tags || []).forEach(function (t) { set[t] = true; }); });
     return set;
   }
-  function l4Satisfied(g) {
+  function l4Prefers(g, p) {                 // 客人是否偏好某物資（satisfied_by ∩ item.tags）
+    var pref = g && g.satisfied_by || [], tags = p && p.tags || [];
+    return pref.some(function (t) { return tags.indexOf(t) !== -1; });
+  }
+  function l4Satisfied(g) {                   // 關懷包是否含到客人偏好的 tag
     var tags = l4BagTags();
     return (g.satisfied_by || []).some(function (t) { return !!tags[t]; });
   }
-  function l4IdxOf(arr, id) { for (var i = 0; i < arr.length; i++) if (arr[i].id === id) return i; return -1; }
-  function l4LaterFreshNeeders() {     // 排在「當前這位」之後、尚未服務、且需要新鮮的客人數
-    return l4.queue.slice(l4.idx + 1).filter(function (g) { return g.needs_fresh; }).length;
+  function l4Strict(g) {                      // 專一需求（如嬰兒只吃 baby）：偏好沒被配到就不能送
+    var strict = l4Meta().strictTags || [];
+    return (g.satisfied_by || []).some(function (t) { return strict.indexOf(t) !== -1; });
   }
-  /* 稀缺攔截：把含新鮮的關懷包送出，會讓後面某位需要新鮮的客人「拿不到任何新鮮」→ 必經斡旋。
-     已歷過斡旋（brokerChoice 已定）就放行；沒放新鮮、或後面沒有 fresh-needer 也放行。 */
+  /* 開局發每日庫存：fresh 隨機 0~2、staple 隨機 3~5、baby（在場才上架）保證夠；
+     guaranteeContested → 留一樣 fresh+soft（媽媽與王伯伯都偏好）剩 1 份，斡旋每局可成立。 */
+  function l4InitStock() {
+    var plan = l4Meta().stockPlan || {}, stock = {}, shelved = l4Pantry();
+    shelved.forEach(function (p) {
+      stock[p.id] = p.baby ? l4Rand(plan.babyEach || [2, 4])
+        : (p.fresh ? l4Rand(plan.freshEach || [0, 2]) : l4Rand(plan.stapleEach || [3, 5]));
+    });
+    if (plan.guaranteeContested) {
+      var soft = shelved.filter(function (p) { return p.fresh && (p.tags || []).indexOf('soft') !== -1; });
+      if (soft.length) stock[soft[0].id] = 1;
+    }
+    return stock;
+  }
+  /* 稀缺攔截：把「某樣最後 1 份新鮮」放進包要送出，而後面有未服務客人也偏好它 → 回傳那樣（必經斡旋）。
+     已歷過斡旋（brokerChoice 已定）就放行。回傳 null = 不攔截。 */
   function l4ScarcityHit(g) {
-    if (l4.brokerChoice) return false;
-    if (!g || !g.needs_fresh || !l4.data.broker) return false;
-    var bagFresh = l4BagFresh();
-    if (bagFresh < 1) return false;
-    var cap = (l4Meta().stock && l4Meta().stock.fresh) || 0;
-    var afterRemain = cap - l4.freshUsed - bagFresh;   // 送出後剩餘新鮮
-    var later = l4LaterFreshNeeders();
-    return later >= 1 && afterRemain < later;          // 至少一位後面的 needs_fresh 會拿不到新鮮
+    if (l4.brokerChoice || !g || !l4.data.broker) return null;
+    for (var i = 0; i < l4.bag.length; i++) {
+      var p = l4ItemById(l4.bag[i]);
+      if (!p || !p.fresh) continue;
+      if ((l4.stock[p.id] || 0) !== 1) continue;      // 不是最後一份就不算搶
+      var later = l4.queue.slice(l4.idx + 1).some(function (gg) { return l4Prefers(gg, p); });
+      if (later) return p;
+    }
+    return null;
   }
 
   var l4 = null;
@@ -1630,19 +1659,23 @@
     document.getElementById('l4scarcity').classList.add('hidden');
     document.getElementById('l4title').textContent = '';
     l4Get(function (D) {
-      var meta = l4Meta();
-      var pool = (D.guests || []).slice();
-      var n = meta.guestCount || pool.length;
-      if (meta.shuffle) shuffle(pool);                 // Phase B：隨機抽選/排列
-      var q = pool.slice(0, n);
-      // 「晚到的長者」永遠排在「分享者媽媽」之後，斡旋敘事（媽媽替晚到者分一份）才成立
-      var iM = l4IdxOf(q, 'mother'), iE = l4IdxOf(q, 'elder');
+      var meta = l4Meta(), guests = D.guests || [];
+      // 媽媽＋王伯伯固定（斡旋爭點那對）；其餘（夜班工作者／年輕父母）每局隨機補位 → 生→老輪替
+      var byId = {}; guests.forEach(function (g) { byId[g.id] = g; });
+      var required = []; ['mother', 'elder'].forEach(function (id) { if (byId[id]) required.push(byId[id]); });
+      var optional = guests.filter(function (g) { return required.indexOf(g) === -1; });
+      if (meta.shuffle) shuffle(optional);
+      var n = meta.guestCount || guests.length;
+      var q = required.concat(optional).slice(0, n);
+      if (meta.shuffle) shuffle(q);
+      var iM = l4IdxOf(q, 'mother'), iE = l4IdxOf(q, 'elder');   // 王伯伯（晚到）永遠排在媽媽（分享者）之後
       if (iM > -1 && iE > -1 && iM > iE) { var t = q[iM]; q[iM] = q[iE]; q[iE] = t; }
       l4 = {
-        data: D, queue: q, idx: 0, guest: null,
+        data: D, queue: q, idx: 0, guest: null, stock: {},
         bag: [], asked: false, sys: '', pendingGuide: '',
-        freshUsed: 0, served: 0, brokerChoice: null, ended: false
+        served: 0, brokerChoice: null, contested: null, ended: false
       };
+      l4.stock = l4InitStock();                         // 每日庫存（依 queue 是否含年輕父母決定是否上架嬰兒款）
       document.getElementById('l4leave').textContent = T('toHub');
       document.getElementById('l4title').textContent = L(D.title);
       l4LoadBg();
@@ -1658,6 +1691,7 @@
   }
 
   function l4NextGuest() {
+    l4.busy = false;
     if (l4.idx >= l4.queue.length) { l4Finish(); return; }
     l4.guest = l4.queue[l4.idx];
     l4.bag = []; l4.asked = false;
@@ -1694,23 +1728,17 @@
     ask.onclick = function () { l4.asked = true; if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {} l4RenderGuest(); };
   }
 
-  /* 物資列：fresh 共用額度會見底；點 → 放進關懷包 */
+  /* 物資列：每樣自己一份、各自顯示剩餘、各自變灰；點 → 放進關懷包 */
   function l4RenderPantry() {
-    var meta = l4Meta();
     document.getElementById('l4pantryLabel').textContent = T('l4Pantry');
-    var remain = l4FreshRemain();
-    var tag = document.getElementById('l4freshTag');
-    tag.textContent = '🧺 ' + T('l4FreshLeft') + ' ' + remain;
-    tag.classList.toggle('low', remain === 1);
-    tag.classList.toggle('out', remain === 0);
     var row = document.getElementById('l4pantry'); row.innerHTML = '';
-    (meta.pantry || []).forEach(function (p) {
-      var fresh = !!p.fresh, gone = fresh && remain <= 0;
+    l4Pantry().forEach(function (p) {
+      var remain = l4Remain(p.id), gone = remain <= 0;
       var el = document.createElement('div');
-      el.className = 'l4item' + (fresh ? ' fresh' : '') + (gone ? ' gone' : '');
+      el.className = 'l4item' + (p.fresh ? ' fresh' : '') + (p.baby ? ' baby' : '') + (gone ? ' gone' : '');
       el.innerHTML = '<span class="l4ico">' + (p.icon || '🧺') + '</span>' +
         '<span class="l4nm">' + l4Esc(L(p.name)) + '</span>' +
-        (fresh ? '<span class="l4cnt">' + remain + '</span>' : '');
+        '<span class="l4cnt">' + Math.max(0, remain) + '</span>';
       el.addEventListener('click', function () { l4Add(p.id); });
       row.appendChild(el);
     });
@@ -1718,7 +1746,7 @@
 
   function l4Add(id) {
     if (l4.bag.indexOf(id) !== -1) return;            // 同一樣只放一次
-    if (l4IsFresh(id) && l4FreshRemain() <= 0) { if (window.Sound && Sound.soft) try { Sound.soft(); } catch (e) {} flash('🤍 ' + T('l4FreshOut')); return; }
+    if (l4Remain(id) <= 0) { if (window.Sound && Sound.soft) try { Sound.soft(); } catch (e) {} flash('🤍 ' + T('l4FreshOut')); return; }
     l4.bag.push(id);
     if (window.Sound && Sound.pick) try { Sound.pick(); } catch (e) {}
     l4RenderPantry(); l4RenderBag(); l4RenderActions();
@@ -1754,56 +1782,71 @@
     box.appendChild(give);
   }
 
-  /* 稀缺時刻：必經的小覆蓋層（點題＋唯一出路＝跟媽媽聊聊分一份）。跳不過。 */
-  function l4OpenScarcity() {
-    var late = l4.queue.slice(l4.idx + 1).filter(function (g) { return g.needs_fresh; })[0];
+  /* 稀缺時刻：必經的小覆蓋層（點題＋三個等價選項）。跳不過；三條都讓人人被照顧、回饋一致。 */
+  function l4OpenScarcity(item) {
+    l4.contested = item;
+    var late = l4.queue.slice(l4.idx + 1).filter(function (g) { return l4Prefers(g, item); })[0];
     var name = (late && late.name) ? L(late.name) : T('l4SomeoneLate');
     document.getElementById('l4scLine').textContent = (T('l4ScarcityLine') || '').replace('{name}', name);
-    var btn = document.getElementById('l4scBroker');
-    btn.textContent = L(l4.data.broker.prompt);
-    btn.onclick = l4Broker;
+    var box = document.getElementById('l4scOpts'); box.innerHTML = '';
+    function opt(label, fn) {
+      var b = document.createElement('button'); b.className = 'l4act broker';
+      b.textContent = label; b.addEventListener('click', fn); box.appendChild(b);
+    }
+    opt(L(l4.data.broker.prompt), l4BrokerAsk);                                   // 1. 問對方讓給另一位（隨機）
+    opt(T('l4OptGiveCurrent'), function () { l4ApplyBroker('keep', false); });    // 2. 給這位、幫另一位用其他物資湊
+    opt(T('l4OptGiveLate'), function () { l4ApplyBroker('yield', false); });      // 3. 留給晚到的、幫這位用其他物資湊
     document.getElementById('l4scarcity').classList.remove('hidden');
     if (window.Sound && Sound.soft) try { Sound.soft(); } catch (e) {}
   }
 
-  /* 斡旋：問媽媽要不要分一份 → 隨機 同意/婉拒；兩條都有路、回饋一致。
-     歷過後 brokerChoice 已定，回到主畫面讓玩家把袋子湊好再送出（送出不再被攔）。 */
-  function l4Broker() {
-    document.getElementById('l4scarcity').classList.add('hidden');
-    var b = l4.data.broker || {};
-    var agree = Math.random() < 0.5;
-    l4.brokerChoice = agree ? 'agree' : 'decline';
-    if (agree) {
-      // 她留一份新鮮給晚到的人 → 用乾糧補滿（保留袋中既有乾糧，新鮮固定 1 份）
-      var staples = l4.bag.filter(function (id) { return !l4IsFresh(id); });
-      var freshes = l4.bag.filter(l4IsFresh);
-      l4.bag = (freshes.length ? [freshes[0]] : ['bread']).concat(staples);
-      l4.sys = L(b.agree);
-    } else {
-      // 她今晚兩份新鮮都需要 → 幫她裝滿兩份；晚到的王伯伯改用乾糧留一份
-      l4.bag = ['bread', 'fruit'];
-      l4.sys = L(b.decline);
-      l4.pendingGuide = L(b.setaside);
-    }
-    if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {}
-    l4RenderGuest(); l4RenderPantry(); l4RenderBag(); l4RenderActions();
+  /* 選項1：問對方 → 隨機 同意(讓給晚到的=yield)/婉拒(自己留=keep)，結果在覆蓋層明確顯示 */
+  function l4BrokerAsk() {
+    l4ApplyBroker(Math.random() < 0.5 ? 'yield' : 'keep', true);
   }
 
-  /* 給出關懷包：稀缺成立 → 攔截進斡旋（跳不過）；合適 → 道謝＋回饋＋存檔＋下一位；
-     不合 → 溫柔提示（不是答錯、不懲罰） */
+  /* 套用斡旋結果。yield＝這份留給晚到的那位、當前這位用其他物資；keep＝這份給當前這位、晚到的用其他物資。
+     歷過後 brokerChoice 已定，回主畫面讓玩家把袋子湊好再送出（不再被攔）。回饋一致。 */
+  function l4ApplyBroker(mode, viaAsk) {
+    var b = l4.data.broker || {};
+    l4.brokerChoice = mode;
+    if (mode === 'yield') {
+      if (l4.contested) l4.bag = l4.bag.filter(function (id) { return id !== l4.contested.id; }); // 這份不被當前這位帶走
+      l4.sys = viaAsk ? L(b.agree) : T('l4YieldConfirm');
+      l4.pendingGuide = '';                                  // 晚到的那位之後自然拿到這份新鮮
+    } else {                                                 // keep
+      l4.sys = viaAsk ? L(b.decline) : T('l4KeepConfirm');
+      l4.pendingGuide = L(b.setaside);                       // 晚到的那位 → 用其他物資湊一份留著
+    }
+    if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {}
+    function close() {
+      document.getElementById('l4scarcity').classList.add('hidden');
+      l4RenderGuest(); l4RenderPantry(); l4RenderBag(); l4RenderActions();
+    }
+    if (viaAsk) {   // 隨機結果先「明確顯示」在覆蓋層上，再收掉
+      document.getElementById('l4scOpts').innerHTML = '<div class="l4sc-result">' + l4Esc(l4.sys) + '</div>';
+      setTimeout(close, 1600);
+    } else { close(); }
+  }
+
+  /* 給出關懷包：稀缺成立 → 攔截進斡旋（跳不過）；嬰兒等專一需求未配到 → 溫柔重試；
+     配到偏好 → 暖暖道謝；只剩乾糧 → 誠實溫柔一句。都給回饋、都不是失敗。 */
   function l4Give() {
-    var g = l4.guest; if (!g || !l4.bag.length) return;
-    if (l4ScarcityHit(g)) { l4OpenScarcity(); return; }   // 稀缺一刻，必經斡旋
-    if (!l4Satisfied(g)) {
+    var g = l4.guest; if (!g || !l4.bag.length || l4.busy) return;   // busy：送出後過場中，擋連點重複送
+    var hit = l4ScarcityHit(g);
+    if (hit) { l4OpenScarcity(hit); return; }                // 稀缺一刻，必經斡旋
+    var matched = l4Satisfied(g);
+    if (!matched && l4Strict(g)) {                           // 嬰兒只吃 baby，乾糧不能充數
       if (window.Sound && Sound.soft) try { Sound.soft(); } catch (e) {}
-      flash('🤍 ' + T('l4Hint'));
+      flash('🍼 ' + T('l4BabyHint'));
       return;
     }
-    // 提交：新鮮被這位帶走的份額落地
-    l4.freshUsed += l4BagFresh();
-    // 道謝
-    l4.sys = L(g.thanks);
-    l4RenderGuest();
+    // 提交：消耗各自庫存；立刻清空袋子＋上鎖，避免過場中重複送出（連點/快點）
+    l4.busy = true;
+    l4.bag.forEach(function (id) { l4.stock[id] = Math.max(0, (l4.stock[id] || 0) - 1); });
+    l4.bag = [];
+    l4.sys = matched ? L(g.thanks) : T('l4StapleOnly');     // 配到偏好→暖；只剩乾糧→誠實一句
+    l4RenderGuest(); l4RenderBag(); l4RenderActions();
     if (window.Sound) { try { (Sound.success ? Sound.success(0) : Sound.coin && Sound.coin()); } catch (e) {} }
     // 回饋：沿用既有世界數值（每照顧一人 = perHome），存得住
     var R = l4Meta().perGuestReward || C.perHome;
@@ -1847,7 +1890,7 @@
     if (!l4) return;
     if (!document.getElementById('l4end').classList.contains('hidden')) { l4ShowEnd(); return; }
     l4RenderAll();
-    if (!document.getElementById('l4scarcity').classList.contains('hidden')) l4OpenScarcity();
+    if (!document.getElementById('l4scarcity').classList.contains('hidden') && l4.contested) l4OpenScarcity(l4.contested);
   }
 
   /* ===================================================================

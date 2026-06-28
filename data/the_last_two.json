@@ -32,6 +32,14 @@
       "need_surface": { "en": "\"Something quick I can take with me?\"", "zh": "「有沒有能帶著走、馬上吃的？」", "es": "\"¿Algo rápido que me pueda llevar?\"" },
       "need_deep": { "en": "\"Something to get me through till morning, no time to cook.\"", "zh": "「能撐到天亮就好，沒時間煮。」", "es": "\"Algo que me aguante hasta la mañana, sin tiempo de cocinar.\"" },
       "thanks": { "en": "A grateful nod: \"This'll keep me going. Thank you.\"", "zh": "他感激地點頭：「這夠我撐過去了，謝謝。」", "es": "Asiente agradecido: \"Esto me mantendrá. Gracias.\"" }
+    },
+    {
+      "id": "young_parent", "art": "last2_neighbor", "needs_fresh": false,
+      "satisfied_by": ["baby"],
+      "arrive": { "en": "A young parent comes in, a baby asleep in their arms.", "zh": "一位年輕的爸爸／媽媽走進來，懷裡的寶寶睡著了。", "es": "Llega un joven con su bebé dormido en brazos." },
+      "need_surface": { "en": "\"Anything for the little one?\"", "zh": "「有沒有適合小寶寶的？」", "es": "\"¿Hay algo para el bebé?\"" },
+      "need_deep": { "en": "\"Formula or baby rice — that's what we're short on.\"", "zh": "「奶粉或米粉，就缺這個。」", "es": "\"Fórmula o cereal de arroz — es lo que nos falta.\"" },
+      "thanks": { "en": "They cradle the baby, relieved: \"Exactly what we needed. Thank you.\"", "zh": "他輕輕搖著寶寶，鬆了一口氣：「這正是我們需要的，謝謝。」", "es": "Mece al bebé, aliviado: \"Justo lo que necesitábamos. Gracias.\"" }
     }
   ],
   "broker": {

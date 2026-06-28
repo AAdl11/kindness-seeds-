@@ -776,33 +776,38 @@ body.screen-level #milestones{display:none;}
 #l4top{position:absolute;top:0;left:0;right:0;z-index:30;display:flex;justify-content:center;align-items:center;padding:10px 12px;pointer-events:none;}
 #l4title{pointer-events:auto;background:rgba(36,22,44,.58);color:#fff;font-weight:800;font-size:14px;padding:7px 14px;border-radius:999px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
 #l4leave{position:fixed;left:calc(12px + env(safe-area-inset-left));top:calc(54px + env(safe-area-inset-top));z-index:95;pointer-events:auto;background:rgba(255,255,255,.2);color:#fff;border-radius:999px;padding:7px 13px;font-weight:800;font-size:13px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
-/* 上方：今天還剩的物資（fresh 會見底） */
-#l4pantryWrap{position:absolute;left:8px;right:8px;top:calc(96px + env(safe-area-inset-top));z-index:22;}
-#l4pantryHead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 4px 6px;}
+/* flex 直欄主容器：物資→客人→關懷包，矮畫面也排得下，且不擋頂列/HUD */
+#l4main{position:absolute;left:0;right:0;top:calc(90px + env(safe-area-inset-top));bottom:0;z-index:18;
+  display:flex;flex-direction:column;min-height:0;padding:0 8px calc(8px + env(safe-area-inset-bottom));}
+/* 上方：今天的物資（每樣自己一份；變多 → 自動換行成多排） */
+#l4pantryWrap{flex:0 0 auto;min-height:0;}
+#l4pantryHead{display:flex;align-items:center;gap:8px;margin:0 4px 4px;}
 #l4pantryLabel{color:#fff;font-weight:800;font-size:12.5px;text-shadow:0 1px 3px rgba(0,0,0,.4);}
-#l4freshTag{font-weight:800;font-size:12px;padding:3px 10px;border-radius:999px;background:rgba(120,180,110,.85);color:#10240c;white-space:nowrap;}
-#l4freshTag.low{background:rgba(240,190,90,.92);color:#3a2706;}
-#l4freshTag.out{background:rgba(210,120,120,.9);color:#fff;}
-#l4pantry{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 6px;-webkit-overflow-scrolling:touch;}
-.l4item{flex:0 0 auto;min-width:64px;background:rgba(255,255,255,.92);border-radius:14px;padding:8px 10px;
-  display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border:2px solid transparent;
-  box-shadow:0 4px 10px rgba(0,0,0,.26);transition:transform .12s,box-shadow .18s;}
-.l4item:active{transform:scale(.96);}
-.l4item .l4ico{font-size:1.5rem;line-height:1;}
-.l4item .l4nm{font-size:10.5px;font-weight:800;color:#43373f;text-align:center;line-height:1.15;white-space:nowrap;}
+#l4pantry{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;align-content:flex-start;
+  max-height:30vh;overflow-y:auto;padding:2px;}
+.l4item{flex:0 0 auto;width:62px;background:rgba(255,255,255,.92);border-radius:13px;padding:6px 6px 5px;
+  display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;border:2px solid transparent;
+  box-shadow:0 4px 10px rgba(0,0,0,.26);transition:transform .12s,box-shadow .18s;position:relative;}
+.l4item:active{transform:scale(.95);}
+.l4item .l4ico{font-size:1.4rem;line-height:1;}
+.l4item .l4nm{font-size:9.5px;font-weight:800;color:#43373f;text-align:center;line-height:1.12;}
 .l4item.fresh{border-color:#bfe3a8;}
-.l4item.gone{opacity:.34;pointer-events:none;filter:grayscale(.7);}
-.l4item .l4cnt{font-size:10px;font-weight:800;color:#2f6b1f;}
+.l4item.baby{border-color:#f3c6d8;}
+.l4item.gone{opacity:.32;pointer-events:none;filter:grayscale(.75);}
+.l4item .l4cnt{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;border-radius:9px;
+  background:#3a2c44;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 4px;
+  box-shadow:0 2px 5px rgba(0,0,0,.3);}
+.l4item.fresh .l4cnt{background:#2f6b1f;}
+.l4item.gone .l4cnt{background:#7a7280;}
 /* 中段：當前客人（圖＋對白＋多問一句） */
-#l4guest{position:absolute;left:10px;right:10px;top:198px;bottom:190px;z-index:18;
-  display:flex;align-items:center;gap:14px;}
-#l4guestArt{flex:0 0 auto;width:clamp(110px,30vw,210px);align-self:flex-end;height:96%;
+#l4guest{flex:1 1 auto;min-height:0;display:flex;align-items:center;gap:12px;padding:6px 2px;}
+#l4guestArt{flex:0 0 auto;width:clamp(96px,26vw,200px);align-self:flex-end;height:100%;max-height:42vh;
   background-size:contain;background-position:center bottom;background-repeat:no-repeat;
   filter:drop-shadow(0 6px 12px rgba(0,0,0,.36));opacity:0;transform:translateY(12px);transition:opacity .7s ease,transform .7s ease;}
 #l4guestArt.show{opacity:1;transform:translateY(0);}
-#l4guestPanel{flex:1 1 auto;max-width:min(72vw,520px);background:rgba(28,18,34,.8);color:#fff;border-radius:16px;
-  padding:13px 15px;box-shadow:0 12px 30px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.12);
-  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);max-height:100%;overflow-y:auto;}
+#l4guestPanel{flex:1 1 auto;max-width:min(74vw,520px);max-height:100%;overflow-y:auto;background:rgba(28,18,34,.82);color:#fff;border-radius:16px;
+  padding:12px 14px;box-shadow:0 12px 30px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.12);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
 #l4guestName{font-size:12px;font-weight:800;color:#ffd98a;margin-bottom:4px;}
 #l4dialogue{font-size:clamp(13px,3.3vw,15px);line-height:1.55;color:#f3eef7;white-space:pre-line;}
 #l4dialogue .deep{display:block;margin-top:7px;color:#ffe9bd;}
@@ -810,18 +815,16 @@ body.screen-level #milestones{display:none;}
 .l4mini{margin-top:10px;background:rgba(255,236,180,.14);color:#ffe9bd;border:1px solid rgba(255,224,150,.4);
   border-radius:999px;padding:7px 14px;font-weight:800;font-size:12.5px;cursor:pointer;}
 .l4mini:active{transform:scale(.97);}
-/* 下方：關懷包（湊）＋行動鈕 */
-#l4bagWrap{position:absolute;left:0;right:0;bottom:0;z-index:24;
-  padding:10px 12px calc(12px + env(safe-area-inset-bottom));
-  background:linear-gradient(180deg,rgba(24,15,30,0),rgba(24,15,30,.5) 30%,rgba(24,15,30,.72));}
-#l4bagHead{color:#fff;font-weight:800;font-size:12px;margin:0 2px 6px;text-shadow:0 1px 3px rgba(0,0,0,.4);}
-#l4bag{display:flex;flex-wrap:wrap;gap:7px;min-height:42px;align-content:flex-start;
-  background:rgba(255,255,255,.07);border:1px dashed rgba(255,255,255,.22);border-radius:14px;padding:8px;}
+/* 下方：關懷包（湊）＋送出 */
+#l4bagWrap{flex:0 0 auto;padding:8px 4px 2px;}
+#l4bagHead{color:#fff;font-weight:800;font-size:12px;margin:0 2px 5px;text-shadow:0 1px 3px rgba(0,0,0,.4);}
+#l4bag{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;max-height:14vh;overflow-y:auto;align-content:flex-start;
+  background:rgba(255,255,255,.07);border:1px dashed rgba(255,255,255,.22);border-radius:14px;padding:7px;}
 .l4pin{display:flex;align-items:center;gap:5px;background:#fff;border-radius:999px;padding:5px 8px 5px 10px;
   font-size:12px;font-weight:800;color:#43373f;box-shadow:0 3px 8px rgba(0,0,0,.26);}
 .l4pin .x{cursor:pointer;color:#b06a6a;font-weight:900;padding:0 2px;}
 .l4bagEmpty{color:#d7cadf;font-size:12px;font-weight:600;padding:4px 2px;}
-#l4actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;justify-content:flex-end;}
+#l4actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px;justify-content:flex-end;}
 .l4act{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.24);border-radius:999px;
   padding:11px 18px;font-weight:800;font-size:14px;cursor:pointer;transition:background .18s,transform .12s;}
 .l4act:active{transform:scale(.98);}
@@ -840,13 +843,17 @@ body.screen-level #milestones{display:none;}
   background:linear-gradient(180deg,rgba(30,16,34,.5),rgba(16,9,22,.72));-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);}
 .l4sc-card{max-width:min(92vw,460px);background:rgba(30,20,38,.96);color:#fff;border-radius:18px;padding:20px 18px 16px;
   text-align:center;box-shadow:0 16px 44px rgba(0,0,0,.5);border:1px solid rgba(255,224,150,.28);}
-.l4sc-line{font-size:clamp(14px,3.6vw,16px);font-weight:700;line-height:1.6;color:#fdf2dd;margin-bottom:16px;}
-.l4sc-card .l4act.broker{width:100%;}
+.l4sc-line{font-size:clamp(14px,3.6vw,16px);font-weight:700;line-height:1.6;color:#fdf2dd;margin-bottom:14px;}
+/* 三個等價選項（無好壞色；全部都好、回饋一致） */
+#l4scOpts{display:flex;flex-direction:column;gap:9px;}
+#l4scOpts .l4act{width:100%;text-align:center;line-height:1.4;font-size:13.5px;padding:12px 14px;}
+.l4sc-result{margin-top:12px;font-size:13.5px;font-weight:700;color:#bfe3a8;line-height:1.5;}
 /* 直式窄畫面：客人改上下排，留更多對白空間 */
 @media (max-aspect-ratio:3/4){
-  #l4guest{flex-direction:column;align-items:stretch;top:190px;bottom:198px;gap:8px;}
-  #l4guestArt{align-self:center;width:clamp(96px,26vw,150px);height:42%;}
+  #l4guest{flex-direction:column;align-items:stretch;gap:8px;}
+  #l4guestArt{align-self:center;width:clamp(86px,24vw,140px);height:34vh;max-height:34vh;}
   #l4guestPanel{max-width:100%;}
+  #l4pantry{max-height:26vh;}
 }
 
 /* ===================================================================
