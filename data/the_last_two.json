@@ -26,7 +26,7 @@
       "thanks": { "en": "His eyes fill with gratitude: \"Tonight I won't just get by on crackers.\"", "zh": "他眼裡滿是感激：「今晚不用只吃餅乾了。」", "es": "Sus ojos se llenan de gratitud: \"Hoy no cenaré solo galletas.\"" }
     },
     {
-      "id": "night_worker", "art": "last2_volunteer", "needs_fresh": false,
+      "id": "night_worker", "art": "last2_nightworker", "needs_fresh": false,
       "satisfied_by": ["ready_to_eat", "portable"],
       "arrive": { "en": "A tired night-shift worker stops by on the way to a long shift.", "zh": "一位疲憊的夜班工作者，趕著上整夜的班，路過進來。", "es": "Un trabajador del turno noche se detiene camino a una larga jornada." },
       "need_surface": { "en": "\"Something quick I can take with me?\"", "zh": "「有沒有能帶著走、馬上吃的？」", "es": "\"¿Algo rápido que me pueda llevar?\"" },
@@ -34,12 +34,12 @@
       "thanks": { "en": "A grateful nod: \"This'll keep me going. Thank you.\"", "zh": "他感激地點頭：「這夠我撐過去了，謝謝。」", "es": "Asiente agradecido: \"Esto me mantendrá. Gracias.\"" }
     },
     {
-      "id": "young_parent", "art": "last2_neighbor", "needs_fresh": false,
+      "id": "young_parent", "art": "last2_youngparent", "needs_fresh": false,
       "satisfied_by": ["baby"],
-      "arrive": { "en": "A young parent comes in, a baby asleep in their arms.", "zh": "一位年輕的爸爸／媽媽走進來，懷裡的寶寶睡著了。", "es": "Llega un joven con su bebé dormido en brazos." },
+      "arrive": { "en": "A young couple comes in, their baby asleep in their arms.", "zh": "一對年輕夫妻走進來，懷裡的寶寶睡著了。", "es": "Una pareja joven entra, con su bebé dormido en brazos." },
       "need_surface": { "en": "\"Anything for the little one?\"", "zh": "「有沒有適合小寶寶的？」", "es": "\"¿Hay algo para el bebé?\"" },
       "need_deep": { "en": "\"Formula or baby rice — that's what we're short on.\"", "zh": "「奶粉或米粉，就缺這個。」", "es": "\"Fórmula o cereal de arroz — es lo que nos falta.\"" },
-      "thanks": { "en": "They cradle the baby, relieved: \"Exactly what we needed. Thank you.\"", "zh": "他輕輕搖著寶寶，鬆了一口氣：「這正是我們需要的，謝謝。」", "es": "Mece al bebé, aliviado: \"Justo lo que necesitábamos. Gracias.\"" }
+      "thanks": { "en": "They cradle the baby, relieved: \"Exactly what we needed. Thank you.\"", "zh": "他們輕輕搖著寶寶，鬆了一口氣：「這正是我們需要的，謝謝。」", "es": "Mecen al bebé, aliviados: \"Justo lo que necesitábamos. Gracias.\"" }
     }
   ],
   "broker": {

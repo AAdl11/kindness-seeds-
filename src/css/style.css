@@ -790,6 +790,7 @@ body.screen-level #milestones{display:none;}
   box-shadow:0 4px 10px rgba(0,0,0,.26);transition:transform .12s,box-shadow .18s;position:relative;}
 .l4item:active{transform:scale(.95);}
 .l4item .l4ico{font-size:1.4rem;line-height:1;}
+.l4item .l4ico.l4img{width:30px;height:30px;background-size:contain;background-position:center;background-repeat:no-repeat;}
 .l4item .l4nm{font-size:9.5px;font-weight:800;color:#43373f;text-align:center;line-height:1.12;}
 .l4item.fresh{border-color:#bfe3a8;}
 .l4item.baby{border-color:#f3c6d8;}
@@ -822,6 +823,7 @@ body.screen-level #milestones{display:none;}
   background:rgba(255,255,255,.07);border:1px dashed rgba(255,255,255,.22);border-radius:14px;padding:7px;}
 .l4pin{display:flex;align-items:center;gap:5px;background:#fff;border-radius:999px;padding:5px 8px 5px 10px;
   font-size:12px;font-weight:800;color:#43373f;box-shadow:0 3px 8px rgba(0,0,0,.26);}
+.l4pin .l4pimg{width:18px;height:18px;background-size:contain;background-position:center;background-repeat:no-repeat;}
 .l4pin .x{cursor:pointer;color:#b06a6a;font-weight:900;padding:0 2px;}
 .l4bagEmpty{color:#d7cadf;font-size:12px;font-weight:600;padding:4px 2px;}
 #l4actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px;justify-content:flex-end;}

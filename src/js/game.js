@@ -1552,16 +1552,16 @@
         need_surface: { en: '"Anything left for these slow legs of mine?"', zh: '「我這雙走不快的腿，還趕得上有東西嗎？」', es: '"¿Queda algo para estas piernas que ya no corren?"' },
         need_deep: { en: '"Something soft I can chew would be a real kindness."', zh: '「有軟一點、好咀嚼的就太好了。」', es: '"Algo blando que pueda masticar sería una gran bondad."' },
         thanks: { en: 'His eyes fill with gratitude: "Tonight I won\'t just get by on crackers."', zh: '他眼裡滿是感激：「今晚不用只吃餅乾了。」', es: 'Sus ojos se llenan de gratitud: "Hoy no cenaré solo galletas."' } },
-      { id: 'night_worker', art: 'last2_volunteer', needs_fresh: false, satisfied_by: ['ready_to_eat', 'portable'],
+      { id: 'night_worker', art: 'last2_nightworker', needs_fresh: false, satisfied_by: ['ready_to_eat', 'portable'],
         arrive: { en: 'A tired night-shift worker stops by on the way to a long shift.', zh: '一位疲憊的夜班工作者，趕著上整夜的班，路過進來。', es: 'Un trabajador del turno noche se detiene camino a una larga jornada.' },
         need_surface: { en: '"Something quick I can take with me?"', zh: '「有沒有能帶著走、馬上吃的？」', es: '"¿Algo rápido que me pueda llevar?"' },
         need_deep: { en: '"Something to get me through till morning, no time to cook."', zh: '「能撐到天亮就好，沒時間煮。」', es: '"Algo que me aguante hasta la mañana, sin tiempo de cocinar."' },
         thanks: { en: 'A grateful nod: "This\'ll keep me going. Thank you."', zh: '他感激地點頭：「這夠我撐過去了，謝謝。」', es: 'Asiente agradecido: "Esto me mantendrá. Gracias."' } },
-      { id: 'young_parent', art: 'last2_neighbor', needs_fresh: false, satisfied_by: ['baby'],
-        arrive: { en: 'A young parent comes in, a baby asleep in their arms.', zh: '一位年輕的爸爸／媽媽走進來，懷裡的寶寶睡著了。', es: 'Llega un joven con su bebé dormido en brazos.' },
+      { id: 'young_parent', art: 'last2_youngparent', needs_fresh: false, satisfied_by: ['baby'],
+        arrive: { en: 'A young couple comes in, their baby asleep in their arms.', zh: '一對年輕夫妻走進來，懷裡的寶寶睡著了。', es: 'Una pareja joven entra, con su bebé dormido en brazos.' },
         need_surface: { en: '"Anything for the little one?"', zh: '「有沒有適合小寶寶的？」', es: '"¿Hay algo para el bebé?"' },
         need_deep: { en: '"Formula or baby rice — that\'s what we\'re short on."', zh: '「奶粉或米粉，就缺這個。」', es: '"Fórmula o cereal de arroz — es lo que nos falta."' },
-        thanks: { en: 'They cradle the baby, relieved: "Exactly what we needed. Thank you."', zh: '他輕輕搖著寶寶，鬆了一口氣：「這正是我們需要的，謝謝。」', es: 'Mece al bebé, aliviado: "Justo lo que necesitábamos. Gracias."' } }
+        thanks: { en: 'They cradle the baby, relieved: "Exactly what we needed. Thank you."', zh: '他們輕輕搖著寶寶，鬆了一口氣：「這正是我們需要的，謝謝。」', es: 'Mecen al bebé, aliviados: "Justo lo que necesitábamos. Gracias."' } }
     ],
     broker: {
       prompt: { en: "Quietly ask the mother if she'd be willing to share one fresh pack.", zh: '輕聲問媽媽，願不願意分一份新鮮的出來。', es: 'Pregúntale en voz baja a la madre si querría compartir un paquete fresco.' },
@@ -1738,11 +1738,12 @@
       var remain = l4Remain(p.id), gone = remain <= 0;
       var el = document.createElement('div');
       el.className = 'l4item' + (p.fresh ? ' fresh' : '') + (p.baby ? ' baby' : '') + (gone ? ' gone' : '');
-      el.innerHTML = '<span class="l4ico">' + (p.icon || '🧺') + '</span>' +
-        '<span class="l4nm">' + l4Esc(L(p.name)) + '</span>' +
+      var ico = p.img ? '<span class="l4ico l4img"></span>' : '<span class="l4ico">' + (p.icon || '🧺') + '</span>';
+      el.innerHTML = ico + '<span class="l4nm">' + l4Esc(L(p.name)) + '</span>' +
         '<span class="l4cnt">' + Math.max(0, remain) + '</span>';
       el.addEventListener('click', function () { l4Add(p.id); });
       row.appendChild(el);
+      if (p.img) (function (sp) { resolveImg(p.img, function (u) { if (u && sp) sp.style.backgroundImage = "url('" + u + "')"; }); })(el.querySelector('.l4img'));
     });
   }
 
@@ -1768,9 +1769,11 @@
     l4.bag.forEach(function (id) {
       var p = l4ItemById(id); if (!p) return;
       var pin = document.createElement('div'); pin.className = 'l4pin';
-      pin.innerHTML = '<span>' + (p.icon || '🧺') + '</span><span>' + l4Esc(L(p.name)) + '</span><span class="x">×</span>';
+      var ic = p.img ? '<span class="l4pimg"></span>' : '<span>' + (p.icon || '🧺') + '</span>';
+      pin.innerHTML = ic + '<span>' + l4Esc(L(p.name)) + '</span><span class="x">×</span>';
       pin.querySelector('.x').addEventListener('click', function () { l4Remove(id); });
       bag.appendChild(pin);
+      if (p.img) (function (sp) { resolveImg(p.img, function (u) { if (u && sp) sp.style.backgroundImage = "url('" + u + "')"; }); })(pin.querySelector('.l4pimg'));
     });
   }
 

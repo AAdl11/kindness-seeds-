@@ -151,11 +151,14 @@ window.CONFIG = {
       { id: 'soup', icon: '🍲', tags: ['staple', 'soft', 'ready_to_eat', 'portable'], name: { zh: '罐頭湯', en: 'Canned soup', es: 'Sopa enlatada' } },
       { id: 'bar', icon: '🍫', tags: ['staple', 'ready_to_eat', 'portable'], name: { zh: '能量棒', en: 'Energy bar', es: 'Barra energética' } },
       { id: 'water', icon: '💧', tags: ['staple', 'drink'], name: { zh: '瓶裝水', en: 'Bottled water', es: 'Agua' } },
-      { id: 'oil', icon: '🫗', tags: ['staple', 'pantry'], name: { zh: '食用油', en: 'Cooking oil', es: 'Aceite' } },
-      // —— 嬰幼兒物資：年輕父母在場才上架 ——
+      { id: 'oil', img: 'item_oil', tags: ['staple', 'pantry'], name: { zh: '食用油', en: 'Cooking oil', es: 'Aceite' } },
+      // —— 嬰幼兒物資：baby:true → 只在年輕父母在場才上架。
+      //    food（'baby' tag）＝必要的嬰兒食物（奶粉／米粉，擇一即可）；
+      //    care（'care' tag，無 'baby'）＝尿布／嬰兒油，加分照顧品、非必要、不能當食物充數。
       { id: 'formula', icon: '🍼', tags: ['baby', 'kids', 'drink'], baby: true, name: { zh: '奶粉', en: 'Infant formula', es: 'Fórmula' } },
       { id: 'babyrice', icon: '🥣', tags: ['baby', 'soft', 'kids'], baby: true, name: { zh: '米粉（嬰兒）', en: 'Baby rice cereal', es: 'Cereal de arroz' } },
-      { id: 'babyoil', icon: '🧴', tags: ['baby', 'care'], baby: true, name: { zh: '嬰兒油', en: 'Baby oil', es: 'Aceite para bebé' } }
+      { id: 'diaper', img: 'item_diaper', tags: ['care'], baby: true, name: { zh: '尿布', en: 'Diapers', es: 'Pañales' } },
+      { id: 'babyoil', img: 'item_babyoil', tags: ['care'], baby: true, name: { zh: '嬰兒油', en: 'Baby oil', es: 'Aceite para bebé' } }
     ],
     how: {
       zh: '互助站快打烊、東西不多。問出每個人的需要，翻物資配一份合適的關懷包；不夠時想辦法分享，讓沒有人空手回家。',
