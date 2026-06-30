@@ -120,6 +120,9 @@ window.CONFIG = {
     music: 'assets/audio/level4_care.mp3',     // 第四關專屬曲（溫柔・有希望）；進關播放、循環、離開停
     img: 'last2_scene',                         // 互助站室內背景（基底檔名；副檔名自動偵測）
     arch: 'last2_arch',                         // Community Care 拱門框；客人站進中間暖光開口、邊緣羽化
+    // 每位客人圖在開口裡的焦點＋縮放：媽媽要露出兩個小孩 → contain 整張裝進、偏下；半身像 → cover 拉近偏上
+    figFocus: { mother: 'center 64%', young_parent: 'center 32%', elder: 'center 24%', night_worker: 'center 20%' },
+    figSize: { mother: 'contain' },
     // 美術基底檔名（離線：assets/images/ 自動找副檔名）。pipeline 的 JSON 不帶圖，圖一律住在這。
     cast: { scene: 'last2_scene', street: 'last2_street', packages: 'last2_packages', neighbor: 'last2_neighbor' },
     guestCount: 3,            // 媽媽＋王伯伯固定（斡旋爭點）＋第3位每局在 {夜班工作者, 年輕父母} 輪替

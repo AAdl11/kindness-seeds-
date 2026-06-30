@@ -1734,6 +1734,8 @@
     var g = l4.guest; if (!g) return;
     var fig = document.getElementById('l4guestFig');       // 客人圖疊在拱門開口裡（邊緣羽化）；拱門框是 #l4guestArt 底圖
     fig.classList.remove('show'); fig.style.backgroundImage = '';
+    fig.style.backgroundPosition = (l4Meta().figFocus || {})[g.id] || 'center 28%';   // 每位客人各自焦點，露出該露的（媽媽兩小孩）
+    fig.style.backgroundSize = (l4Meta().figSize || {})[g.id] || 'cover';              // 媽媽 contain 全可見；半身像 cover 拉近裁掉自身拱門
     if (g.art) resolveImg(g.art, function (u) { if (u) { fig.style.backgroundImage = "url('" + u + "')"; setTimeout(function () { fig.classList.add('show'); }, 80); } });
     document.getElementById('l4guestName').textContent = g.name ? L(g.name) : '';
     var html = '<span>' + l4Esc(L(g.arrive)) + '</span>' +
