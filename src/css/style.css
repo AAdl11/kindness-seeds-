@@ -253,6 +253,9 @@ body.screen-stillness #mute{display:none !important;}
 /* 關卡時：金圈米芽/竹筒移到側邊中段，不擋底部面板/回收桶 */
 body.screen-level #sproutRing,body.screen-level2 #sproutRing,body.screen-level3 #sproutRing,body.screen-level4 #sproutRing{bottom:auto;top:40%;right:8px;width:70px;}
 body.screen-level #bamboo,body.screen-level2 #bamboo,body.screen-level3 #bamboo,body.screen-level4 #bamboo{bottom:auto;top:38%;left:10px;}
+/* 關4：拱門/角色在左側 → 竹筒＋金圈米芽全移到右側欄堆疊，不壓到主角 */
+body.screen-level4 #sproutRing{top:30%;right:8px;left:auto;}
+body.screen-level4 #bamboo{left:auto;right:14px;top:54%;}
 body.screen-level #milestones{display:none;}
 
 /* ---------- 小芽盆栽圖示 ---------- */
@@ -790,7 +793,7 @@ body.screen-level #milestones{display:none;}
   box-shadow:0 4px 10px rgba(0,0,0,.26);transition:transform .12s,box-shadow .18s;position:relative;}
 .l4item:active{transform:scale(.95);}
 .l4item .l4ico{font-size:1.4rem;line-height:1;}
-.l4item .l4ico.l4img{width:46px;height:42px;background-size:contain;background-position:center;background-repeat:no-repeat;}
+.l4item .l4ico.l4img{width:50px;height:44px;background-size:cover;background-position:center;background-repeat:no-repeat;border-radius:8px;}
 .l4item .l4nm{font-size:9.5px;font-weight:800;color:#43373f;text-align:center;line-height:1.12;}
 .l4item.fresh{border-color:#bfe3a8;}
 .l4item.baby{border-color:#f3c6d8;}
@@ -801,20 +804,24 @@ body.screen-level #milestones{display:none;}
 .l4item.fresh .l4cnt{background:#2f6b1f;}
 .l4item.gone .l4cnt{background:#7a7280;}
 /* 中段：當前客人（圖＋對白＋多問一句） */
-#l4guest{flex:1 1 auto;min-height:0;display:flex;align-items:center;gap:12px;padding:6px 2px;}
-/* Community Care 拱門框：客人站進中間暖光開口 */
-#l4guestArt{flex:0 0 auto;align-self:center;height:100%;max-height:46vh;aspect-ratio:1024/1536;position:relative;
+#l4guest{flex:1 1 auto;min-height:0;position:relative;}
+/* Community Care 拱門框：左側、放大、上下撐滿（接近桌子高度）；外緣 mask 羽化融進背景 */
+#l4guestArt{position:absolute;left:1%;top:0;bottom:0;aspect-ratio:1024/1536;
   background-size:100% 100%;background-position:center;background-repeat:no-repeat;
-  filter:drop-shadow(0 6px 12px rgba(0,0,0,.28));}
-/* 客人圖疊進拱門開口、縮放填滿、邊緣 mask 羽化淡進暖光（不要硬邊框；臉/寶寶中心保持清楚） */
-#l4guestFig{position:absolute;left:28%;right:28%;top:27%;bottom:11%;
-  background-size:cover;background-position:center top;background-repeat:no-repeat;
-  -webkit-mask-image:radial-gradient(ellipse 84% 92% at 50% 40%, #000 70%, rgba(0,0,0,0) 100%);
-  mask-image:radial-gradient(ellipse 84% 92% at 50% 40%, #000 70%, rgba(0,0,0,0) 100%);
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.3));
+  -webkit-mask-image:radial-gradient(ellipse 98% 99% at 50% 50%, #000 84%, rgba(0,0,0,0) 100%);
+  mask-image:radial-gradient(ellipse 98% 99% at 50% 50%, #000 84%, rgba(0,0,0,0) 100%);}
+/* 客人圖整張裝進開口（contain，不被門柱裁切）；臉／小孩／寶寶都完整可見；自身邊緣輕羽化 */
+#l4guestFig{position:absolute;left:25%;right:25%;top:25%;bottom:13%;
+  background-size:contain;background-position:center bottom;background-repeat:no-repeat;
+  -webkit-mask-image:radial-gradient(ellipse 92% 94% at 50% 46%, #000 80%, rgba(0,0,0,0) 100%);
+  mask-image:radial-gradient(ellipse 92% 94% at 50% 46%, #000 80%, rgba(0,0,0,0) 100%);
   opacity:0;transform:translateY(8px);transition:opacity .7s ease,transform .7s ease;}
 #l4guestFig.show{opacity:1;transform:translateY(0);}
-#l4guestPanel{flex:1 1 auto;max-width:min(74vw,520px);max-height:100%;overflow-y:auto;background:rgba(28,18,34,.82);color:#fff;border-radius:16px;
-  padding:12px 14px;box-shadow:0 12px 30px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.12);
+/* 對話框置中（避開左側拱門，不壓到角色） */
+#l4guestPanel{position:absolute;left:54%;top:50%;transform:translate(-50%,-50%);
+  width:min(46vw,500px);max-height:92%;overflow-y:auto;background:rgba(28,18,34,.82);color:#fff;border-radius:16px;
+  padding:13px 16px;box-shadow:0 12px 30px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.12);
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
 #l4guestName{font-size:12px;font-weight:800;color:#ffd98a;margin-bottom:4px;}
 #l4dialogue{font-size:clamp(13px,3.3vw,15px);line-height:1.55;color:#f3eef7;white-space:pre-line;}
@@ -830,7 +837,7 @@ body.screen-level #milestones{display:none;}
   background:rgba(255,255,255,.07);border:1px dashed rgba(255,255,255,.22);border-radius:14px;padding:7px;}
 .l4pin{display:flex;align-items:center;gap:5px;background:#fff;border-radius:999px;padding:5px 8px 5px 10px;
   font-size:12px;font-weight:800;color:#43373f;box-shadow:0 3px 8px rgba(0,0,0,.26);}
-.l4pin .l4pimg{width:26px;height:24px;background-size:contain;background-position:center;background-repeat:no-repeat;}
+.l4pin .l4pimg{width:28px;height:24px;background-size:cover;background-position:center;background-repeat:no-repeat;border-radius:6px;}
 .l4pin .x{cursor:pointer;color:#b06a6a;font-weight:900;padding:0 2px;}
 .l4bagEmpty{color:#d7cadf;font-size:12px;font-weight:600;padding:4px 2px;}
 #l4actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px;justify-content:flex-end;}
@@ -859,9 +866,9 @@ body.screen-level #milestones{display:none;}
 .l4sc-result{margin-top:12px;font-size:13.5px;font-weight:700;color:#bfe3a8;line-height:1.5;}
 /* 直式窄畫面：客人改上下排，留更多對白空間 */
 @media (max-aspect-ratio:3/4){
-  #l4guest{flex-direction:column;align-items:stretch;gap:8px;}
-  #l4guestArt{align-self:center;height:30vh;max-height:30vh;width:auto;}
-  #l4guestPanel{max-width:100%;}
+  #l4guest{display:flex;flex-direction:column;align-items:center;gap:8px;}
+  #l4guestArt{position:relative;left:auto;top:auto;bottom:auto;height:30vh;max-height:30vh;width:auto;}
+  #l4guestPanel{position:relative;left:auto;top:auto;transform:none;width:100%;max-width:100%;}
   #l4pantry{max-height:26vh;}
 }
 

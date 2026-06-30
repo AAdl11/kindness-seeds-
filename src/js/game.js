@@ -1835,14 +1835,15 @@
       l4.pendingGuide = { L: b.setaside };                   // 晚到的那位 → 用其他物資湊一份留著
     }
     if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {}
-    function close() {
+    // 點選後保留結果畫面約 3 秒（明確顯示選了哪個、發生什麼）再進下一步，讓玩家看清楚
+    var opts = document.getElementById('l4scOpts');
+    opts.innerHTML = '<div class="l4sc-result">' + l4Esc(l4SysText()) + '</div>';
+    if (l4._brokerTimer) clearTimeout(l4._brokerTimer);
+    l4._brokerTimer = setTimeout(function () {
+      l4._brokerTimer = null;
       document.getElementById('l4scarcity').classList.add('hidden');
       l4RenderGuest(); l4RenderPantry(); l4RenderBag(); l4RenderActions();
-    }
-    if (viaAsk) {   // 隨機結果先「明確顯示」在覆蓋層上，再收掉
-      document.getElementById('l4scOpts').innerHTML = '<div class="l4sc-result">' + l4Esc(l4SysText()) + '</div>';
-      setTimeout(close, 1600);
-    } else { close(); }
+    }, 3000);
   }
 
   /* 給出關懷包：稀缺成立 → 攔截進斡旋（跳不過）；嬰兒等專一需求未配到 → 溫柔重試；
@@ -1906,7 +1907,10 @@
     if (!l4) return;
     if (!document.getElementById('l4end').classList.contains('hidden')) { l4ShowEnd(); return; }
     l4RenderAll();
-    if (!document.getElementById('l4scarcity').classList.contains('hidden') && l4.contested) l4OpenScarcity(l4.contested);
+    if (!document.getElementById('l4scarcity').classList.contains('hidden')) {
+      if (l4._brokerTimer) document.getElementById('l4scOpts').innerHTML = '<div class="l4sc-result">' + l4Esc(l4SysText()) + '</div>';
+      else if (l4.contested) l4OpenScarcity(l4.contested);
+    }
   }
 
   /* ===================================================================
