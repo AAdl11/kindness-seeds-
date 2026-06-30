@@ -1560,7 +1560,7 @@
       { id: 'young_parent', art: 'last2_youngparent', needs_fresh: false, satisfied_by: ['baby'],
         arrive: { en: 'A young couple comes in, their baby asleep in their arms.', zh: '一對年輕夫妻走進來，懷裡的寶寶睡著了。', es: 'Una pareja joven entra, con su bebé dormido en brazos.' },
         need_surface: { en: '"Anything for the little one?"', zh: '「有沒有適合小寶寶的？」', es: '"¿Hay algo para el bebé?"' },
-        need_deep: { en: '"Formula or baby rice — that\'s what we\'re short on."', zh: '「奶粉或米粉，就缺這個。」', es: '"Fórmula o cereal de arroz — es lo que nos falta."' },
+        need_deep: { en: '"Formula or baby rice is what we really need — and diapers or a little baby oil would be such a help too."', zh: '「奶粉或米粉是一定要的；要是還有尿布或嬰兒油，那就更好了。」', es: '"Fórmula o cereal de arroz es lo que de verdad necesitamos — y unos pañales o aceite para bebé también nos vendrían muy bien."' },
         thanks: { en: 'They cradle the baby, relieved: "Exactly what we needed. Thank you."', zh: '他們輕輕搖著寶寶，鬆了一口氣：「這正是我們需要的，謝謝。」', es: 'Mecen al bebé, aliviados: "Justo lo que necesitábamos. Gracias."' } }
     ],
     broker: {
@@ -1675,7 +1675,7 @@
       if (iM > -1 && iE > -1 && iM > iE) { var t = q[iM]; q[iM] = q[iE]; q[iE] = t; }
       l4 = {
         data: D, queue: q, idx: 0, guest: null, stock: {},
-        bag: [], asked: false, sysSpec: null, pendingGuide: null,
+        bag: [], asked: false, sysSpec: null, reserveFor: null, contestedLateId: null,
         served: 0, brokerChoice: null, contested: null, ended: false
       };
       l4.stock = l4InitStock();                         // 每日庫存（依 queue 是否含年輕父母決定是否上架嬰兒款）
@@ -1700,7 +1700,15 @@
     if (l4.idx >= l4.queue.length) { l4Finish(); return; }
     l4.guest = l4.queue[l4.idx];
     l4.bag = []; l4.asked = false;
-    l4.sysSpec = l4.pendingGuide || null; l4.pendingGuide = null;   // 婉拒後→替晚到者留一份的引導
+    // 「留一份給晚到者」的引導只准出現在「它真正指涉的那位客人」身上（偏好爭點物資的晚到者），
+    // 不是無腦接在下一位身上 → 修掉「夫妻/夜班局接到『為王伯伯留乾糧』」的錯接。
+    if (l4.reserveFor && l4.guest && l4.guest.id === l4.reserveFor.id) {
+      l4.sysSpec = l4.reserveFor.guide; l4.reserveFor = null;
+      console.log('[L4] setaside guide shown for', l4.guest.id, '(the late guest who wanted the contested item)');
+    } else {
+      l4.sysSpec = null;
+      if (l4.reserveFor && l4.guest) console.log('[L4] setaside guide suppressed for', l4.guest.id, '— reserved for', l4.reserveFor.id);
+    }
     l4RenderAll();
   }
 
@@ -1802,6 +1810,7 @@
   function l4OpenScarcity(item) {
     l4.contested = item;
     var late = l4.queue.slice(l4.idx + 1).filter(function (g) { return l4Prefers(g, item); })[0];
+    l4.contestedLateId = late ? late.id : null;   // 真正偏好這份爭點物資的晚到者（setaside 只能指涉他）
     var name = (late && late.name) ? L(late.name) : T('l4SomeoneLate');
     document.getElementById('l4scLine').textContent = (T('l4ScarcityLine') || '').replace('{name}', name);
     var box = document.getElementById('l4scOpts'); box.innerHTML = '';
@@ -1829,11 +1838,12 @@
     if (mode === 'yield') {
       if (l4.contested) l4.bag = l4.bag.filter(function (id) { return id !== l4.contested.id; }); // 這份不被當前這位帶走
       l4.sysSpec = viaAsk ? { L: b.agree } : { T: 'l4YieldConfirm' };
-      l4.pendingGuide = null;                                // 晚到的那位之後自然拿到這份新鮮
-    } else {                                                 // keep
+      l4.reserveFor = null;                                  // 晚到的那位之後自然拿到這份新鮮，不需留乾糧引導
+    } else {                                                 // keep：這份給當前這位 → 替「真正偏好它的晚到者」留一份乾糧
       l4.sysSpec = viaAsk ? { L: b.decline } : { T: 'l4KeepConfirm' };
-      l4.pendingGuide = { L: b.setaside };                   // 晚到的那位 → 用其他物資湊一份留著
+      l4.reserveFor = l4.contestedLateId ? { id: l4.contestedLateId, guide: { L: b.setaside } } : null;
     }
+    console.log('[L4] broker resolved:', mode, '| reserve setaside for:', (l4.reserveFor ? l4.reserveFor.id : 'none'));
     if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {}
     // 點選後保留結果畫面約 3 秒（明確顯示選了哪個、發生什麼）再進下一步，讓玩家看清楚
     var opts = document.getElementById('l4scOpts');
@@ -1848,10 +1858,25 @@
 
   /* 給出關懷包：稀缺成立 → 攔截進斡旋（跳不過）；嬰兒等專一需求未配到 → 溫柔重試；
      配到偏好 → 暖暖道謝；只剩乾糧 → 誠實溫柔一句。都給回饋、都不是失敗。 */
+  /* 斡旋自我審視：說清楚這局到底有沒有資格跳斡旋，理由印 console 給明暺驗證 */
+  function l4SuppressReason(g) {
+    if (l4.brokerChoice) return 'already brokered this round';
+    var freshSoft = l4.bag.filter(function (id) { var p = l4ItemById(id); return p && p.fresh && (p.tags || []).indexOf('soft') !== -1; });
+    if (!freshSoft.length) return 'bag holds no fresh+soft item (only bread/eggs can be contested)';
+    var last = freshSoft.filter(function (id) { return (l4.stock[id] || 0) === 1; });
+    if (!last.length) return 'the fresh+soft item is not the last one (stock > 1)';
+    var anyLater = last.some(function (id) { var p = l4ItemById(id); return l4.queue.slice(l4.idx + 1).some(function (gg) { return l4Prefers(gg, p); }); });
+    if (!anyLater) return 'no later unserved guest prefers that item';
+    return 'eligible';
+  }
   function l4Give() {
     var g = l4.guest; if (!g || !l4.bag.length || l4.busy) return;   // busy：送出後過場中，擋連點重複送
     var hit = l4ScarcityHit(g);
-    if (hit) { l4OpenScarcity(hit); return; }                // 稀缺一刻，必經斡旋
+    if (hit) {                                               // 稀缺一刻，必經斡旋
+      console.log('[L4] broker FIRED — contested "' + hit.id + '" (fresh+soft, last 1) held by "' + g.id + '"; a later guest wants it');
+      l4OpenScarcity(hit); return;
+    }
+    console.log('[L4] broker suppressed for "' + g.id + '" — ' + l4SuppressReason(g));
     var matched = l4Satisfied(g);
     if (!matched && l4Strict(g)) {                           // 嬰兒只吃 baby，乾糧不能充數
       if (window.Sound && Sound.soft) try { Sound.soft(); } catch (e) {}

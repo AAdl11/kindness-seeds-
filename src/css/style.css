@@ -811,11 +811,11 @@ body.screen-level #milestones{display:none;}
   filter:drop-shadow(0 8px 16px rgba(0,0,0,.3));
   -webkit-mask-image:radial-gradient(ellipse 98% 99% at 50% 50%, #000 84%, rgba(0,0,0,0) 100%);
   mask-image:radial-gradient(ellipse 98% 99% at 50% 50%, #000 84%, rgba(0,0,0,0) 100%);}
-/* 客人圖整張裝進開口（contain，不被門柱裁切）；臉／小孩／寶寶都完整可見；自身邊緣輕羽化 */
-#l4guestFig{position:absolute;left:25%;right:25%;top:25%;bottom:13%;
+/* 客人圖整張裝進拱門暖光開口（contain，新拱門無門柱→可放更滿）；四位都完整可見；邊緣 ~14% 羽化融進暖光 */
+#l4guestFig{position:absolute;left:23%;right:23%;top:23%;bottom:14%;
   background-size:contain;background-position:center bottom;background-repeat:no-repeat;
-  -webkit-mask-image:radial-gradient(ellipse 92% 94% at 50% 46%, #000 80%, rgba(0,0,0,0) 100%);
-  mask-image:radial-gradient(ellipse 92% 94% at 50% 46%, #000 80%, rgba(0,0,0,0) 100%);
+  -webkit-mask-image:radial-gradient(ellipse 94% 95% at 50% 46%, #000 84%, rgba(0,0,0,0) 100%);
+  mask-image:radial-gradient(ellipse 94% 95% at 50% 46%, #000 84%, rgba(0,0,0,0) 100%);
   opacity:0;transform:translateY(8px);transition:opacity .7s ease,transform .7s ease;}
 #l4guestFig.show{opacity:1;transform:translateY(0);}
 /* 對話框置中（避開左側拱門，不壓到角色） */
