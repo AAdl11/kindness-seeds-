@@ -1644,10 +1644,11 @@
     if (l4.brokerChoice || !g || !l4.data.broker) return null;
     for (var i = 0; i < l4.bag.length; i++) {
       var p = l4ItemById(l4.bag[i]);
-      if (!p || !p.fresh) continue;
+      if (!p || !p.fresh) continue;                   // 只有「當前這位的包裡真的含有」的新鮮物才可能成爭點
+      if ((p.tags || []).indexOf('soft') === -1) continue;  // 爭點只能是「新鮮且軟」（麵包/雞蛋）→ 媽媽要新鮮、王伯伯吃得動
       if ((l4.stock[p.id] || 0) !== 1) continue;      // 不是最後一份就不算搶
       var later = l4.queue.slice(l4.idx + 1).some(function (gg) { return l4Prefers(gg, p); });
-      if (later) return p;
+      if (later) return p;                            // 另有未服務、且偏好這份軟麵包/雞蛋的客人 → 才登場
     }
     return null;
   }
@@ -1674,7 +1675,7 @@
       if (iM > -1 && iE > -1 && iM > iE) { var t = q[iM]; q[iM] = q[iE]; q[iE] = t; }
       l4 = {
         data: D, queue: q, idx: 0, guest: null, stock: {},
-        bag: [], asked: false, sys: '', pendingGuide: '',
+        bag: [], asked: false, sysSpec: null, pendingGuide: null,
         served: 0, brokerChoice: null, contested: null, ended: false
       };
       l4.stock = l4InitStock();                         // 每日庫存（依 queue 是否含年輕父母決定是否上架嬰兒款）
@@ -1690,6 +1691,8 @@
   function l4LoadBg() {
     var meta = l4Meta(), bg = document.getElementById('l4bg');
     if (meta.img) resolveImg(meta.img, function (u) { if (u) bg.style.backgroundImage = "url('" + u + "')"; });
+    var arch = document.getElementById('l4guestArt');   // Community Care 拱門框（靜態；客人圖疊在開口裡）
+    if (meta.arch) resolveImg(meta.arch, function (u) { if (u) arch.style.backgroundImage = "url('" + u + "')"; });
   }
 
   function l4NextGuest() {
@@ -1697,8 +1700,15 @@
     if (l4.idx >= l4.queue.length) { l4Finish(); return; }
     l4.guest = l4.queue[l4.idx];
     l4.bag = []; l4.asked = false;
-    l4.sys = l4.pendingGuide || ''; l4.pendingGuide = '';   // 婉拒後→替晚到者留一份的引導
+    l4.sysSpec = l4.pendingGuide || null; l4.pendingGuide = null;   // 婉拒後→替晚到者留一份的引導
     l4RenderAll();
+  }
+
+  /* 系統補述（道謝／斡旋結果／引導）用「語言無關的 spec」存：{L:三語物件} 或 {T:i18n key}，
+     切語言時 l4RenderGuest 用當前語言重解析，不會卡在舊語言。 */
+  function l4SysText() {
+    var s = l4.sysSpec; if (!s) return '';
+    return s.T ? T(s.T) : (s.L ? L(s.L) : '');
   }
 
   /* 一次重繪四區（切語言時也走這裡，文字用 L()/T() 重取） */
@@ -1714,14 +1724,15 @@
   /* 客人：圖＋對白（arrive＋need_surface＋(deep)＋(sys)）＋「多問一句」 */
   function l4RenderGuest() {
     var g = l4.guest; if (!g) return;
-    var art = document.getElementById('l4guestArt');
-    art.classList.remove('show'); art.style.backgroundImage = '';
-    if (g.art) resolveImg(g.art, function (u) { if (u) { art.style.backgroundImage = "url('" + u + "')"; setTimeout(function () { art.classList.add('show'); }, 80); } });
+    var fig = document.getElementById('l4guestFig');       // 客人圖疊在拱門開口裡（邊緣羽化）；拱門框是 #l4guestArt 底圖
+    fig.classList.remove('show'); fig.style.backgroundImage = '';
+    if (g.art) resolveImg(g.art, function (u) { if (u) { fig.style.backgroundImage = "url('" + u + "')"; setTimeout(function () { fig.classList.add('show'); }, 80); } });
     document.getElementById('l4guestName').textContent = g.name ? L(g.name) : '';
     var html = '<span>' + l4Esc(L(g.arrive)) + '</span>' +
       '<span class="deep">' + l4Esc(L(g.need_surface)) + '</span>';
     if (l4.asked && g.need_deep) html += '<span class="deep">' + l4Esc(L(g.need_deep)) + '</span>';
-    if (l4.sys) html += '<span class="sys">' + l4Esc(l4.sys) + '</span>';
+    var sys = l4SysText();
+    if (sys) html += '<span class="sys">' + l4Esc(sys) + '</span>';
     document.getElementById('l4dialogue').innerHTML = html;
     var ask = document.getElementById('l4askMore');
     ask.textContent = T('l4AskMore');
@@ -1817,11 +1828,11 @@
     l4.brokerChoice = mode;
     if (mode === 'yield') {
       if (l4.contested) l4.bag = l4.bag.filter(function (id) { return id !== l4.contested.id; }); // 這份不被當前這位帶走
-      l4.sys = viaAsk ? L(b.agree) : T('l4YieldConfirm');
-      l4.pendingGuide = '';                                  // 晚到的那位之後自然拿到這份新鮮
+      l4.sysSpec = viaAsk ? { L: b.agree } : { T: 'l4YieldConfirm' };
+      l4.pendingGuide = null;                                // 晚到的那位之後自然拿到這份新鮮
     } else {                                                 // keep
-      l4.sys = viaAsk ? L(b.decline) : T('l4KeepConfirm');
-      l4.pendingGuide = L(b.setaside);                       // 晚到的那位 → 用其他物資湊一份留著
+      l4.sysSpec = viaAsk ? { L: b.decline } : { T: 'l4KeepConfirm' };
+      l4.pendingGuide = { L: b.setaside };                   // 晚到的那位 → 用其他物資湊一份留著
     }
     if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {}
     function close() {
@@ -1829,7 +1840,7 @@
       l4RenderGuest(); l4RenderPantry(); l4RenderBag(); l4RenderActions();
     }
     if (viaAsk) {   // 隨機結果先「明確顯示」在覆蓋層上，再收掉
-      document.getElementById('l4scOpts').innerHTML = '<div class="l4sc-result">' + l4Esc(l4.sys) + '</div>';
+      document.getElementById('l4scOpts').innerHTML = '<div class="l4sc-result">' + l4Esc(l4SysText()) + '</div>';
       setTimeout(close, 1600);
     } else { close(); }
   }
@@ -1850,7 +1861,7 @@
     l4.busy = true;
     l4.bag.forEach(function (id) { l4.stock[id] = Math.max(0, (l4.stock[id] || 0) - 1); });
     l4.bag = [];
-    l4.sys = matched ? L(g.thanks) : T('l4StapleOnly');     // 配到偏好→暖；只剩乾糧→誠實一句
+    l4.sysSpec = matched ? { L: g.thanks } : { T: 'l4StapleOnly' };   // 配到偏好→暖；只剩乾糧→誠實一句（spec：切語言即時翻）
     l4RenderGuest(); l4RenderBag(); l4RenderActions();
     if (window.Sound) { try { (Sound.success ? Sound.success(0) : Sound.coin && Sound.coin()); } catch (e) {} }
     // 回饋：沿用既有世界數值（每照顧一人 = perHome），存得住

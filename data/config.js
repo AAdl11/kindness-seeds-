@@ -117,8 +117,9 @@ window.CONFIG = {
     id: 'the_last_two',
     type: 'resourceful_helper',
     data: 'data/the_last_two.json',            // runtime 讀這份（pipeline 人審後的產出）；fetch 失敗時用內建 fallback
-    music: 'assets/audio/ending_warm.mp3',     // placeholder（祥和）；日後可換
+    music: 'assets/audio/level4_care.mp3',     // 第四關專屬曲（溫柔・有希望）；進關播放、循環、離開停
     img: 'last2_scene',                         // 互助站室內背景（基底檔名；副檔名自動偵測）
+    arch: 'last2_arch',                         // Community Care 拱門框；客人站進中間暖光開口、邊緣羽化
     // 美術基底檔名（離線：assets/images/ 自動找副檔名）。pipeline 的 JSON 不帶圖，圖一律住在這。
     cast: { scene: 'last2_scene', street: 'last2_street', packages: 'last2_packages', neighbor: 'last2_neighbor' },
     guestCount: 3,            // 媽媽＋王伯伯固定（斡旋爭點）＋第3位每局在 {夜班工作者, 年輕父母} 輪替
