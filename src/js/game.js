@@ -170,7 +170,10 @@
       ds: { zh: '街角整理回乾淨', en: 'A corner made bright', es: 'Una esquina iluminada' } },
     { id: 'hotmeal', fu: 'community', state: 'soon', stars: 2, pos: { x: 0.73, y: 0.37 },
       nm: { zh: '遊民熱食', en: 'Hot meals', es: 'Comidas calientes' },
-      ds: { zh: '社區活動中心', en: 'Community center', es: 'Centro comunitario' } }
+      ds: { zh: '社區活動中心', en: 'Community center', es: 'Centro comunitario' } },
+    { id: 'the_last_two', fu: 'community', state: 'play', stars: 2, pos: { x: 0.64, y: 0.66 },
+      nm: { zh: '最後兩份', en: 'The Last Two', es: 'Los últimos dos' },
+      ds: { zh: '社區互助站', en: 'Community mutual-aid station', es: 'Centro de ayuda comunitaria' } }
   ];
   var TREE_POS = { x: 0.55, y: 0.82 };   // 中央總成長樹（base 落點，往上長）
 
@@ -178,13 +181,13 @@
   function returnToHub() { Sound.playScene('hub'); show('hub'); renderHub(); }
 
   function show(id) {
-    ['opening', 'hub', 'level', 'level2', 'level3', 'ending', 'stillness'].forEach(function (s) {
+    ['opening', 'hub', 'level', 'level2', 'level3', 'level4', 'ending', 'stillness'].forEach(function (s) {
       var el = document.getElementById(s); if (!el) return;
-      if (s === 'level' || s === 'level2' || s === 'level3') el.style.display = (s === id) ? 'block' : 'none';
+      if (s === 'level' || s === 'level2' || s === 'level3' || s === 'level4') el.style.display = (s === id) ? 'block' : 'none';
       else el.classList.toggle('hidden', s !== id);
     });
     document.body.className = 'screen-' + id;
-    var g = (id === 'hub' || id === 'level' || id === 'level2' || id === 'level3');  // 永久 HUD / 竹筒 / 金圈米芽
+    var g = (id === 'hub' || id === 'level' || id === 'level2' || id === 'level3' || id === 'level4');  // 永久 HUD / 竹筒 / 金圈米芽
     ['hudTime', 'hudCoins', 'bamboo', 'sproutRing'].forEach(function (eid) {
       document.getElementById(eid).classList.toggle('hidden', !g);
     });
@@ -231,7 +234,7 @@
   function completedCount() { return ACTIVITIES.filter(function (a) { return SAVE.lit[a.id]; }).length; }
 
   /* 意見箱：開新分頁到問卷頁，帶上目前語言（純改連結，不動玩法/存檔）；三語標籤隨語言更新 */
-  var FB_BASE = 'https://aadl11.github.io/kindness-seeds-/feedback.html';
+  var FB_BASE = 'feedback.html';   // 相對路徑：本機測試開本機問卷、上線自動指向線上問卷
   function fbUrl() {
     var lang = window.LANG || 'zh';
     return FB_BASE + '?lang=' + encodeURIComponent(lang);
@@ -240,7 +243,7 @@
     var label = T('feedback'), url = fbUrl();
     var circle = document.getElementById('hubFeedback');
     if (circle) { circle.href = url; circle.title = label; circle.setAttribute('aria-label', label); }
-    ['endFb', 'l2fb', 'l3fb'].forEach(function (id) {
+    ['endFb', 'l2fb', 'l3fb', 'l4fb'].forEach(function (id) {
       var el = document.getElementById(id);
       if (el) { el.href = url; el.textContent = '💬 ' + label; }
     });
@@ -853,6 +856,7 @@
   function startActivity(id) {
     if (id === C.level2.id) startLevel2();
     else if (id === C.level3.id) startLevel3();
+    else if (C.level4 && id === C.level4.id) startLevel4();
     else startLevel();
   }
 
@@ -1493,6 +1497,7 @@
       l3Relabel();
       if (!document.getElementById('l3end').classList.contains('hidden')) l3ShowEnd();
     }
+    if (document.getElementById('level4').style.display === 'block' && l4) l4Relabel();
     if (!document.getElementById('ending').classList.contains('hidden')) {
       document.getElementById('endTitle').textContent = T('endTitle');
       document.getElementById('endLine').textContent = T('endLine');
@@ -1518,6 +1523,421 @@
     Sound.unlock();                                // 第一次點擊解鎖
     Sound.playScene('hub');
     show('hub'); renderHub();
+  }
+
+  /* ===================================================================
+     關卡 · 互助站「最後兩份」（type:"resourceful_helper"）
+     情境內容（客人池/對白/斡旋/結尾）讀自 data/the_last_two.json（pipeline 人審 gate 的產出）；
+     圖片＋規則（pantry/stock/獎勵）住在 config.level4（pipeline 不碰）。
+     玩法：問→湊→稀缺斡旋。無計分・無好壞・回饋一致・婉拒不懲罰。
+     =================================================================== */
+  var L4DATA = null;          // 載入後快取（fetch 成功 = pipeline 最新；失敗 = 內建離線鏡像）
+
+  /* 內建離線鏡像：只在 file:// 直接開啟、fetch 取不到本地 JSON 時當後備。
+     正式部署（http/https、GitHub Pages）一律讀 data/the_last_two.json；
+     pipeline 重跑 approve 覆寫的是那份 JSON，這份鏡像不是真相來源、可能落後。 */
+  var L4_FALLBACK = {
+    id: 'the_last_two', type: 'resourceful_helper',
+    title: { en: 'The Last Two', zh: '最後兩份', es: 'Los últimos dos' },
+    intro: { en: "Closing time at the mutual-aid station. A few neighbors are still on their way, and not much is left. Let's make sure no one goes home forgotten.", zh: '互助站快打烊了。還有幾位鄰居在路上，櫃上也剩得不多。我們來想辦法，讓今天沒有人被忘記。', es: 'Hora de cerrar en el centro de ayuda. Aún vienen algunos vecinos y queda poco. Vamos a procurar que nadie se vaya olvidado.' },
+    guests: [
+      { id: 'mother', art: 'last2_mother', needs_fresh: true, satisfied_by: ['fresh', 'fruit'],
+        arrive: { en: 'A young mother reaches the counter, holding her two children by the hand.', zh: '一位年輕媽媽牽著兩個孩子走到櫃台前。', es: 'Una madre joven llega al mostrador, tomando de la mano a sus dos hijos.' },
+        need_surface: { en: '"Is there anything fresh left for dinner tonight?"', zh: '「今晚還有沒有新鮮的可以當晚餐？」', es: '"¿Queda algo fresco para la cena de hoy?"' },
+        need_deep: { en: '"The kids haven\'t had fresh fruit in days — they\'d be so happy."', zh: '「孩子們好幾天沒吃到新鮮水果了，有的話他們會很開心。」', es: '"Los niños llevan días sin fruta fresca — se pondrían muy felices."' },
+        thanks: { en: 'She breathes a sigh of relief; the children chatter happily about dinner.', zh: '她鬆了一口氣，孩子們高興地討論今晚的晚餐。', es: 'Suspira aliviada; los niños hablan felices de la cena.' } },
+      { id: 'elder', art: 'last2_elder', needs_fresh: true, satisfied_by: ['soft', 'staple'],
+        name: { en: 'Mr. Wang', zh: '王伯伯', es: 'don Wang' },
+        arrive: { en: 'Mr. Wang arrives late, leaning on his cane, wiping his brow.', zh: '王伯伯晚到了，拄著拐杖、擦著汗。', es: 'Don Wang llega tarde, apoyado en su bastón, secándose la frente.' },
+        need_surface: { en: '"Anything left for these slow legs of mine?"', zh: '「我這雙走不快的腿，還趕得上有東西嗎？」', es: '"¿Queda algo para estas piernas que ya no corren?"' },
+        need_deep: { en: '"Something soft I can chew would be a real kindness."', zh: '「有軟一點、好咀嚼的就太好了。」', es: '"Algo blando que pueda masticar sería una gran bondad."' },
+        thanks: { en: 'His eyes fill with gratitude: "Tonight I won\'t just get by on crackers."', zh: '他眼裡滿是感激：「今晚不用只吃餅乾了。」', es: 'Sus ojos se llenan de gratitud: "Hoy no cenaré solo galletas."' } },
+      { id: 'night_worker', art: 'last2_nightworker', needs_fresh: false, satisfied_by: ['ready_to_eat', 'portable'],
+        arrive: { en: 'A tired night-shift worker stops by on the way to a long shift.', zh: '一位疲憊的夜班工作者，趕著上整夜的班，路過進來。', es: 'Un trabajador del turno noche se detiene camino a una larga jornada.' },
+        need_surface: { en: '"Something quick I can take with me?"', zh: '「有沒有能帶著走、馬上吃的？」', es: '"¿Algo rápido que me pueda llevar?"' },
+        need_deep: { en: '"Something to get me through till morning, no time to cook."', zh: '「能撐到天亮就好，沒時間煮。」', es: '"Algo que me aguante hasta la mañana, sin tiempo de cocinar."' },
+        thanks: { en: 'A grateful nod: "This\'ll keep me going. Thank you."', zh: '他感激地點頭：「這夠我撐過去了，謝謝。」', es: 'Asiente agradecido: "Esto me mantendrá. Gracias."' } },
+      { id: 'young_parent', art: 'last2_youngparent', needs_fresh: false, satisfied_by: ['baby'],
+        arrive: { en: 'A young couple comes in, their baby asleep in their arms.', zh: '一對年輕夫妻走進來，懷裡的寶寶睡著了。', es: 'Una pareja joven entra, con su bebé dormido en brazos.' },
+        need_surface: { en: '"Anything for the little one?"', zh: '「有沒有適合小寶寶的？」', es: '"¿Hay algo para el bebé?"' },
+        need_deep: { en: '"Formula or baby rice is what we really need — and diapers or a little baby oil would be such a help too."', zh: '「奶粉或米粉是一定要的；要是還有尿布或嬰兒油，那就更好了。」', es: '"Fórmula o cereal de arroz es lo que de verdad necesitamos — y unos pañales o aceite para bebé también nos vendrían muy bien."' },
+        thanks: { en: 'They cradle the baby, relieved: "Exactly what we needed. Thank you."', zh: '他們輕輕搖著寶寶，鬆了一口氣：「這正是我們需要的，謝謝。」', es: 'Mecen al bebé, aliviados: "Justo lo que necesitábamos. Gracias."' } }
+    ],
+    broker: {
+      prompt: { en: "Quietly ask the mother if she'd be willing to share one fresh pack.", zh: '輕聲問媽媽，願不願意分一份新鮮的出來。', es: 'Pregúntale en voz baja a la madre si querría compartir un paquete fresco.' },
+      agree: { en: 'She looks at her children, smiles, and nods. Now top up her bag with staples and the oats the kids love.', zh: '她看了看孩子，微笑點頭。現在用乾糧和孩子愛的燕麥幫她把袋子補滿。', es: 'Mira a sus hijos, sonríe y asiente. Ahora completa su bolsa con básicos y la avena que les gusta.' },
+      decline: { en: 'She gently tightens her grip on the children\'s hands: "I\'m sorry — we really need both tonight." That\'s completely okay.', zh: '她輕輕握緊孩子的手：「對不起，今晚我們真的兩份都需要。」這完全沒關係。', es: 'Aprieta con ternura las manos de sus hijos: "Lo siento — hoy de verdad necesitamos los dos." Está totalmente bien.' },
+      setaside: { en: 'Turn to the shelves and put together a good pantry pack to set aside for Mr. Wang when he arrives.', zh: '轉身翻櫃子，為晚到的王伯伯先湊一份好的乾糧關懷包留著。', es: 'Ve a los estantes y arma una buena despensa para apartarla para don Wang cuando llegue.' }
+    },
+    ending_question: { en: 'After this afternoon of different paces and needs, what does "fairness" mean to you — everyone getting the same, or everyone getting what they need most right then?', zh: '這個下午，看著不同的步伐與需求，你覺得「公平」是每個人都得到一樣的分量，還是每個人都得到他當下最需要的支持？', es: 'Tras esta tarde de ritmos y necesidades distintas, ¿qué es para ti la "justicia" — que todos reciban lo mismo, o que cada quien reciba lo que más necesita en ese momento?' },
+    to_level5_hook: { en: 'Tomorrow, at the summer camp, a new kid will need someone to make room for them — but that\'s another day.', zh: '明天的夏令營，會有個新來的孩子需要人替他留個位子——不過那是另一天的事了。', es: 'Mañana, en el campamento de verano, un niño nuevo necesitará que alguien le haga espacio — pero eso es otro día.' },
+    safety_meta: { reviewed_by: 'human', no_score: true, no_correct_answer: true }
+  };
+
+  function l4Esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  /* 讀 data/the_last_two.json（pipeline 產出）；file:// 取不到時用內建鏡像，離線照樣可玩 */
+  function l4Get(cb) {
+    if (L4DATA) { cb(L4DATA); return; }
+    var url = (C.level4 && C.level4.data) || 'data/the_last_two.json';
+    try {
+      fetch(url, { cache: 'no-store' })
+        .then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (j) { L4DATA = (j && j.guests) ? j : L4_FALLBACK; cb(L4DATA); })
+        .catch(function () { L4DATA = L4_FALLBACK; cb(L4DATA); });
+    } catch (e) { L4DATA = L4_FALLBACK; cb(L4DATA); }
+  }
+
+  /* ---- 物資/關懷包小工具 ---- */
+  function l4Meta() { return C.level4 || {}; }
+  function l4ItemById(id) { return (l4Meta().pantry || []).filter(function (p) { return p.id === id; })[0]; }
+  function l4IsFresh(id) { var p = l4ItemById(id); return !!(p && p.fresh); }
+  function l4IdxOf(arr, id) { for (var i = 0; i < arr.length; i++) if (arr[i].id === id) return i; return -1; }
+  function l4Rand(rng) { var a = (rng && rng[0]) || 0, b = (rng && rng[1] != null) ? rng[1] : a; return a + Math.floor(Math.random() * (b - a + 1)); }
+  function l4HasYoungParent() { return !!(l4 && l4.queue && l4.queue.some(function (g) { return g.id === 'young_parent'; })); }
+  /* 上架的物資：嬰幼兒款（baby）只有年輕父母在場才上架，避免無謂格子 */
+  function l4Pantry() {
+    var yp = l4HasYoungParent();
+    return (l4Meta().pantry || []).filter(function (p) { return yp || !p.baby; });
+  }
+  /* 每樣自己的剩餘＝庫存 − 是否已放進袋（袋裡同一樣只放一次） */
+  function l4Remain(id) { return (l4.stock[id] || 0) - (l4.bag.indexOf(id) !== -1 ? 1 : 0); }
+  function l4BagTags() {
+    var set = {};
+    l4.bag.forEach(function (id) { var p = l4ItemById(id); (p && p.tags || []).forEach(function (t) { set[t] = true; }); });
+    return set;
+  }
+  function l4Prefers(g, p) {                 // 客人是否偏好某物資（satisfied_by ∩ item.tags）
+    var pref = g && g.satisfied_by || [], tags = p && p.tags || [];
+    return pref.some(function (t) { return tags.indexOf(t) !== -1; });
+  }
+  function l4Satisfied(g) {                   // 關懷包是否含到客人偏好的 tag
+    var tags = l4BagTags();
+    return (g.satisfied_by || []).some(function (t) { return !!tags[t]; });
+  }
+  function l4Strict(g) {                      // 專一需求（如嬰兒只吃 baby）：偏好沒被配到就不能送
+    var strict = l4Meta().strictTags || [];
+    return (g.satisfied_by || []).some(function (t) { return strict.indexOf(t) !== -1; });
+  }
+  /* 開局發每日庫存：fresh 隨機 0~2、staple 隨機 3~5、baby（在場才上架）保證夠；
+     guaranteeContested → 留一樣 fresh+soft（媽媽與王伯伯都偏好）剩 1 份，斡旋每局可成立。 */
+  function l4InitStock() {
+    var plan = l4Meta().stockPlan || {}, stock = {}, shelved = l4Pantry();
+    shelved.forEach(function (p) {
+      stock[p.id] = p.baby ? l4Rand(plan.babyEach || [2, 4])
+        : (p.fresh ? l4Rand(plan.freshEach || [0, 2]) : l4Rand(plan.stapleEach || [3, 5]));
+    });
+    if (plan.guaranteeContested) {
+      // 爭點只能是「新鮮且真的軟」（麵包／雞蛋）：媽媽要新鮮、王伯伯要軟好咀嚼，兩人都用得上。
+      // 隨機選其一固定剩 1 份 → 斡旋每局成立，且被分享的那份王伯伯吃得動。
+      var soft = shelved.filter(function (p) { return p.fresh && (p.tags || []).indexOf('soft') !== -1; });
+      if (soft.length) stock[soft[l4Rand([0, soft.length - 1])].id] = 1;
+    }
+    return stock;
+  }
+  /* 稀缺攔截：把「某樣最後 1 份新鮮」放進包要送出，而後面有未服務客人也偏好它 → 回傳那樣（必經斡旋）。
+     已歷過斡旋（brokerChoice 已定）就放行。回傳 null = 不攔截。 */
+  function l4ScarcityHit(g) {
+    if (l4.brokerChoice || !g || !l4.data.broker) return null;
+    for (var i = 0; i < l4.bag.length; i++) {
+      var p = l4ItemById(l4.bag[i]);
+      if (!p || !p.fresh) continue;                   // 只有「當前這位的包裡真的含有」的新鮮物才可能成爭點
+      if ((p.tags || []).indexOf('soft') === -1) continue;  // 爭點只能是「新鮮且軟」（麵包/雞蛋）→ 媽媽要新鮮、王伯伯吃得動
+      if ((l4.stock[p.id] || 0) !== 1) continue;      // 不是最後一份就不算搶
+      var later = l4.queue.slice(l4.idx + 1).some(function (gg) { return l4Prefers(gg, p); });
+      if (later) return p;                            // 另有未服務、且偏好這份軟麵包/雞蛋的客人 → 才登場
+    }
+    return null;
+  }
+
+  var l4 = null;
+  function startLevel4() {
+    if (window.Sound) Sound.playScene('last2');     // 祥和配樂（register 在 wire）
+    show('level4');
+    document.getElementById('level4').classList.remove('warm');
+    document.getElementById('l4end').classList.add('hidden');
+    document.getElementById('l4scarcity').classList.add('hidden');
+    document.getElementById('l4title').textContent = '';
+    l4Get(function (D) {
+      var meta = l4Meta(), guests = D.guests || [];
+      // 媽媽＋王伯伯固定（斡旋爭點那對）；其餘（夜班工作者／年輕父母）每局隨機補位 → 生→老輪替
+      var byId = {}; guests.forEach(function (g) { byId[g.id] = g; });
+      var required = []; ['mother', 'elder'].forEach(function (id) { if (byId[id]) required.push(byId[id]); });
+      var optional = guests.filter(function (g) { return required.indexOf(g) === -1; });
+      if (meta.shuffle) shuffle(optional);
+      var n = meta.guestCount || guests.length;
+      var q = required.concat(optional).slice(0, n);
+      if (meta.shuffle) shuffle(q);
+      var iM = l4IdxOf(q, 'mother'), iE = l4IdxOf(q, 'elder');   // 王伯伯（晚到）永遠排在媽媽（分享者）之後
+      if (iM > -1 && iE > -1 && iM > iE) { var t = q[iM]; q[iM] = q[iE]; q[iE] = t; }
+      l4 = {
+        data: D, queue: q, idx: 0, guest: null, stock: {},
+        bag: [], asked: false, sysSpec: null, reserveFor: null, contestedLateId: null,
+        served: 0, brokerChoice: null, contested: null, ended: false
+      };
+      l4.stock = l4InitStock();                         // 每日庫存（依 queue 是否含年輕父母決定是否上架嬰兒款）
+      document.getElementById('l4leave').textContent = T('toHub');
+      document.getElementById('l4title').textContent = L(D.title);
+      l4LoadBg();
+      flash('🧺 ' + L(D.intro));                        // 開場小字（怎麼玩在 how；這裡給情境）
+      l4NextGuest();
+    });
+  }
+
+  /* 背景圖（基底檔名 → resolveImg；載不到用 CSS 漸層 fallback） */
+  function l4LoadBg() {
+    var meta = l4Meta(), bg = document.getElementById('l4bg');
+    if (meta.img) resolveImg(meta.img, function (u) { if (u) bg.style.backgroundImage = "url('" + u + "')"; });
+    var arch = document.getElementById('l4guestArt');   // Community Care 拱門框（靜態；客人圖疊在開口裡）
+    if (meta.arch) resolveImg(meta.arch, function (u) { if (u) arch.style.backgroundImage = "url('" + u + "')"; });
+  }
+
+  function l4NextGuest() {
+    l4.busy = false;
+    if (l4.idx >= l4.queue.length) { l4Finish(); return; }
+    l4.guest = l4.queue[l4.idx];
+    l4.bag = []; l4.asked = false;
+    // 「留一份給晚到者」的引導只准出現在「它真正指涉的那位客人」身上（偏好爭點物資的晚到者），
+    // 不是無腦接在下一位身上 → 修掉「夫妻/夜班局接到『為王伯伯留乾糧』」的錯接。
+    if (l4.reserveFor && l4.guest && l4.guest.id === l4.reserveFor.id) {
+      l4.sysSpec = l4.reserveFor.guide; l4.reserveFor = null;
+      console.log('[L4] setaside guide shown for', l4.guest.id, '(the late guest who wanted the contested item)');
+    } else {
+      l4.sysSpec = null;
+      if (l4.reserveFor && l4.guest) console.log('[L4] setaside guide suppressed for', l4.guest.id, '— reserved for', l4.reserveFor.id);
+    }
+    l4RenderAll();
+  }
+
+  /* 系統補述（道謝／斡旋結果／引導）用「語言無關的 spec」存：{L:三語物件} 或 {T:i18n key}，
+     切語言時 l4RenderGuest 用當前語言重解析，不會卡在舊語言。 */
+  function l4SysText() {
+    var s = l4.sysSpec; if (!s) return '';
+    return s.T ? T(s.T) : (s.L ? L(s.L) : '');
+  }
+
+  /* 一次重繪四區（切語言時也走這裡，文字用 L()/T() 重取） */
+  function l4RenderAll() {
+    document.getElementById('l4title').textContent = L(l4.data.title);
+    document.getElementById('l4leave').textContent = T('toHub');
+    l4RenderGuest();
+    l4RenderPantry();
+    l4RenderBag();
+    l4RenderActions();
+  }
+
+  /* 客人：圖＋對白（arrive＋need_surface＋(deep)＋(sys)）＋「多問一句」 */
+  function l4RenderGuest() {
+    var g = l4.guest; if (!g) return;
+    var fig = document.getElementById('l4guestFig');       // 客人圖疊在拱門開口裡（邊緣羽化）；拱門框是 #l4guestArt 底圖
+    fig.classList.remove('show'); fig.style.backgroundImage = '';
+    fig.style.backgroundPosition = (l4Meta().figFocus || {})[g.id] || 'center 28%';   // 每位客人各自焦點，露出該露的（媽媽兩小孩）
+    fig.style.backgroundSize = (l4Meta().figSize || {})[g.id] || 'cover';              // 媽媽 contain 全可見；半身像 cover 拉近裁掉自身拱門
+    if (g.art) resolveImg(g.art, function (u) { if (u) { fig.style.backgroundImage = "url('" + u + "')"; setTimeout(function () { fig.classList.add('show'); }, 80); } });
+    document.getElementById('l4guestName').textContent = g.name ? L(g.name) : '';
+    var html = '<span>' + l4Esc(L(g.arrive)) + '</span>' +
+      '<span class="deep">' + l4Esc(L(g.need_surface)) + '</span>';
+    if (l4.asked && g.need_deep) html += '<span class="deep">' + l4Esc(L(g.need_deep)) + '</span>';
+    var sys = l4SysText();
+    if (sys) html += '<span class="sys">' + l4Esc(sys) + '</span>';
+    document.getElementById('l4dialogue').innerHTML = html;
+    var ask = document.getElementById('l4askMore');
+    ask.textContent = T('l4AskMore');
+    var canAsk = !l4.asked && g.need_deep;
+    ask.classList.toggle('hidden', !canAsk);
+    ask.onclick = function () { l4.asked = true; if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {} l4RenderGuest(); };
+  }
+
+  /* 物資列：每樣自己一份、各自顯示剩餘、各自變灰；點 → 放進關懷包 */
+  function l4RenderPantry() {
+    document.getElementById('l4pantryLabel').textContent = T('l4Pantry');
+    var row = document.getElementById('l4pantry'); row.innerHTML = '';
+    l4Pantry().forEach(function (p) {
+      var remain = l4Remain(p.id), gone = remain <= 0;
+      var el = document.createElement('div');
+      el.className = 'l4item' + (p.fresh ? ' fresh' : '') + (p.baby ? ' baby' : '') + (gone ? ' gone' : '');
+      var ico = p.img ? '<span class="l4ico l4img"></span>' : '<span class="l4ico">' + (p.icon || '🧺') + '</span>';
+      el.innerHTML = ico + '<span class="l4nm">' + l4Esc(L(p.name)) + '</span>' +
+        '<span class="l4cnt">' + Math.max(0, remain) + '</span>';
+      el.addEventListener('click', function () { l4Add(p.id); });
+      row.appendChild(el);
+      if (p.img) (function (sp) { resolveImg(p.img, function (u) { if (u && sp) sp.style.backgroundImage = "url('" + u + "')"; }); })(el.querySelector('.l4img'));
+    });
+  }
+
+  function l4Add(id) {
+    if (l4.bag.indexOf(id) !== -1) return;            // 同一樣只放一次
+    if (l4Remain(id) <= 0) { if (window.Sound && Sound.soft) try { Sound.soft(); } catch (e) {} flash('🤍 ' + T('l4FreshOut')); return; }
+    l4.bag.push(id);
+    if (window.Sound && Sound.pick) try { Sound.pick(); } catch (e) {}
+    l4RenderPantry(); l4RenderBag(); l4RenderActions();
+  }
+  function l4Remove(id) {
+    l4.bag = l4.bag.filter(function (x) { return x !== id; });
+    if (window.Sound && Sound.unpick) try { Sound.unpick(); } catch (e) {}
+    l4RenderPantry(); l4RenderBag(); l4RenderActions();
+  }
+
+  function l4RenderBag() {
+    document.getElementById('l4bagHead').textContent = '🎁 ' + T('l4Bag');
+    var bag = document.getElementById('l4bag'); bag.innerHTML = '';
+    if (!l4.bag.length) {
+      var e = document.createElement('div'); e.className = 'l4bagEmpty'; e.textContent = T('l4BagEmpty'); bag.appendChild(e); return;
+    }
+    l4.bag.forEach(function (id) {
+      var p = l4ItemById(id); if (!p) return;
+      var pin = document.createElement('div'); pin.className = 'l4pin';
+      var ic = p.img ? '<span class="l4pimg"></span>' : '<span>' + (p.icon || '🧺') + '</span>';
+      pin.innerHTML = ic + '<span>' + l4Esc(L(p.name)) + '</span><span class="x">×</span>';
+      pin.querySelector('.x').addEventListener('click', function () { l4Remove(id); });
+      bag.appendChild(pin);
+      if (p.img) (function (sp) { resolveImg(p.img, function (u) { if (u && sp) sp.style.backgroundImage = "url('" + u + "')"; }); })(pin.querySelector('.l4pimg'));
+    });
+  }
+
+  /* 行動鈕：送出關懷包（稀缺攔截在 l4Give 內處理，不再有可略過的側邊鈕） */
+  function l4RenderActions() {
+    var box = document.getElementById('l4actions'); box.innerHTML = '';
+    var give = document.createElement('button'); give.className = 'l4act give';
+    give.textContent = T('l4Give');
+    give.disabled = !l4.bag.length;
+    give.addEventListener('click', l4Give);
+    box.appendChild(give);
+  }
+
+  /* 稀缺時刻：必經的小覆蓋層（點題＋三個等價選項）。跳不過；三條都讓人人被照顧、回饋一致。 */
+  function l4OpenScarcity(item) {
+    l4.contested = item;
+    var late = l4.queue.slice(l4.idx + 1).filter(function (g) { return l4Prefers(g, item); })[0];
+    l4.contestedLateId = late ? late.id : null;   // 真正偏好這份爭點物資的晚到者（setaside 只能指涉他）
+    var name = (late && late.name) ? L(late.name) : T('l4SomeoneLate');
+    document.getElementById('l4scLine').textContent = (T('l4ScarcityLine') || '').replace('{name}', name);
+    var box = document.getElementById('l4scOpts'); box.innerHTML = '';
+    function opt(label, fn) {
+      var b = document.createElement('button'); b.className = 'l4act broker';
+      b.textContent = label; b.addEventListener('click', fn); box.appendChild(b);
+    }
+    opt(L(l4.data.broker.prompt), l4BrokerAsk);                                   // 1. 問對方讓給另一位（隨機）
+    opt(T('l4OptGiveCurrent'), function () { l4ApplyBroker('keep', false); });    // 2. 給這位、幫另一位用其他物資湊
+    opt(T('l4OptGiveLate'), function () { l4ApplyBroker('yield', false); });      // 3. 留給晚到的、幫這位用其他物資湊
+    document.getElementById('l4scarcity').classList.remove('hidden');
+    if (window.Sound && Sound.soft) try { Sound.soft(); } catch (e) {}
+  }
+
+  /* 選項1：問對方 → 隨機 同意(讓給晚到的=yield)/婉拒(自己留=keep)，結果在覆蓋層明確顯示 */
+  function l4BrokerAsk() {
+    l4ApplyBroker(Math.random() < 0.5 ? 'yield' : 'keep', true);
+  }
+
+  /* 套用斡旋結果。yield＝這份留給晚到的那位、當前這位用其他物資；keep＝這份給當前這位、晚到的用其他物資。
+     歷過後 brokerChoice 已定，回主畫面讓玩家把袋子湊好再送出（不再被攔）。回饋一致。 */
+  function l4ApplyBroker(mode, viaAsk) {
+    var b = l4.data.broker || {};
+    l4.brokerChoice = mode;
+    if (mode === 'yield') {
+      if (l4.contested) l4.bag = l4.bag.filter(function (id) { return id !== l4.contested.id; }); // 這份不被當前這位帶走
+      l4.sysSpec = viaAsk ? { L: b.agree } : { T: 'l4YieldConfirm' };
+      l4.reserveFor = null;                                  // 晚到的那位之後自然拿到這份新鮮，不需留乾糧引導
+    } else {                                                 // keep：這份給當前這位 → 替「真正偏好它的晚到者」留一份乾糧
+      l4.sysSpec = viaAsk ? { L: b.decline } : { T: 'l4KeepConfirm' };
+      l4.reserveFor = l4.contestedLateId ? { id: l4.contestedLateId, guide: { L: b.setaside } } : null;
+    }
+    console.log('[L4] broker resolved:', mode, '| reserve setaside for:', (l4.reserveFor ? l4.reserveFor.id : 'none'));
+    if (window.Sound && Sound.clue) try { Sound.clue(); } catch (e) {}
+    // 點選後保留結果畫面約 3 秒（明確顯示選了哪個、發生什麼）再進下一步，讓玩家看清楚
+    var opts = document.getElementById('l4scOpts');
+    opts.innerHTML = '<div class="l4sc-result">' + l4Esc(l4SysText()) + '</div>';
+    if (l4._brokerTimer) clearTimeout(l4._brokerTimer);
+    l4._brokerTimer = setTimeout(function () {
+      l4._brokerTimer = null;
+      document.getElementById('l4scarcity').classList.add('hidden');
+      l4RenderGuest(); l4RenderPantry(); l4RenderBag(); l4RenderActions();
+    }, 3000);
+  }
+
+  /* 給出關懷包：稀缺成立 → 攔截進斡旋（跳不過）；嬰兒等專一需求未配到 → 溫柔重試；
+     配到偏好 → 暖暖道謝；只剩乾糧 → 誠實溫柔一句。都給回饋、都不是失敗。 */
+  /* 斡旋自我審視：說清楚這局到底有沒有資格跳斡旋，理由印 console 給明暺驗證 */
+  function l4SuppressReason(g) {
+    if (l4.brokerChoice) return 'already brokered this round';
+    var freshSoft = l4.bag.filter(function (id) { var p = l4ItemById(id); return p && p.fresh && (p.tags || []).indexOf('soft') !== -1; });
+    if (!freshSoft.length) return 'bag holds no fresh+soft item (only bread/eggs can be contested)';
+    var last = freshSoft.filter(function (id) { return (l4.stock[id] || 0) === 1; });
+    if (!last.length) return 'the fresh+soft item is not the last one (stock > 1)';
+    var anyLater = last.some(function (id) { var p = l4ItemById(id); return l4.queue.slice(l4.idx + 1).some(function (gg) { return l4Prefers(gg, p); }); });
+    if (!anyLater) return 'no later unserved guest prefers that item';
+    return 'eligible';
+  }
+  function l4Give() {
+    var g = l4.guest; if (!g || !l4.bag.length || l4.busy) return;   // busy：送出後過場中，擋連點重複送
+    var hit = l4ScarcityHit(g);
+    if (hit) {                                               // 稀缺一刻，必經斡旋
+      console.log('[L4] broker FIRED — contested "' + hit.id + '" (fresh+soft, last 1) held by "' + g.id + '"; a later guest wants it');
+      l4OpenScarcity(hit); return;
+    }
+    console.log('[L4] broker suppressed for "' + g.id + '" — ' + l4SuppressReason(g));
+    var matched = l4Satisfied(g);
+    if (!matched && l4Strict(g)) {                           // 嬰兒只吃 baby，乾糧不能充數
+      if (window.Sound && Sound.soft) try { Sound.soft(); } catch (e) {}
+      flash('🍼 ' + T('l4BabyHint'));
+      return;
+    }
+    // 提交：消耗各自庫存；立刻清空袋子＋上鎖，避免過場中重複送出（連點/快點）
+    l4.busy = true;
+    l4.bag.forEach(function (id) { l4.stock[id] = Math.max(0, (l4.stock[id] || 0) - 1); });
+    l4.bag = [];
+    l4.sysSpec = matched ? { L: g.thanks } : { T: 'l4StapleOnly' };   // 配到偏好→暖；只剩乾糧→誠實一句（spec：切語言即時翻）
+    l4RenderGuest(); l4RenderBag(); l4RenderActions();
+    if (window.Sound) { try { (Sound.success ? Sound.success(0) : Sound.coin && Sound.coin()); } catch (e) {} }
+    // 回饋：沿用既有世界數值（每照顧一人 = perHome），存得住
+    var R = l4Meta().perGuestReward || C.perHome;
+    SAVE.kindnessMin += (R.minutes || C.perHome.minutes);
+    SAVE.coins += (R.coins || C.perHome.coins);
+    SAVE.bamboo += (R.coins || C.perHome.coins);
+    SAVE.sprout.growth += (R.growth || C.perHome.growth);
+    persist(); refreshGlobals();
+    var art = document.getElementById('l4guestArt').getBoundingClientRect();
+    var cx = art.left + art.width / 2, cy = art.top + art.height / 2;
+    flyTo('sproutRing', cx, cy, 'flydot', function () { refreshGlobals(); pulseRing(0); });
+    flyTo('bamboo', cx, cy, 'flycoin', function () { if (window.Sound && Sound.coin) try { Sound.coin(); } catch (e) {} bambooBump(); });
+    if (window.Sound && Sound.grow) try { Sound.grow(); } catch (e) {}
+    // 下一位
+    l4.served += 1; l4.idx += 1;
+    setTimeout(l4NextGuest, 1100);
+  }
+
+  /* 全員被照顧 → 互助站暖起來 → 反思問句（只呈現）→ 第五關勾子 */
+  function l4Finish() {
+    l4.ended = true;
+    document.getElementById('level4').classList.add('warm');
+    SAVE.lit[C.level4.id] = true; persist();          // 那一區在地圖上開花（完成標記，非分數）
+    l4ShowEnd();
+  }
+  function l4ShowEnd() {
+    var D = l4.data;
+    document.getElementById('l4endTitle').textContent = L(D.title);
+    document.getElementById('l4plant').innerHTML = plantSVG(SAVE.sprout.growth, 130);
+    document.getElementById('l4endLine').textContent = T('l4Warm');
+    document.getElementById('l4endQ').textContent = L(D.ending_question);
+    document.getElementById('l4endHook').textContent = D.to_level5_hook ? L(D.to_level5_hook) : '';
+    document.getElementById('l4again').textContent = T('l4Again');
+    document.getElementById('l4hub').textContent = T('toHub');
+    applyFeedback();
+    document.getElementById('l4end').classList.remove('hidden');
+  }
+
+  /* 切語言時原地重繪（進行中→重繪四區；結算中→重繪結算卡） */
+  function l4Relabel() {
+    if (!l4) return;
+    if (!document.getElementById('l4end').classList.contains('hidden')) { l4ShowEnd(); return; }
+    l4RenderAll();
+    if (!document.getElementById('l4scarcity').classList.contains('hidden')) {
+      if (l4._brokerTimer) document.getElementById('l4scOpts').innerHTML = '<div class="l4sc-result">' + l4Esc(l4SysText()) + '</div>';
+      else if (l4.contested) l4OpenScarcity(l4.contested);
+    }
   }
 
   /* ===================================================================
@@ -1748,6 +2168,13 @@
     document.getElementById('l3leave').addEventListener('click', function () { returnToHub(); });
     document.getElementById('l3again').addEventListener('click', startLevel3);
     document.getElementById('l3hub').addEventListener('click', function () { Stillness.open(returnToHub); });
+    // 關4 · 道德兩難「最後兩份」
+    if (C.level4) {
+      Sound.register('last2', C.level4.music, 0.22, false);
+      document.getElementById('l4leave').addEventListener('click', function () { returnToHub(); });
+      document.getElementById('l4again').addEventListener('click', startLevel4);
+      document.getElementById('l4hub').addEventListener('click', function () { Stillness.open(returnToHub); });
+    }
 
     // 底部面板收合
     document.getElementById('panelTab').addEventListener('click', function () {

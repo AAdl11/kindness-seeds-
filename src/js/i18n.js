@@ -80,7 +80,32 @@ window.I18N = {
       '🎍 南蘇丹里程碑：靠倒竹筒推進',
       '✉️ 花蓮里程碑：靠關3 送信推進'
     ],
-    tapClue: '（點背景上發亮的點）'
+    tapClue: '（點背景上發亮的點）',
+    // 關4・互助站「最後兩份」（resourceful_helper）
+    l4Pantry: '今天還剩的物資',
+    l4FreshLeft: '新鮮剩',
+    l4AskMore: '多問一句',
+    l4Bag: '關懷包',
+    l4BagEmpty: '從上面的物資挑東西放進來。',
+    l4Give: '送出關懷包',
+    l4Broker: '聊聊分一份',
+    l4ScarcityLine: '這是今天最後的新鮮了——{name}還在路上，走得慢、晚點才到。',
+    l4SomeoneLate: '有人',
+    l4SetAside: '留一份給晚到的人',
+    l4StapleOnly: '今天沒有新鮮的了，這些乾糧也能撐著——謝謝你。',
+    l4BabyHint: '小寶寶還沒辦法吃這個——找找奶粉或米粉吧。沒關係，慢慢來。',
+    l4OptGiveCurrent: '先給這一位，幫晚到的那位用其他物資湊一份',
+    l4OptGiveLate: '留給晚到的那位，幫這一位用其他物資湊一份',
+    l4KeepConfirm: '好——這份給這一位；晚到的那位，我們用其他物資湊。',
+    l4YieldConfirm: '好——這份留給晚到的那位；這一位，我們用其他物資湊。',
+    l4Hint: '也許不太合適——再看看他需要的，換一樣試試。沒關係，慢慢來。',
+    l4FreshOut: '新鮮的發完了，看看乾糧能怎麼湊。',
+    l4Served: '照顧到了',
+    l4Continue: '繼續',
+    l4Reflect: '靜靜想一想',
+    l4ReflectNote: '沒有標準答案，也不用回答——把它放在心裡就好。',
+    l4Warm: '互助站暖暖的——今天，沒有人被忘記。',
+    l4Again: '再走一次'
   },
   en: {
     title: 'Seeds of Kindness · Hunters Point',
@@ -155,7 +180,32 @@ window.I18N = {
       '🎍 South Sudan milestone: advances by pouring bamboo',
       '✉️ Hualien milestone: advances by sending letters in Level 3'
     ],
-    tapClue: '(tap the glowing dots)'
+    tapClue: '(tap the glowing dots)',
+    // Level 4 · mutual-aid station "The Last Two" (resourceful_helper)
+    l4Pantry: "What's still on the shelves",
+    l4FreshLeft: 'Fresh left',
+    l4AskMore: 'Ask one more thing',
+    l4Bag: 'Care pack',
+    l4BagEmpty: 'Pick items from the shelves above to add them here.',
+    l4Give: 'Hand over the care pack',
+    l4Broker: 'Talk about sharing one',
+    l4ScarcityLine: "This is the last of today's fresh — and {name} is still on the way, moving slowly.",
+    l4SomeoneLate: 'someone',
+    l4SetAside: 'Set one aside for whoever comes late',
+    l4StapleOnly: "No fresh left today, but these staples will carry you through — thank you.",
+    l4BabyHint: "The little one can't manage this yet — look for formula or baby rice. No rush.",
+    l4OptGiveCurrent: 'Give this one now; build the other a pack from other supplies',
+    l4OptGiveLate: 'Save it for whoever comes later; build this one a pack from other supplies',
+    l4KeepConfirm: "Okay — this one goes to them; we'll put the late arrival's pack together from other supplies.",
+    l4YieldConfirm: "Okay — this stays for whoever comes late; we'll build this one's pack from other supplies.",
+    l4Hint: "That may not quite fit — look again at what they need and try another. No rush, take your time.",
+    l4FreshOut: 'The fresh is all gone — see what the staples can do.',
+    l4Served: 'cared for',
+    l4Continue: 'Continue',
+    l4Reflect: 'A quiet question',
+    l4ReflectNote: 'There is no right answer, and none is collected — just hold it for a moment.',
+    l4Warm: 'The station feels warm — today, no one was forgotten.',
+    l4Again: 'Walk it again'
   },
   es: {
     title: 'Semillas de Bondad · Hunters Point',
@@ -230,7 +280,32 @@ window.I18N = {
       '🎍 Hito Sudán del Sur: avanza al verter el bambú',
       '✉️ Hito Hualien: avanza al enviar cartas en el Nivel 3'
     ],
-    tapClue: '(toca los puntos brillantes)'
+    tapClue: '(toca los puntos brillantes)',
+    // Nivel 4 · centro de ayuda "Los últimos dos" (resourceful_helper)
+    l4Pantry: 'Lo que queda en los estantes',
+    l4FreshLeft: 'Fresco restante',
+    l4AskMore: 'Preguntar algo más',
+    l4Bag: 'Paquete de cuidado',
+    l4BagEmpty: 'Elige cosas de los estantes de arriba para añadirlas aquí.',
+    l4Give: 'Entregar el paquete',
+    l4Broker: 'Hablar de compartir uno',
+    l4ScarcityLine: 'Esto es lo último fresco de hoy — y {name} aún viene en camino, despacio.',
+    l4SomeoneLate: 'alguien',
+    l4SetAside: 'Apartar uno para quien llegue tarde',
+    l4StapleOnly: 'Hoy no queda nada fresco, pero estos básicos te sostendrán — gracias.',
+    l4BabyHint: 'El bebé todavía no puede con esto — busca fórmula o cereal de arroz. Con calma.',
+    l4OptGiveCurrent: 'Dárselo a este ahora; armar el del otro con otros alimentos',
+    l4OptGiveLate: 'Guardarlo para quien llegue tarde; armar el de este con otros alimentos',
+    l4KeepConfirm: 'Bien — este es para él; el del que llega tarde lo armamos con otros alimentos.',
+    l4YieldConfirm: 'Bien — esto queda para quien llegue tarde; el de este lo armamos con otros alimentos.',
+    l4Hint: 'Quizá no sea lo más adecuado — mira otra vez lo que necesita e intenta otra cosa. Sin prisa, con calma.',
+    l4FreshOut: 'Ya no queda fresco — mira qué pueden hacer los básicos.',
+    l4Served: 'atendido',
+    l4Continue: 'Continuar',
+    l4Reflect: 'Una pregunta serena',
+    l4ReflectNote: 'No hay respuesta correcta, y no se recoge ninguna — solo guárdala un momento.',
+    l4Warm: 'El centro se siente cálido — hoy nadie quedó olvidado.',
+    l4Again: 'Recorrerlo otra vez'
   }
 };
 

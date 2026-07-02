@@ -1,0 +1,62 @@
+{
+  "id": "the_last_two",
+  "type": "resourceful_helper",
+  "title": { "en": "The Last Two", "zh": "最後兩份", "es": "Los últimos dos" },
+  "intro": {
+    "en": "Closing time at the mutual-aid station. A few neighbors are still on their way, and not much is left on the shelves. Let's make sure no one goes home forgotten.",
+    "zh": "互助站快打烊了。還有幾位鄰居在路上，櫃上也剩得不多。我們來想辦法，讓今天沒有人被忘記。",
+    "es": "Hora de cerrar en el centro de ayuda. Aún vienen algunos vecinos y queda poco en los estantes. Vamos a procurar que nadie se vaya olvidado."
+  },
+  "guests": [
+    {
+      "id": "mother", "art": "last2_mother", "needs_fresh": true,
+      "satisfied_by": ["fresh", "fruit"],
+      "arrive": { "en": "A young mother reaches the counter, holding her two children by the hand.", "zh": "一位年輕媽媽牽著兩個孩子走到櫃台前。", "es": "Una madre joven llega al mostrador, tomando de la mano a sus dos hijos." },
+      "need_surface": { "en": "\"Is there anything fresh left for dinner tonight?\"", "zh": "「今晚還有沒有新鮮的可以當晚餐？」", "es": "\"¿Queda algo fresco para la cena de hoy?\"" },
+      "need_deep": { "en": "\"The kids haven't had fresh fruit in days — they'd be so happy.\"", "zh": "「孩子們好幾天沒吃到新鮮水果了，有的話他們會很開心。」", "es": "\"Los niños llevan días sin fruta fresca — se pondrían muy felices.\"" },
+      "thanks": { "en": "She breathes a sigh of relief; the children chatter happily about dinner.", "zh": "她鬆了一口氣，孩子們高興地討論今晚的晚餐。", "es": "Suspira aliviada; los niños hablan felices de la cena." }
+    },
+    {
+      "id": "elder", "art": "last2_elder", "needs_fresh": true,
+      "satisfied_by": ["soft", "staple"],
+      "name": { "en": "Mr. Wang", "zh": "王伯伯", "es": "don Wang" },
+      "arrive": { "en": "Mr. Wang arrives late, leaning on his cane, wiping his brow.", "zh": "王伯伯晚到了，拄著拐杖、擦著汗。", "es": "Don Wang llega tarde, apoyado en su bastón, secándose la frente." },
+      "need_surface": { "en": "\"Anything left for these slow legs of mine?\"", "zh": "「我這雙走不快的腿，還趕得上有東西嗎？」", "es": "\"¿Queda algo para estas piernas que ya no corren?\"" },
+      "need_deep": { "en": "\"Something soft I can chew would be a real kindness.\"", "zh": "「有軟一點、好咀嚼的就太好了。」", "es": "\"Algo blando que pueda masticar sería una gran bondad.\"" },
+      "thanks": { "en": "His eyes fill with gratitude: \"Tonight I won't just get by on crackers.\"", "zh": "他眼裡滿是感激：「今晚不用只吃餅乾了。」", "es": "Sus ojos se llenan de gratitud: \"Hoy no cenaré solo galletas.\"" }
+    },
+    {
+      "id": "night_worker", "art": "last2_nightworker", "needs_fresh": false,
+      "satisfied_by": ["ready_to_eat", "portable"],
+      "arrive": { "en": "A tired night-shift worker stops by on the way to a long shift.", "zh": "一位疲憊的夜班工作者，趕著上整夜的班，路過進來。", "es": "Un trabajador del turno noche se detiene camino a una larga jornada." },
+      "need_surface": { "en": "\"Something quick I can take with me?\"", "zh": "「有沒有能帶著走、馬上吃的？」", "es": "\"¿Algo rápido que me pueda llevar?\"" },
+      "need_deep": { "en": "\"Something to get me through till morning, no time to cook.\"", "zh": "「能撐到天亮就好，沒時間煮。」", "es": "\"Algo que me aguante hasta la mañana, sin tiempo de cocinar.\"" },
+      "thanks": { "en": "A grateful nod: \"This'll keep me going. Thank you.\"", "zh": "他感激地點頭：「這夠我撐過去了，謝謝。」", "es": "Asiente agradecido: \"Esto me mantendrá. Gracias.\"" }
+    },
+    {
+      "id": "young_parent", "art": "last2_youngparent", "needs_fresh": false,
+      "satisfied_by": ["baby"],
+      "arrive": { "en": "A young couple comes in, their baby asleep in their arms.", "zh": "一對年輕夫妻走進來，懷裡的寶寶睡著了。", "es": "Una pareja joven entra, con su bebé dormido en brazos." },
+      "need_surface": { "en": "\"Anything for the little one?\"", "zh": "「有沒有適合小寶寶的？」", "es": "\"¿Hay algo para el bebé?\"" },
+      "need_deep": { "en": "\"Formula or baby rice is what we really need — and diapers or a little baby oil would be such a help too.\"", "zh": "「奶粉或米粉是一定要的；要是還有尿布或嬰兒油，那就更好了。」", "es": "\"Fórmula o cereal de arroz es lo que de verdad necesitamos — y unos pañales o aceite para bebé también nos vendrían muy bien.\"" },
+      "thanks": { "en": "They cradle the baby, relieved: \"Exactly what we needed. Thank you.\"", "zh": "他們輕輕搖著寶寶，鬆了一口氣：「這正是我們需要的，謝謝。」", "es": "Mecen al bebé, aliviados: \"Justo lo que necesitábamos. Gracias.\"" }
+    }
+  ],
+  "broker": {
+    "prompt": { "en": "Quietly ask the mother if she'd be willing to share one fresh pack.", "zh": "輕聲問媽媽，願不願意分一份新鮮的出來。", "es": "Pregúntale en voz baja a la madre si querría compartir un paquete fresco." },
+    "agree": { "en": "She looks at her children, smiles, and nods. Now top up her bag with staples and the oats the kids love.", "zh": "她看了看孩子，微笑點頭。現在用乾糧和孩子愛的燕麥幫她把袋子補滿。", "es": "Mira a sus hijos, sonríe y asiente. Ahora completa su bolsa con básicos y la avena que les gusta." },
+    "decline": { "en": "She gently tightens her grip on the children's hands: \"I'm sorry — we really need both tonight.\" That's completely okay.", "zh": "她輕輕握緊孩子的手：「對不起，今晚我們真的兩份都需要。」這完全沒關係。", "es": "Aprieta con ternura las manos de sus hijos: \"Lo siento — hoy de verdad necesitamos los dos.\" Está totalmente bien." },
+    "setaside": { "en": "Turn to the shelves and put together a good pantry pack to set aside for Mr. Wang when he arrives.", "zh": "轉身翻櫃子，為晚到的王伯伯先湊一份好的乾糧關懷包留著。", "es": "Ve a los estantes y arma una buena despensa para apartarla para don Wang cuando llegue." }
+  },
+  "ending_question": {
+    "en": "After this afternoon of different paces and needs, what does \"fairness\" mean to you — everyone getting the same, or everyone getting what they need most right then?",
+    "zh": "這個下午，看著不同的步伐與需求，你覺得「公平」是每個人都得到一樣的分量，還是每個人都得到他當下最需要的支持？",
+    "es": "Tras esta tarde de ritmos y necesidades distintas, ¿qué es para ti la \"justicia\" — que todos reciban lo mismo, o que cada quien reciba lo que más necesita en ese momento?"
+  },
+  "to_level5_hook": {
+    "en": "Tomorrow, at the summer camp, a new kid will need someone to make room for them — but that's another day.",
+    "zh": "明天的夏令營，會有個新來的孩子需要人替他留個位子——不過那是另一天的事了。",
+    "es": "Mañana, en el campamento de verano, un niño nuevo necesitará que alguien le haga espacio — pero eso es otro día."
+  },
+  "safety_meta": { "reviewed_by": "human", "no_score": true, "no_correct_answer": true }
+}

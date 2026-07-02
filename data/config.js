@@ -111,6 +111,66 @@ window.CONFIG = {
     ]
   },
 
+  /* 關4・互助站「最後兩份」（resourceful_helper：問→湊→稀缺斡旋）。
+     presentation＋遊戲規則住這（pipeline 不碰）；會變動的情境內容讀自 data/the_last_two.json。 */
+  level4: {
+    id: 'the_last_two',
+    type: 'resourceful_helper',
+    data: 'data/the_last_two.json',            // runtime 讀這份（pipeline 人審後的產出）；fetch 失敗時用內建 fallback
+    music: 'assets/audio/level4_care.mp3',     // 第四關專屬曲（溫柔・有希望）；進關播放、循環、離開停
+    img: 'last2_scene',                         // 互助站室內背景（基底檔名；副檔名自動偵測）
+    arch: 'last2_arch',                         // Community Care 拱門框；客人站進中間暖光開口、邊緣羽化
+    // 每位客人圖在開口裡的焦點＋縮放：媽媽要露出兩個小孩 → contain 整張裝進、偏下；半身像 → cover 拉近偏上
+    figFocus: { mother: 'center 64%', young_parent: 'center 32%', elder: 'center 24%', night_worker: 'center 20%' },
+    figSize: { mother: 'contain' },
+    // 美術基底檔名（離線：assets/images/ 自動找副檔名）。pipeline 的 JSON 不帶圖，圖一律住在這。
+    cast: { scene: 'last2_scene', street: 'last2_street', packages: 'last2_packages', neighbor: 'last2_neighbor' },
+    guestCount: 3,            // 媽媽＋王伯伯固定（斡旋爭點）＋第3位每局在 {夜班工作者, 年輕父母} 輪替
+    shuffle: true,            // 隨機抽選/排列（媽媽仍排在晚到的王伯伯之前，斡旋敘事才成立）
+    // 每照顧一位客人的回饋；沿用 perHome（同一套世界數值），這裡可覆寫
+    perGuestReward: { growth: 1, coins: 3, minutes: 10 },
+    // 每日庫存（每樣自己一份）。開局依此隨機發貨 → 重玩性＋真實「某天不夠」；乾糧永遠足、不卡關。
+    stockPlan: {
+      freshEach: [0, 2],          // 每樣新鮮類隨機 0~2（有時某樣就是 0）
+      stapleEach: [3, 5],         // 乾糧/基本類隨機 3~5（一定夠）
+      babyEach: [2, 4],           // 嬰兒款（年輕父母在場才上架，且保證夠）
+      guaranteeContested: true    // 保證有「一樣新鮮、剩 1 份、且媽媽＋王伯伯都偏好」→ 斡旋每局可成立
+    },
+    strictTags: ['baby'],         // 專一需求：嬰兒只吃 baby（乾糧不能充數）；其餘 satisfied_by 視為「偏好」
+    // 物資清單：每樣有自己的庫存（A）。fresh:true＝新鮮（少且每日浮動）；baby＝只有年輕父母在場才上架。
+    pantry: [
+      // —— 新鮮類：想要、但庫存少且每日隨機 ——
+      // 生水果/生菜＝新鮮但「不算長者軟好咀嚼」→ 不標 soft（牙口不好咬不動）
+      { id: 'fruit', icon: '🍎', tags: ['fresh', 'fruit'], fresh: true, name: { zh: '新鮮水果', en: 'Fresh fruit', es: 'Fruta fresca' } },
+      { id: 'veg', icon: '🥬', tags: ['fresh', 'veg'], fresh: true, name: { zh: '新鮮蔬菜', en: 'Fresh vegetables', es: 'Verduras frescas' } },
+      // 雞蛋、麵包＝唯二「新鮮且真的軟」→ 同時滿足媽媽（新鮮）與王伯伯（軟）；爭點只會是這兩樣之一
+      { id: 'eggs', icon: '🥚', tags: ['fresh', 'soft', 'protein'], fresh: true, name: { zh: '雞蛋', en: 'Eggs', es: 'Huevos' } },
+      { id: 'bread', icon: '🍞', tags: ['fresh', 'soft'], fresh: true, name: { zh: '新鮮麵包', en: 'Fresh bread', es: 'Pan fresco' } },
+      { id: 'milk', icon: '🥛', tags: ['fresh', 'kids', 'drink'], fresh: true, name: { zh: '牛奶', en: 'Milk', es: 'Leche' } },
+      // —— 乾糧/基本類：一定有（庫存足）——
+      { id: 'rice', icon: '🍚', tags: ['staple'], name: { zh: '米', en: 'Rice', es: 'Arroz' } },
+      { id: 'crackers', icon: '🍪', tags: ['staple', 'ready_to_eat', 'portable'], name: { zh: '乾糧／餅乾', en: 'Crackers', es: 'Galletas' } },
+      { id: 'oats', icon: '🥣', tags: ['staple', 'soft', 'kids'], name: { zh: '燕麥', en: 'Oats', es: 'Avena' } },
+      { id: 'can', icon: '🥫', tags: ['staple', 'protein', 'ready_to_eat'], name: { zh: '罐頭（魚／肉）', en: 'Canned fish/meat', es: 'Lata (pescado/carne)' } },
+      { id: 'soup', icon: '🍲', tags: ['staple', 'soft', 'ready_to_eat', 'portable'], name: { zh: '罐頭湯', en: 'Canned soup', es: 'Sopa enlatada' } },
+      { id: 'bar', icon: '🍫', tags: ['staple', 'ready_to_eat', 'portable'], name: { zh: '能量棒', en: 'Energy bar', es: 'Barra energética' } },
+      { id: 'water', icon: '💧', tags: ['staple', 'drink'], name: { zh: '瓶裝水', en: 'Bottled water', es: 'Agua' } },
+      { id: 'oil', img: 'item_oil', tags: ['staple', 'pantry'], name: { zh: '食用油', en: 'Cooking oil', es: 'Aceite' } },
+      // —— 嬰幼兒物資：baby:true → 只在年輕父母在場才上架。
+      //    food（'baby' tag）＝必要的嬰兒食物（奶粉／米粉，擇一即可）；
+      //    care（'care' tag，無 'baby'）＝尿布／嬰兒油，加分照顧品、非必要、不能當食物充數。
+      { id: 'formula', icon: '🍼', tags: ['baby', 'kids', 'drink'], baby: true, name: { zh: '奶粉', en: 'Infant formula', es: 'Fórmula' } },
+      { id: 'babyrice', icon: '🥣', tags: ['baby', 'soft', 'kids'], baby: true, name: { zh: '米粉（嬰兒）', en: 'Baby rice cereal', es: 'Cereal de arroz' } },
+      { id: 'diaper', img: 'item_diaper', tags: ['care'], baby: true, name: { zh: '尿布', en: 'Diapers', es: 'Pañales' } },
+      { id: 'babyoil', img: 'item_babyoil', tags: ['care'], baby: true, name: { zh: '嬰兒油', en: 'Baby oil', es: 'Aceite para bebé' } }
+    ],
+    how: {
+      zh: '互助站快打烊、東西不多。問出每個人的需要，翻物資配一份合適的關懷包；不夠時想辦法分享，讓沒有人空手回家。',
+      en: 'The station is closing and supplies are low. Ask what each person needs, build a fitting care pack from the shelves, and when it runs short, find a way to share so no one leaves empty-handed.',
+      es: 'El centro va a cerrar y queda poco. Pregunta qué necesita cada quien, arma un paquete adecuado y, cuando falte, busca cómo compartir para que nadie se vaya con las manos vacías.'
+    }
+  },
+
   /* 關2・環保小尖兵（分類整理；資料驅動，整關可換內容＝AIAO 母模） */
   level2: {
     id: 'eco',

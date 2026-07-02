@@ -203,6 +203,62 @@
   </div>
 </div>
 
+<!-- ============ 關4 · 互助站「最後兩份」（resourceful_helper：問→湊→斡旋） ============ -->
+<div id="level4">
+  <div id="l4scene">
+    <div id="l4bg"></div>        <!-- 互助站室內背景（載到才覆蓋漸層 fallback） -->
+    <div id="l4soft"></div>      <!-- 柔光底＋暗角，主體清楚 -->
+  </div>
+  <div id="l4top">
+    <div id="l4title"></div>
+    <button id="l4leave"></button>
+  </div>
+  <!-- flex 直欄：物資（可換行）→ 客人 → 關懷包；不擋頂列/HUD，矮畫面也排得下 -->
+  <div id="l4main">
+    <!-- 上方：今天的物資（每樣自己一份；會變多 → 自動換行） -->
+    <div id="l4pantryWrap">
+      <div id="l4pantryHead"><span id="l4pantryLabel"></span></div>
+      <div id="l4pantry"></div>
+    </div>
+    <!-- 中段：當前客人（圖＋對白＋多問一句） -->
+    <div id="l4guest">
+      <div id="l4guestArt"><div id="l4guestFig"></div></div>
+      <div id="l4guestPanel">
+        <div id="l4guestName"></div>
+        <div id="l4dialogue"></div>
+        <button id="l4askMore" class="l4mini hidden"></button>
+      </div>
+    </div>
+    <!-- 下方：關懷包（湊）＋送出 -->
+    <div id="l4bagWrap">
+      <div id="l4bagHead"></div>
+      <div id="l4bag"></div>
+      <div id="l4actions"></div>   <!-- 送出關懷包，JS 注入 -->
+    </div>
+  </div>
+  <!-- 稀缺時刻：送出含「最後一份新鮮、且別人也想要」時，必經此關（跳不過）。三個等價選項。 -->
+  <div id="l4scarcity" class="hidden">
+    <div class="l4sc-card">
+      <div id="l4scLine" class="l4sc-line"></div>
+      <div id="l4scOpts"></div>   <!-- 三個選項，JS 注入 -->
+    </div>
+  </div>
+  <div id="l4end" class="hidden">
+    <div class="card">
+      <h1 id="l4endTitle"></h1>
+      <div id="l4plant" class="endplant"></div>
+      <p id="l4endLine" class="endwarm"></p>
+      <p id="l4endQ" class="endwarm"></p>
+      <p id="l4endHook" class="l4hook"></p>
+      <div class="row">
+        <button class="btn" id="l4again"></button>
+        <button class="btn blue" id="l4hub"></button>
+        <a class="btn fbBtn" id="l4fb"></a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ============ 結尾 · 天黑了 ============ -->
 <section id="ending" class="screen hidden">
   <div class="bg" style="background-image:url('assets/images/rv_park_night.png')"></div>

@@ -60,6 +60,10 @@
   .chips button{border:1.5px solid var(--line);background:rgba(255,255,255,.92);font:inherit;font-weight:800;font-size:15px;
     padding:13px 16px;border-radius:14px;cursor:pointer;text-align:center;}
   .chips button.sel{background:var(--green);color:#fff;border-color:var(--green);}
+  /* 一指點大顆選項：情緒（可複選）大 emoji；年齡兩欄換行 */
+  .chips button .em{font-size:24px;margin-right:8px;vertical-align:-3px;}
+  .chips.wrap{flex-direction:row;flex-wrap:wrap;}
+  .chips.wrap button{flex:1 1 44%;}
   .send{display:block;width:100%;margin:18px 0 0;background:var(--green);color:#fff;border:none;font:inherit;
     font-weight:800;font-size:18px;padding:16px;border-radius:16px;cursor:pointer;box-shadow:0 8px 18px rgba(63,138,82,.34);}
   .send:active{transform:translateY(1px);}
@@ -136,13 +140,65 @@
     </div>
   </div>
 
+  <div class="card">
+    <div class="cardimg"><img src="https://aadl11.github.io/kindness-seeds-/assets/images/last2_packages.png" alt=""></div>
+    <div class="body">
+      <div class="gt" data-t="g4">最後兩份</div>
+      <div class="q" data-t="like">喜歡這一關嗎?</div>
+      <div class="faces" data-rate="last2"></div>
+      <div class="q" data-t="part">最喜歡哪裡、想更好的地方?</div>
+      <input type="text" data-note="last2">
+    </div>
+  </div>
+
   <div class="card favcard"><div class="body" style="padding-top:18px">
     <div class="q" data-t="fav">最喜歡哪一關?</div>
     <div class="chips" data-fav>
       <button data-v="關懷之夜" data-t="g1">關懷之夜</button>
       <button data-v="環保小尖兵" data-t="g2">環保小尖兵</button>
       <button data-v="畢業感恩" data-t="g3">畢業感恩</button>
+      <button data-v="The Last Two" data-t="g4">最後兩份</button>
     </div>
+  </div></div>
+
+  <div class="card"><div class="body" style="padding-top:18px">
+    <div class="q" data-t="feel">玩起來的感覺是?(可複選)</div>
+    <div class="chips" data-feel>
+      <button data-v="🥰 Warm"><span class="em">🥰</span><span data-t="feelW">溫暖</span></button>
+      <button data-v="😄 Fun"><span class="em">😄</span><span data-t="feelF">好玩</span></button>
+      <button data-v="🤔 Made me think"><span class="em">🤔</span><span data-t="feelT">讓我想一想</span></button>
+      <button data-v="😵 Confusing"><span class="em">😵</span><span data-t="feelC">有點看不懂</span></button>
+      <button data-v="🤩 Want more"><span class="em">🤩</span><span data-t="feelM">還想再玩</span></button>
+    </div>
+  </div></div>
+
+  <div class="card"><div class="body" style="padding-top:18px">
+    <div class="q" data-t="rec">會推薦給朋友嗎?</div>
+    <div class="chips" data-rec>
+      <button data-v="😍 Definitely"><span class="em">😍</span><span data-t="recD">一定會</span></button>
+      <button data-v="🙂 Maybe"><span class="em">🙂</span><span data-t="recM">可能會</span></button>
+      <button data-v="😐 Not really"><span class="em">😐</span><span data-t="recN">不太會</span></button>
+    </div>
+  </div></div>
+
+  <div class="card"><div class="body" style="padding-top:18px">
+    <div class="q" data-t="age">你的年齡層</div>
+    <div class="chips wrap" data-age>
+      <button data-v="Under 12" data-t="ageA">12 以下</button>
+      <button data-v="13–15" data-t="ageB">13–15</button>
+      <button data-v="16–18" data-t="ageC">16–18</button>
+      <button data-v="19–22" data-t="ageD">19–22</button>
+      <button data-v="23+" data-t="ageE">23+</button>
+    </div>
+    <div class="q" data-t="langq">你用哪個語言玩?</div>
+    <div class="chips wrap" data-langq>
+      <button data-v="中文">中文</button>
+      <button data-v="English">English</button>
+      <button data-v="Español">Español</button>
+    </div>
+  </div></div>
+
+  <div class="card"><div class="body" style="padding-top:18px">
     <div class="q" data-t="say">想對米芽說的話 🌱</div>
     <textarea data-say rows="3"></textarea>
     <button class="send" data-t="send">送出 💌</button>
@@ -158,28 +214,51 @@
 </div>
 
 <script>
-/* 回饋進你的 Google 表單（收在試算表，不進信箱）。用「取得預先填入的連結」拿這 9 個值 */
+/* 回饋進你的 Google 表單（收在試算表，不進信箱）。用「取得預先填入的連結」拿這些值。
+   注意：所有 data-v（送出的後臺值）必須和 Google 表單裡的選項字串「完全一致」（含 emoji 與空格），
+   對不上會被表單丟棄。要改值，直接改 HTML 裡各按鈕的 data-v 即可。 */
 const FORM={action:"https://docs.google.com/forms/d/e/1FAIpQLScKNF-Zf4MCRWkgPi8QtvzAM-bjwyX4MUyQxSX6hhBUyjPyPg/formResponse",
   rate_dusk:"entry.1512668895",note_dusk:"entry.1210453746",
   rate_eco:"entry.1299571165",note_eco:"entry.1619848509",
   rate_grad:"entry.1405941511",note_grad:"entry.477412929",
-  fav:"entry.2064432295",say:"entry.1867267801"};
+  rate_last2:"entry.1222687655",note_last2:"entry.2143973026",
+  fav:"entry.2064432295",feel:"entry.1328239687",rec:"entry.142760202",
+  age:"entry.249674229",lang:"entry.40713450",say:"entry.1867267801"};
 const T={
- zh:{fun:"你玩得開心嗎?",sub:"玩完留個心得,大小事都歡迎 🙏",g1:"關懷之夜",g2:"環保小尖兵",g3:"畢業感恩",
-   like:"喜歡這一關嗎?",part:"最喜歡哪裡、想更好的地方?",fav:"最喜歡哪一關?",say:"想對米芽說的話 🌱",
+ zh:{fun:"你玩得開心嗎?",sub:"玩完留個心得,大小事都歡迎 🙏",g1:"關懷之夜",g2:"環保小尖兵",g3:"畢業感恩",g4:"最後兩份",
+   like:"喜歡這一關嗎?",part:"最喜歡哪裡、想更好的地方?",fav:"最喜歡哪一關?",
+   feel:"玩起來的感覺是?(可複選)",feelW:"溫暖",feelF:"好玩",feelT:"讓我想一想",feelC:"有點看不懂",feelM:"還想再玩",
+   rec:"會推薦給朋友嗎?",recD:"一定會",recM:"可能會",recN:"不太會",
+   age:"你的年齡層",ageA:"12 以下",ageB:"13–15",ageC:"16–18",ageD:"19–22",ageE:"23+",
+   langq:"你用哪個語言玩?",say:"想對米芽說的話 🌱",
    send:"送出 💌",hint:"不用具名,放心寫",tyt:"謝謝你!",typ:"你的心意,米芽收到了 🌱",back2:"← 回到遊戲",back:"← 回到米芽"},
- en:{fun:"Did you have fun?",sub:"Played it? Tell us anything 🙏",g1:"Care at Dusk",g2:"Eco Rangers",g3:"Graduation",
-   like:"Did you like it?",part:"Favorite part, or anything to improve?",fav:"Favorite level?",say:"Anything else for Miya 🌱",
+ en:{fun:"Did you have fun?",sub:"Played it? Tell us anything 🙏",g1:"Care at Dusk",g2:"Eco Rangers",g3:"Graduation",g4:"The Last Two",
+   like:"Did you like it?",part:"Favorite part, or anything to improve?",fav:"Favorite level?",
+   feel:"How did it make you feel? (pick any)",feelW:"Warm",feelF:"Fun",feelT:"Made me think",feelC:"Confusing",feelM:"Want more",
+   rec:"Would you recommend it to friends?",recD:"Definitely",recM:"Maybe",recN:"Not really",
+   age:"Age group",ageA:"Under 12",ageB:"13–15",ageC:"16–18",ageD:"19–22",ageE:"23+",
+   langq:"Which language did you play in?",say:"Anything else for Miya 🌱",
    send:"Send 💌",hint:"No name needed",tyt:"Thank you!",typ:"Miya received your heart 🌱",back2:"← Back to the game",back:"← Back to Miya"},
- es:{fun:"¿Te divertiste?",sub:"¿Lo jugaste? Cuéntanos 🙏",g1:"Cuidado al Atardecer",g2:"Eco-guardianes",g3:"Graduación",
-   like:"¿Te gustó?",part:"¿Parte favorita o por mejorar?",fav:"¿Nivel favorito?",say:"¿Algo más para Miya 🌱?",
+ es:{fun:"¿Te divertiste?",sub:"¿Lo jugaste? Cuéntanos 🙏",g1:"Cuidado al Atardecer",g2:"Eco-guardianes",g3:"Graduación",g4:"Las Últimas Dos",
+   like:"¿Te gustó?",part:"¿Parte favorita o por mejorar?",fav:"¿Nivel favorito?",
+   feel:"¿Cómo te hizo sentir? (elige varios)",feelW:"Cálido",feelF:"Divertido",feelT:"Me hizo pensar",feelC:"Confuso",feelM:"Quiero más",
+   rec:"¿Lo recomendarías a tus amigos?",recD:"Claro que sí",recM:"Quizás",recN:"No mucho",
+   age:"Grupo de edad",ageA:"Menos de 12",ageB:"13–15",ageC:"16–18",ageD:"19–22",ageE:"23+",
+   langq:"¿En qué idioma jugaste?",say:"¿Algo más para Miya 🌱?",
    send:"Enviar 💌",hint:"Sin nombre",tyt:"¡Gracias!",typ:"Miya recibió tu cariño 🌱",back2:"← Volver al juego",back:"← Volver con Miya"}};
-const EM=["😞","🙁","😐","😀","😍"];const data={rate:{},fav:""};
+const EM=["😞","🙁","😐","😀","😍"];const data={rate:{},fav:"",feel:[],rec:"",age:"",lang:""};
 document.querySelectorAll('[data-rate]').forEach(row=>{const k=row.dataset.rate;
   EM.forEach((e,i)=>{const b=document.createElement('button');b.type='button';b.textContent=e;
     b.onclick=()=>{data.rate[k]=i+1;[...row.children].forEach(c=>c.classList.toggle('sel',c===b));};row.appendChild(b);});});
-document.querySelectorAll('[data-fav] button').forEach(b=>{
-  b.onclick=()=>{data.fav=b.dataset.v;document.querySelectorAll('[data-fav] button').forEach(x=>x.classList.toggle('sel',x===b));};});
+/* 單選群（fav / rec / age / langq）：三語顯示，但送出的一律是 data-v 的單一後臺值 */
+function single(sel,key){document.querySelectorAll(sel+' button').forEach(b=>{
+  b.onclick=()=>{data[key]=b.dataset.v;document.querySelectorAll(sel+' button').forEach(x=>x.classList.toggle('sel',x===b));};});}
+single('[data-fav]','fav');single('[data-rec]','rec');single('[data-age]','age');single('[data-langq]','lang');
+/* 複選（feel）：點了再點可取消；送出時同一個 entry 重複帶多個值 */
+document.querySelectorAll('[data-feel] button').forEach(b=>{
+  b.onclick=()=>{const v=b.dataset.v,i=data.feel.indexOf(v);
+    if(i>=0){data.feel.splice(i,1);b.classList.remove('sel');}
+    else{data.feel.push(v);b.classList.add('sel');}};});
 function setLang(l){document.documentElement.lang=l;
   document.querySelectorAll('[data-t]').forEach(el=>{const v=T[l][el.dataset.t];if(v)el.textContent=v;});
   document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));}
@@ -191,10 +270,17 @@ document.querySelector('.send').onclick=()=>{const p=new URLSearchParams();
   put(FORM.rate_dusk,data.rate.dusk);put(FORM.note_dusk,val('[data-note=dusk]'));
   put(FORM.rate_eco,data.rate.eco);put(FORM.note_eco,val('[data-note=eco]'));
   put(FORM.rate_grad,data.rate.grad);put(FORM.note_grad,val('[data-note=grad]'));
-  put(FORM.fav,data.fav);put(FORM.say,val('[data-say]'));
+  put(FORM.rate_last2,data.rate.last2);put(FORM.note_last2,val('[data-note=last2]'));
+  put(FORM.fav,data.fav);
+  data.feel.forEach(v=>p.append(FORM.feel,v));   // 複選：同一 entry 重複多值
+  put(FORM.rec,data.rec);put(FORM.age,data.age);put(FORM.lang,data.lang);
+  put(FORM.say,val('[data-say]'));
   try{if(FORM.action.startsWith('http'))fetch(FORM.action,{method:'POST',mode:'no-cors',body:p});}catch(e){}
   document.getElementById('thanks').classList.add('show');window.scrollTo(0,0);};
 setLang(['zh','en','es'].indexOf(qlang)>=0?qlang:'zh');
+/* 從遊戲帶來的 ?lang= 順手預選「你用哪個語言玩?」（玩家仍可改） */
+(function(){const m={zh:'中文',en:'English',es:'Español'}[qlang];if(!m)return;
+  document.querySelectorAll('[data-langq] button').forEach(b=>{if(b.dataset.v===m){data.lang=m;b.classList.add('sel');}});})();
 // 優先用瀏覽器返回（回到玩家剛剛的遊戲狀態），否則回首頁
 function backToGame(){
   if(history.length>1){ history.back(); }
