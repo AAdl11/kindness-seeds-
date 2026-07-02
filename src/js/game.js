@@ -234,7 +234,7 @@
   function completedCount() { return ACTIVITIES.filter(function (a) { return SAVE.lit[a.id]; }).length; }
 
   /* 意見箱：開新分頁到問卷頁，帶上目前語言（純改連結，不動玩法/存檔）；三語標籤隨語言更新 */
-  var FB_BASE = 'https://aadl11.github.io/kindness-seeds-/feedback.html';
+  var FB_BASE = 'feedback.html';   // 相對路徑：本機測試開本機問卷、上線自動指向線上問卷
   function fbUrl() {
     var lang = window.LANG || 'zh';
     return FB_BASE + '?lang=' + encodeURIComponent(lang);
