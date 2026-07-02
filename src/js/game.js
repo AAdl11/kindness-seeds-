@@ -173,7 +173,7 @@
       ds: { zh: '社區活動中心', en: 'Community center', es: 'Centro comunitario' } },
     { id: 'the_last_two', fu: 'community', state: 'play', stars: 2, pos: { x: 0.64, y: 0.66 },
       nm: { zh: '最後兩份', en: 'The Last Two', es: 'Los últimos dos' },
-      ds: { zh: '互助站 · 道德兩難', en: 'Mutual-aid station · a dilemma', es: 'Centro de ayuda · un dilema' } }
+      ds: { zh: '社區互助站', en: 'Community mutual-aid station', es: 'Centro de ayuda comunitaria' } }
   ];
   var TREE_POS = { x: 0.55, y: 0.82 };   // 中央總成長樹（base 落點，往上長）
 
