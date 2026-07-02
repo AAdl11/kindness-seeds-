@@ -780,21 +780,23 @@ body.screen-level #milestones{display:none;}
 #l4title{pointer-events:auto;background:rgba(36,22,44,.58);color:#fff;font-weight:800;font-size:14px;padding:7px 14px;border-radius:999px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
 #l4leave{position:fixed;left:calc(12px + env(safe-area-inset-left));top:calc(54px + env(safe-area-inset-top));z-index:95;pointer-events:auto;background:rgba(255,255,255,.2);color:#fff;border-radius:999px;padding:7px 13px;font-weight:800;font-size:13px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
 /* flex 直欄主容器：物資→客人→關懷包，矮畫面也排得下，且不擋頂列/HUD */
-#l4main{position:absolute;left:0;right:0;top:calc(90px + env(safe-area-inset-top));bottom:0;z-index:18;
-  display:flex;flex-direction:column;min-height:0;padding:0 8px calc(8px + env(safe-area-inset-bottom));}
-/* 上方：今天的物資（每樣自己一份；變多 → 自動換行成多排） */
-#l4pantryWrap{flex:0 0 auto;min-height:0;}
-#l4pantryHead{display:flex;align-items:center;gap:8px;margin:0 4px 4px;}
+/* 版面原則（明暺拍板）：場景構圖不動、不縮；介面直接「浮」在畫面上層（ghud 玻璃風）。
+   #l4main 只當定位容器；場景(#l4guest)吃滿整區，物資列/關懷包列都是絕對定位浮層。 */
+#l4main{position:absolute;left:0;right:0;top:calc(90px + env(safe-area-inset-top));bottom:0;z-index:18;}
+/* 上方：物資浮層（固定大格、圖填滿；放不下 → 換行成兩排、整排置中；格子絕不等比縮小） */
+#l4pantryWrap{position:absolute;left:0;right:0;top:0;z-index:24;padding:0 10px;pointer-events:none;}
+#l4pantryWrap>*{pointer-events:auto;}
+#l4pantryHead{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 4px 4px;}
 #l4pantryLabel{color:#fff;font-weight:800;font-size:12.5px;text-shadow:0 1px 3px rgba(0,0,0,.4);}
-#l4pantry{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;align-content:flex-start;
-  max-height:30vh;overflow-y:auto;padding:2px;}
-.l4item{flex:0 0 auto;width:62px;background:rgba(255,255,255,.92);border-radius:13px;padding:6px 6px 5px;
-  display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;border:2px solid transparent;
-  box-shadow:0 4px 10px rgba(0,0,0,.26);transition:transform .12s,box-shadow .18s;position:relative;}
+#l4pantry{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;align-content:flex-start;
+  max-width:min(96vw,1560px);margin:0 auto;padding:2px;}
+.l4item{flex:0 0 auto;width:80px;background:rgba(255,255,255,.94);border-radius:14px;padding:7px 6px 6px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;border:2px solid transparent;
+  box-shadow:0 4px 12px rgba(0,0,0,.28);transition:transform .12s,box-shadow .18s;position:relative;}
 .l4item:active{transform:scale(.95);}
-.l4item .l4ico{font-size:1.4rem;line-height:1;}
-.l4item .l4ico.l4img{width:50px;height:44px;background-size:cover;background-position:center;background-repeat:no-repeat;border-radius:8px;}
-.l4item .l4nm{font-size:9.5px;font-weight:800;color:#43373f;text-align:center;line-height:1.12;}
+.l4item .l4ico{font-size:2rem;line-height:1.15;}
+.l4item .l4ico.l4img{width:66px;height:52px;background-size:cover;background-position:center;background-repeat:no-repeat;border-radius:9px;}
+.l4item .l4nm{font-size:10.5px;font-weight:800;color:#43373f;text-align:center;line-height:1.12;}
 .l4item.fresh{border-color:#bfe3a8;}
 .l4item.baby{border-color:#f3c6d8;}
 .l4item.gone{opacity:.32;pointer-events:none;filter:grayscale(.75);}
@@ -803,8 +805,8 @@ body.screen-level #milestones{display:none;}
   box-shadow:0 2px 5px rgba(0,0,0,.3);}
 .l4item.fresh .l4cnt{background:#2f6b1f;}
 .l4item.gone .l4cnt{background:#7a7280;}
-/* 中段：當前客人（圖＋對白＋多問一句） */
-#l4guest{flex:1 1 auto;min-height:0;position:relative;}
+/* 場景層：吃滿整區（物資/關懷包是浮層，不佔版面、不擠壓場景） */
+#l4guest{position:absolute;inset:0;z-index:14;}
 /* Community Care 拱門框：左側、放大、往下延伸蓋住背景盆栽；外緣只羽化「上＋兩側」，底座保持實心覆蓋背景 */
 #l4guestArt{position:absolute;left:0;top:-3%;bottom:-7%;aspect-ratio:1024/1536;
   background-size:100% 100%;background-position:center;background-repeat:no-repeat;
@@ -822,9 +824,9 @@ body.screen-level #milestones{display:none;}
 #l4guestFig::after{content:'';position:absolute;inset:0;pointer-events:none;
   background:radial-gradient(ellipse 80% 86% at 50% 42%, rgba(250,212,132,0) 52%, rgba(247,198,104,.5) 80%, rgba(243,185,82,.85) 100%);}
 #l4guestFig.show{opacity:1;transform:translateY(0);}
-/* 對話框置中（避開左側拱門，不壓到角色） */
-#l4guestPanel{position:absolute;left:54%;top:50%;transform:translate(-50%,-50%);
-  width:min(46vw,500px);max-height:92%;overflow-y:auto;background:rgba(28,18,34,.82);color:#fff;border-radius:16px;
+/* 對話框置中偏上（避開左側拱門與下方關懷包浮層） */
+#l4guestPanel{position:absolute;left:54%;top:45%;transform:translate(-50%,-50%);
+  width:min(46vw,500px);max-height:56%;overflow-y:auto;background:rgba(28,18,34,.82);color:#fff;border-radius:16px;
   padding:13px 16px;box-shadow:0 12px 30px rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.12);
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);}
 #l4guestName{font-size:12px;font-weight:800;color:#ffd98a;margin-bottom:4px;}
@@ -834,17 +836,21 @@ body.screen-level #milestones{display:none;}
 .l4mini{margin-top:10px;background:rgba(255,236,180,.14);color:#ffe9bd;border:1px solid rgba(255,224,150,.4);
   border-radius:999px;padding:7px 14px;font-weight:800;font-size:12.5px;cursor:pointer;}
 .l4mini:active{transform:scale(.97);}
-/* 下方：關懷包（湊）＋送出 */
-#l4bagWrap{flex:0 0 auto;padding:8px 4px 2px;}
-#l4bagHead{color:#fff;font-weight:800;font-size:12px;margin:0 2px 5px;text-shadow:0 1px 3px rgba(0,0,0,.4);}
-#l4bag{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;max-height:14vh;overflow-y:auto;align-content:flex-start;
-  background:rgba(255,255,255,.07);border:1px dashed rgba(255,255,255,.22);border-radius:14px;padding:7px;}
-.l4pin{display:flex;align-items:center;gap:5px;background:#fff;border-radius:999px;padding:5px 8px 5px 10px;
-  font-size:12px;font-weight:800;color:#43373f;box-shadow:0 3px 8px rgba(0,0,0,.26);}
-.l4pin .l4pimg{width:28px;height:24px;background-size:cover;background-position:center;background-repeat:no-repeat;border-radius:6px;}
-.l4pin .x{cursor:pointer;color:#b06a6a;font-weight:900;padding:0 2px;}
-.l4bagEmpty{color:#d7cadf;font-size:12px;font-weight:600;padding:4px 2px;}
-#l4actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:9px;justify-content:flex-end;}
+/* 下方：關懷包玻璃浮層（ghud 風）——z-index 高於拱門，直接蓋在門檻/畫面下緣上，永遠看得到 */
+#l4bagWrap{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom));
+  z-index:30;width:min(96vw,900px);padding:10px 14px 12px;border-radius:20px;
+  background:rgba(18,24,44,.55);border:1px solid rgba(255,255,255,.16);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 6px 20px rgba(0,0,0,.35);}
+#l4bagHead{color:#fff;font-weight:800;font-size:13px;margin:0 2px 6px;text-shadow:0 1px 3px rgba(0,0,0,.4);}
+#l4bag{display:flex;flex-wrap:wrap;gap:8px;min-height:48px;max-height:20vh;overflow-y:auto;align-content:flex-start;
+  background:rgba(255,255,255,.07);border:1px dashed rgba(255,255,255,.22);border-radius:14px;padding:8px;}
+.l4pin{display:flex;align-items:center;gap:7px;background:#fff;border-radius:999px;padding:7px 10px 7px 12px;
+  font-size:14px;font-weight:800;color:#43373f;box-shadow:0 3px 8px rgba(0,0,0,.26);}
+.l4pin>span:first-child{font-size:20px;line-height:1;}
+.l4pin .l4pimg{width:34px;height:28px;background-size:cover;background-position:center;background-repeat:no-repeat;border-radius:7px;}
+.l4pin .x{cursor:pointer;color:#b06a6a;font-weight:900;font-size:16px;padding:0 3px;}
+.l4bagEmpty{color:#d7cadf;font-size:13px;font-weight:600;padding:6px 4px;}
+#l4actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;justify-content:flex-end;}
 .l4act{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.24);border-radius:999px;
   padding:11px 18px;font-weight:800;font-size:14px;cursor:pointer;transition:background .18s,transform .12s;}
 .l4act:active{transform:scale(.98);}
@@ -868,12 +874,13 @@ body.screen-level #milestones{display:none;}
 #l4scOpts{display:flex;flex-direction:column;gap:9px;}
 #l4scOpts .l4act{width:100%;text-align:center;line-height:1.4;font-size:13.5px;padding:12px 14px;}
 .l4sc-result{margin-top:12px;font-size:13.5px;font-weight:700;color:#bfe3a8;line-height:1.5;}
-/* 直式窄畫面：客人改上下排，留更多對白空間 */
+/* 直式窄畫面：拱門縮居左下、對白改上方全寬（物資/關懷包浮層照舊） */
 @media (max-aspect-ratio:3/4){
-  #l4guest{display:flex;flex-direction:column;align-items:center;gap:8px;}
-  #l4guestArt{position:relative;left:auto;top:auto;bottom:auto;height:30vh;max-height:30vh;width:auto;}
-  #l4guestPanel{position:relative;left:auto;top:auto;transform:none;width:100%;max-width:100%;}
-  #l4pantry{max-height:26vh;}
+  #l4guestArt{top:auto;bottom:0;height:52%;aspect-ratio:1024/1536;}
+  #l4guestPanel{left:50%;top:36%;width:min(94vw,520px);max-height:34%;}
+  .l4item{width:68px;}
+  .l4item .l4ico.l4img{width:54px;height:42px;}
+  #l4pantry{max-height:30vh;overflow-y:auto;}
 }
 
 /* ===================================================================
